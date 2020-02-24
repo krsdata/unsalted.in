@@ -31,6 +31,10 @@ class TeamA extends Eloquent
      *
      * @var array
      */
+
+     protected $hidden = [
+        'id', 'created_at','updated_at'
+    ];
     
 
     protected $guarded = ['created_at' , 'updated_at' , 'id' ];

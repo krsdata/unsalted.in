@@ -212,17 +212,17 @@ class ApiController extends BaseController
 
         switch ($status) {
             case '1':
-                 $match = Matches::where('status',$status)->get();
+                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
                 break;
             case '2':
-                 $match = Matches::where('status',$status)->get();
+                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
                 break;
             case '3':
-                 $match = Matches::where('status',$status)->get();
+                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
                 break;
             
             default:
-                $match = Matches::all();
+                $match = Matches::with('teama','teamb')->get();
                 break;
         }
 

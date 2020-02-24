@@ -36,8 +36,12 @@ class Matches extends Eloquent
     protected $guarded = ['created_at' , 'updated_at' , 'id' ];
 
 
-    public function reportedUser()
+    public function teama()
     {
-        return $this->hasMany('App\User', 'id', 'reportedUserId') ;
+        return $this->hasOne('App\Models\TeamA', 'match_id', 'match_id') ;
+    }
+     public function teamb()
+    {
+        return $this->hasOne('App\Models\TeamB', 'match_id', 'match_id') ;
     }
 }
