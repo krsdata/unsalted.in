@@ -51,6 +51,8 @@ class ApiController extends BaseController
 
         \File::put(public_path('/upload/json/live.txt'),$live);
 
+        return ['file updated'];
+
     } 
 
      public function updateMatchDataByStatus($status=1)
@@ -226,7 +228,23 @@ class ApiController extends BaseController
                 break;
         }
 
-        return ['total_result'=>count($match),'status'=>'ok','code'=>'200','message'=>'success','response'=>$match];
+        $banner = \DB::table('banners')->select('title','url','actiontype')->get();
+
+        $join_contest =  \DB::table('join_contests')->where('user_id',1)->first('match_id');
+
+      
+        $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str')->get();
+
+       $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str')->get();
+
+        
+        $data['matchdata'][0] = ['viewType'=>1,'joinedmatches'=>$joinedmatches];
+        $data['matchdata'][1] = ['viewType'=>2,'banners'=>$banner];
+        $data['matchdata'][2] = ['viewType'=>3,'upcomingmatches'=>$match];
+
+
+
+        return ['total_result'=>count($match),'status'=>'true','code'=>'200','message'=>'success','response'=>$data];
     }
  
 }
