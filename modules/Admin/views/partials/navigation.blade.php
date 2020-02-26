@@ -35,36 +35,8 @@
                                     <i class="glyphicon glyphicon-th"></i> View Users </a>
                             </li>
 
-                           <li>
-                                <a href="{{ route('postTask')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View Tasks </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('category')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View category </a>
-                            </li>
-
-                             <li>
-                                <a href="{{ route('contact')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View contact </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('program')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View Program </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('blog')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View Blogs </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('press')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View Press </a>
-                            </li>
-
-                         
+                                                    
+ 
                             
                             
                         </ul>

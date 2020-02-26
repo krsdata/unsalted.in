@@ -14,7 +14,6 @@ use App\Http\Requests;
 use App\Helpers\Helper as Helper;
 //use Modules\Admin\Models\User; 
 use Modules\Admin\Models\Category;
-use Modules\Admin\Models\CategoryDashboard;
 use App\Admin;
 use Illuminate\Http\Request;
 use App\User;
@@ -37,7 +36,7 @@ class AdminController extends Controller {
         $this->middleware('admin');  
         View::share('heading','dashboard');
         View::share('route_url','admin');
-        View::share('WebsiteTitle','Edify');
+        View::share('WebsiteTitle','Plug11');
     }
     /*
     * Dashboard
@@ -56,7 +55,7 @@ class AdminController extends Controller {
         $users_count        =  User::count();
         $category_grp_count =  Category::where('parent_id',0)->count();
         $category_count     =  Category::where('parent_id','!=',0)->count();
-        $category_dashboard_count = CategoryDashboard::count();
+        $category_dashboard_count =1; // CategoryDashboard::count();
 
 
         return view('packages::dashboard.index',compact('category_count','users_count','category_grp_count','page_title','page_action','viewPage','category_dashboard_count'));
