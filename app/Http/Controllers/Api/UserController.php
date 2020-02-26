@@ -32,7 +32,7 @@ class UserController extends BaseController
         $input['last_name']     = $request->input('last_name'); 
         $input['email']         = $request->input('email'); 
         $input['password']      = Hash::make($request->input('password'));
-        $input['role_type']     = $request->input('role_type'); ;
+        $input['role_type']     = 3; //$request->input('role_type'); ;
         $input['user_type']     = $request->input('user_type');
         $input['provider_id']   = $request->input('provider_id'); 
 
@@ -78,7 +78,7 @@ class UserController extends BaseController
          
         $helper = new Helper;
         /** --Create USER-- **/
-       // $user = User::create($input); 
+        $user = User::create($input); 
 
         $subject = "Welcome to Plug11! Verify your email address to get started";
         $email_content = [
@@ -251,7 +251,7 @@ class UserController extends BaseController
        // print_r ($input);
         $validator = Validator::make($request->all(), [
                     'email' => 'required',
-                     'loginType' => 'required'
+                     'user_type' => 'required'
                 ]);
         if ($validator->fails()) {
             $error_msg = [];
@@ -268,7 +268,7 @@ class UserController extends BaseController
             }
         }
 
-        $user_type = $request->loginType;
+        $user_type = $request->user_type;
         switch ($user_type) {
             case 'facebookAuth':
 
@@ -292,7 +292,7 @@ class UserController extends BaseController
                     $user->last_name     = $request->get('last_name'); 
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
-                    $user->user_type     = $request->get('loginType');
+                    $user->user_type     = $request->get('user_type');
                     $user->provider_id   = $request->get('provider_id'); 
                     $user->password   = "";
                     
@@ -342,7 +342,7 @@ class UserController extends BaseController
                     $user->last_name     = $request->get('last_name'); 
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
-                    $user->user_type     = $request->get('loginType');
+                    $user->user_type     = $request->get('user_type');
                     $user->provider_id   = $request->get('provider_id'); 
                     $user->password   = "";
                     
@@ -408,25 +408,6 @@ class UserController extends BaseController
                     "message"=> $message ,
                     'data' => $data
                  ]);   
-    }
-
-    public function update(Request $request)
-    {
-        $all_data = $request->all();
-        $update_users = User::where('id',$request->id)->update($all_data);   
-        if($update_users)
-        {
-            return response()
-            ->json([
-                'status' => 'Updated Succesfully',
-            ]);
-        }
-        else{
-            return response()
-            ->json([
-                'status' => 'Could not Updated',
-            ]);
-        }
     }
 
 }
