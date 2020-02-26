@@ -101,107 +101,45 @@
         );
         /*---------End---------*/
 
-        Route::bind('softwareEditor', function ($value, $route) {
-            return Modules\Admin\Models\SoftwareEditor::find($value);
+        Route::bind('banner', function ($value, $route) {
+            return Modules\Admin\Models\Banner::find($value);
         });
 
         Route::resource(
-            'admin/softwareEditor',
-            'Modules\Admin\Http\Controllers\SoftwareEditorController',
+            'admin/banner',
+            'Modules\Admin\Http\Controllers\BannerController',
             [
                 'names' => [
-                    'edit'      => 'softwareEditor.edit',
-                    'show'      => 'softwareEditor.show',
-                    'destroy'   => 'softwareEditor.destroy',
-                    'update'    => 'softwareEditor.update',
-                    'store'     => 'softwareEditor.store',
-                    'index'     => 'softwareEditor',
-                    'create'    => 'softwareEditor.create',
+                    'edit'      => 'banner.edit',
+                    'show'      => 'banner.show',
+                    'destroy'   => 'banner.destroy',
+                    'update'    => 'banner.update',
+                    'store'     => 'banner.store',
+                    'index'     => 'banner',
+                    'create'    => 'banner.create',
                 ]
                     ]
         );
 
-        Route::bind('editorPortfolio', function ($value, $route) {
-            return Modules\Admin\Models\EditorPortfolio::find($value);
-        });
-
-        Route::resource(
-            'admin/editorPortfolio',
-            'Modules\Admin\Http\Controllers\EditorPortfolioController',
-            [
-                'names' => [
-                    'edit'      => 'editorPortfolio.edit',
-                    'show'      => 'editorPortfolio.show',
-                    'destroy'   => 'editorPortfolio.destroy',
-                    'update'    => 'editorPortfolio.update',
-                    'store'     => 'editorPortfolio.store',
-                    'index'     => 'editorPortfolio',
-                    'create'    => 'editorPortfolio.create',
-                ]
-                    ]
-        );
-
-
-        /*------------User Category and controller---------*/
-
-        Route::bind('sub-category', function ($value, $route) {
-            return Modules\Admin\Models\Category::find($value);
-        });
-
-        Route::resource(
-            'admin/sub-category',
-            'Modules\Admin\Http\Controllers\SubCategoryController',
-            [
-                'names' => [
-                    'edit' => 'sub-category.edit',
-                    'show' => 'sub-category.show',
-                    'destroy' => 'sub-category.destroy',
-                    'update' => 'sub-category.update',
-                    'store' => 'sub-category.store',
-                    'index' => 'sub-category',
-                    'create' => 'sub-category.create',
-                ]
-                    ]
-        );
-        /*------------User Category and controller---------*/
-
-        Route::bind('category-dashboard', function ($value, $route) {
-            return Modules\Admin\Models\CategoryDashboard::find($value);
-        });
-
-        Route::resource(
-            'admin/category-dashboard',
-            'Modules\Admin\Http\Controllers\CategoryDashboardController',
-            [
-                'names' => [
-                    'edit' => 'category-dashboard.edit',
-                    'show' => 'category-dashboard.show',
-                    'destroy' => 'category-dashboard.destroy',
-                    'update' => 'category-dashboard.update',
-                    'store' => 'category-dashboard.store',
-                    'index' => 'category-dashboard',
-                    'create' => 'category-dashboard.create',
-                ]
-                    ]
-        );
+         
         /*---------Contact Route ---------*/
 
-        Route::bind('contact', function ($value, $route) {
-            return Modules\Admin\Models\Contact::find($value);
+        Route::bind('contestType', function ($value, $route) {
+            return Modules\Admin\Models\ContestType::find($value);
         });
 
         Route::resource(
-            'admin/contact',
-            'Modules\Admin\Http\Controllers\ContactController',
+            'admin/contestType',
+            'Modules\Admin\Http\Controllers\ContestTypeController',
             [
             'names' => [
-                'edit' => 'contact.edit',
-                'show' => 'contact.show',
-                'destroy' => 'contact.destroy',
-                'update' => 'contact.update',
-                'store' => 'contact.store',
-                'index' => 'contact',
-                'create' => 'contact.create',
+                'edit' => 'contestType.edit',
+                'show' => 'contestType.show',
+                'destroy' => 'contestType.destroy',
+                'update' => 'contestType.update',
+                'store' => 'contestType.store',
+                'index' => 'contestType',
+                'create' => 'contestType.create',
             ]
                 ]
         );

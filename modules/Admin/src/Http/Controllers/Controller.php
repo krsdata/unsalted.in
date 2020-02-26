@@ -13,6 +13,6 @@ class Controller extends BaseController
 {
 	use DispatchesJobs, ValidatesRequests;
  	function __construct(){
- 		View::share('WebsiteTitle','Edify'); 
+ 		View::share('WebsiteTitle','Plug11');
     }
 }

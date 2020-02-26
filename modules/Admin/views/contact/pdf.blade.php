@@ -15,7 +15,7 @@
                 <!-- BEGIN CONTENT BODY -->
                 <div class="page-content">
                     <!-- BEGIN PAGE HEAD--> 
-                    <h3> <center>Edify</center></h3>
+                    <h3> <center>Plug11</center></h3>
                     <!-- END PAGE BREADCRUMB -->
                     <!-- BEGIN PAGE BASE CONTENT -->
                     <div class="row">

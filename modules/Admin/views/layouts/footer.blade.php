@@ -1,7 +1,7 @@
 <!-- END CONTAINER -->
         <!-- BEGIN FOOTER -->
         <div class="page-footer">
-            <div class="page-footer-inner"> 2020 &copy; Edify
+            <div class="page-footer-inner"> 2020 &copy; Plug11
 
             </div>
             <div class="scroll-to-top">

@@ -211,36 +211,26 @@ class ApiController extends BaseController
     public function getMatch(Request $request){
 
         $status =  $request->status;
-
-        switch ($status) {
-            case '1':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
-            case '2':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
-            case '3':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
-            
-            default:
-                $match = Matches::with('teama','teamb')->get();
-                break;
-        }
-
+        $user = $request->user_id;
         $banner = \DB::table('banners')->select('title','url','actiontype')->get();
 
-        $join_contest =  \DB::table('join_contests')->where('user_id',1)->first('match_id');
+        $join_contest =  \DB::table('join_contests')->where('user_id',$user)->first('match_id');
+        
+        if($join_contest){
+            
 
-      
-        $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str')->get();
+            $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->get();
 
-       $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str')->get();
+            $data['matchdata'][] = ['viewType'=>1,'joinedmatches'=>$joinedmatches];
+            
+        }
+        
+
+       $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->get();
 
         
-        $data['matchdata'][0] = ['viewType'=>1,'joinedmatches'=>$joinedmatches];
-        $data['matchdata'][1] = ['viewType'=>2,'banners'=>$banner];
-        $data['matchdata'][2] = ['viewType'=>3,'upcomingmatches'=>$match];
+        $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
+        $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 
 
 
