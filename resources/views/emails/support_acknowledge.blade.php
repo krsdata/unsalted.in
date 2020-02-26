@@ -26,7 +26,7 @@ table {
                        
                       
                           <p>Best Regards,</p>
-                          <p>Yellotasker Support</p>
+                          <p>Plug11 Support</p>
 
                   </div>
                 </td>
