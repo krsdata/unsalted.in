@@ -35,7 +35,8 @@ Route::group([
       Route::match(['post','get'],'member/customerLogin', 'Api\UserController@customerLogin');
       Route::match(['post','get'],'member/registration', 'Api\UserController@registration');
 			Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
-                  
+      Route::match(['post','get'],'email_verification','Api\UserController@emailVerification');   
+            
 
       Route::match(['post','get'],'storeMatchData', 'Api\ApiController@storeMatchData');
      	//Cron 1
