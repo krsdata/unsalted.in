@@ -35,6 +35,9 @@ class TeamB extends Eloquent
 
     protected $guarded = ['created_at' , 'updated_at' , 'id' ];
 
+      protected $hidden = [
+        'id', 'created_at','updated_at'
+    ];
 
     public function reportedUser()
     {

@@ -51,6 +51,8 @@ class ApiController extends BaseController
 
         \File::put(public_path('/upload/json/live.txt'),$live);
 
+        return ['file updated'];
+
     } 
 
      public function updateMatchDataByStatus($status=1)
@@ -209,24 +211,30 @@ class ApiController extends BaseController
     public function getMatch(Request $request){
 
         $status =  $request->status;
+        $user = $request->user_id;
+        $banner = \DB::table('banners')->select('title','url','actiontype')->get();
 
-        switch ($status) {
-            case '1':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
-            case '2':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
-            case '3':
-                 $match = Matches::with('teama','teamb')->where('status',$status)->get();
-                break;
+        $join_contest =  \DB::table('join_contests')->where('user_id',$user)->first('match_id');
+        
+        if($join_contest){
             
-            default:
-                $match = Matches::with('teama','teamb')->get();
-                break;
-        }
 
-        return ['total_result'=>count($match),'status'=>'ok','code'=>'200','message'=>'success','response'=>$match];
+            $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->get();
+
+            $data['matchdata'][] = ['viewType'=>1,'joinedmatches'=>$joinedmatches];
+            
+        }
+        
+
+       $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->get();
+
+        
+        $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
+        $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
+
+
+
+        return ['total_result'=>count($match),'status'=>'true','code'=>'200','message'=>'success','response'=>$data];
     }
  
 }
