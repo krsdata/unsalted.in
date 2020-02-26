@@ -160,12 +160,7 @@ class Helper {
         return $rating->rating;
     }
 
-    public static function getIndividualCompanyUser($id=null)
-    {
-        $company = CorporateProfile::where('userID',$id)->first();
-        $company_user=   CorporateProfile::selectRaw('userID')->where('company_url',$company->company_url)->get();    
-        return $company_user->lists('userID')->toArray();
-    }
+    
     public static function getRatingData($criteria_id = null,$rating_value=null)    
     {    
         $total_criteria = count($criteria_id);
@@ -237,11 +232,11 @@ class Helper {
             $mail->Username   = getenv('MAIL_USERNAME'); // SMTP account username
             $mail->Password   = getenv('MAIL_PASSWORD');
 
-            $mail->setFrom(getenv('MAIL_USERNAME'), "yellotasker");
+            $mail->setFrom(getenv('MAIL_USERNAME'), "plug11");
             $mail->Subject = $email_content['subject'];
             $mail->MsgHTML($html);
-            $mail->addAddress($email_content['receipent_email'], "yellotasker");
-            $mail->addAddress("kroy@mailinator.com","yellotasker");
+            $mail->addAddress($email_content['receipent_email'], "plug11");
+            $mail->addAddress("kroy@mailinator.com","plug11");
 
             //$mail->addAttachment(‘/home/kundan/Desktop/abc.doc’, ‘abc.doc’); // Optional name
             $mail->SMTPOptions= array(
@@ -285,7 +280,7 @@ class Helper {
             $mail->Username   = getenv('MAIL_USERNAME'); // SMTP account username
             $mail->Password   = getenv('MAIL_PASSWORD');
 
-            $mail->setFrom("support@krsdata.net", "Yellotasker");
+            $mail->setFrom("support@krsdata.net", "plug11");
             $mail->Subject = $subject;
             $mail->MsgHTML($html);
             $mail->addAddress($email_content['receipent_email'], "admin");
@@ -488,37 +483,7 @@ class Helper {
         }                    
         return  $date;
     }
-   /*
-    *Method : getEvaluationCountByMonth
-    * Parameter : User ID, month
-    * Response : last Evaluation date
-    */
-    public function getEvaluationCountByMonth($userid=null,$month=null){
-        $year = Input::get('year');
-        $year =  isset($year)?$year:date('Y');  
-        
-        $count = InterviewRating::where('interviewerID',$userid)
-                    ->whereYear('created_at', '=', $year)
-                    ->whereMonth('created_at', '=', $month)->count(); 
-        return $count;
-    }
-    /*
-    *Method : getCorporateEvaluationCountByMonth
-    * Parameter : User ID, month
-    * Response : last Evaluation date
-    */
-    public function getCorporateEvaluationCountByMonth($userid=null,$month=null){ 
-        
-        $year = Input::get('year');
-        $year =  isset($year)?$year:date('Y'); 
-        $cp = CorporateProfile::where('userID',$userid)->first();
-        $org_domain = $cp->company_url;
-        $cp_user = CorporateProfile::where('company_url',$org_domain)->lists('userID')->toArray();
-        $user = User::whereIn('userID',$cp_user)->count();
-        $count = InterviewRating::whereIn('interviewerID',$cp_user)
-                            ->whereYear('created_at', '=', $year)
-                            ->whereMonth('created_at', '=', $month)->count();
-        return $count;  
-    }
+    
+     
      
 }
