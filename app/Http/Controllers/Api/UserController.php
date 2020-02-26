@@ -410,4 +410,33 @@ class UserController extends BaseController
                  ]);   
     }
 
+     /* @method : Email Verification
+    * @param : token_id
+    * Response : json
+    * Return :token and email 
+   */
+   
+    public function emailVerification(Request $request)
+    {
+        $verification_code = $request->input('verification_code');
+        $email    = $request->input('email');
+
+        if (Hash::check($email, $verification_code)) {
+           $user = User::where('email',$email)->get()->count();
+           if($user>0)
+           {
+              User::where('email',$email)->update(['status'=>1]);  
+           }else{
+            echo "Verification link is Invalid or expire!"; exit();
+                return response()->json([ "status"=>0,"message"=>"Verification link is Invalid!" ,'data' => '']);
+           }
+           echo "Email verified successfully."; exit();  
+           return response()->json([ "status"=>1,"message"=>"Email verified successfully." ,'data' => '']);
+        }else{
+            echo "Verification link is Invalid!"; exit();
+            return response()->json([ "status"=>0,"message"=>"Verification link is invalid!" ,'data' => '']);
+        }
+    }
+   
+
 }

@@ -35,7 +35,7 @@ get started.
                           {{ url('api/v1/email_verification?verification_code='.urlencode($content['verification_token']).'&email='.urlencode($content['email'])) }}</a> 
                       </p> 
                           <p>Best Regards,</p>
-                          <p>Team Yellotasker</p>
+                          <p>Team Plug11</p>
 
                   </div>
                 </td>
