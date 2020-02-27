@@ -183,7 +183,7 @@
                                 <div class="display">
                                     <div class="number">
                                         <h3 class="font-blue-sharp">
-                                            <span data-counter="counterup" data-value="567">{{$match_3}}</span>
+                                            <span data-counter="counterup" data-value="567">{{$match_1}}</span>
                                         </h3>
                                         <small> Upcoming Matches </small>
                                     </div>
@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="progress-info">
                                     <div class="progress">
-                                        <span style="width: {{$match_3}}%;" class="progress-bar progress-bar-success blue-sharp">
+                                        <span style="width: {{$match_1}}%;" class="progress-bar progress-bar-success blue-sharp">
                                             <span class="sr-only">{{$match_3}}% grow</span>
                                         </span>
                                     </div>
