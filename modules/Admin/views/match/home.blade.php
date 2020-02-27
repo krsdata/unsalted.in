@@ -19,7 +19,7 @@
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon-settings font-red"></i>
-                                        <span class="caption-subject font-red sbold uppercase">{{ $heading }}</span>
+                                        <span class="caption-subject font-red sbold uppercase">All Matches </span>
                                     </div>
                                      <div class="col-md-12 pull-right">
                                         <div class=" pull-right">

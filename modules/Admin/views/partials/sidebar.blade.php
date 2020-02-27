@@ -136,12 +136,29 @@
         <span class="title">Manage Fantasy</span>
         <span class="arrow {{ (isset($page_title) && $page_title=='Banner')?'open':'' }}"></span>
     </a>
-    <ul class="sub-menu" style="display: {{ (isset($page_title) && $page_title=='Banner')?'block':'none' }}">
+     
+    <ul class="sub-menu" style="display: {{ (isset($page_title) && $page_title=='Match')?'block':'none' }}">
+
+        <li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='Match')?'open':'' }}">
+
+            <a href="javascript:;" class="nav-link nav-toggle">
+               <i class="glyphicon glyphicon-th"></i>
+                <span class="title">Matches</span>
+                <span class="arrow {{ (isset($sub_page_title) && $sub_page_title=='Match')?'open':'' }}"></span>
+            </a>
+            <ul class="sub-menu"  style="display: {{ (isset($sub_page_title) && $sub_page_title=='Match')?'block':'' }}">
+                 
+                <li class="nav-item {{ (isset($page_action) && $page_action=='View  Match')?'open':'' }}">
+                    <a href="{{ route('match') }}" class="nav-link "  >View Match</a>
+                </li>
+
+            </ul>
+        </li>
        
         <li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='Banner')?'open':'' }}">
 
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="fa fa-folder-o"></i>
+                <i class="glyphicon glyphicon-th"></i>
                 <span class="title">Banner</span>
                 <span class="arrow {{ (isset($sub_page_title) && $sub_page_title=='Banner')?'open':'' }}"></span>
             </a>
@@ -156,10 +173,10 @@
             </ul>
         </li>
 
-	<li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='Contest Type')?'open':'' }}">
+	   <li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='Contest Type')?'open':'' }}">
 
             <a href="javascript:;" class="nav-link nav-toggle">
-                <i class="fa fa-folder-o"></i>
+               <i class="glyphicon glyphicon-th"></i>
                 <span class="title">contest Type</span>
                 <span class="arrow {{ (isset($sub_page_title) && $sub_page_title=='Contest Type')?'open':'' }}"></span>
             </a>
@@ -172,19 +189,9 @@
                 </li>
 
             </ul>
-        </li>
-
-
-
-
-
-    </ul>
-    </li>
-
-    
-
-
-    
+        </li> 
+   
+    </li> 
 
 
                      <li class="nav-item start active {{ (isset($page_title) && $page_title=='Program')?'open':'' }}">
@@ -224,7 +231,7 @@
                                 <li class="nav-item start active {{ (isset($page_title) && $page_title=='Payment')?'open':'' }}">
                                    <a href="javascript:;" class="nav-link nav-toggle">
                                        <i class="glyphicon glyphicon-th"></i>
-                                       <span class="title">Payment Management</span>
+                                       <span class="title">Payment </span>
                                        <span class="arrow {{ (isset($page_title) && $page_title=='Payment')?'open':'' }}"></span>
                                    </a>
                                </li>
