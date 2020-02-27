@@ -36,18 +36,19 @@ Route::group([
       Route::match(['post','get'],'member/registration', 'Api\UserController@registration');
 			Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
       Route::match(['post','get'],'email_verification','Api\UserController@emailVerification');   
-            
-
-      Route::match(['post','get'],'storeMatchData', 'Api\ApiController@storeMatchData');
-     	//Cron 1
-     	Route::match(['post','get'],'updateMatchData', 'Api\ApiController@getMatchDataFromApi');
+       
      	// cron 2 and store match by type
      	Route::match(['post','get'],'storeMatchInfo/{fileName}', 'Api\ApiController@storeMatchInfo');
 
      	// cron 3 and store match by type
      	// url : url/1
+     		//Cron 1
+     	Route::match(['post','get'],'getMatchDataFromApi', 'Api\ApiController@getMatchDataFromApi');
      	Route::match(['post','get'],'updateMatchDataByStatus/{status}', 'Api\ApiController@updateMatchDataByStatus');
-       	
+
+     	// cron from backedn
+   		Route::match(['post','get'],'getMatchDataFromApiAdmin', 'Api\CronController@getMatchDataFromApi');
+     	Route::match(['post','get'],'updateMatchDataByStatusAdmin/{status}', 'Api\CronController@updateMatchDataByStatus');
 	
 		//mobile API
 

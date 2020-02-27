@@ -127,8 +127,6 @@
                             </div>
                         </div>
 
-                    </div>
-
 
                       <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                             <div class="dashboard-stat2 bordered">
@@ -208,7 +206,118 @@
                    
                     
                     <!-- END PAGE BASE CONTENT -->
+                
+                 
+                     
+
                 </div>
+
+                <div class="row">
+                    <div class=" col-lg-12 col-md-12 col-sm-11 col-xs-12 " style=""><p class="alert alert-success  ">CRON JOB : 
+                     @if(Session::has('flash_alert_notice'))
+                              
+                           <span class="alert alert-danger">  {{ Session::get('flash_alert_notice') }} </span>
+                             
+                        @endif
+                 </p> </div>
+                     
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="dashboard-stat2 bordered">
+                                <div class="display">
+                                      <div class="icon">
+                                        <i class="fa fa-folder-open-o"></i>
+                                    </div>
+                                    <div class="number">
+                                        <h3 class="font-blue-sharp">
+                                            <span data-counter="counterup" data-value="567">
+                                                <a href="{{url('api/v2/getMatchDataFromApiAdmin')}}" target="_blank">All Match Status  </a>
+
+                                            </span>
+                                        </h3>
+                                        <small> Update Match from Cron </small>
+                                    </div>
+                                  
+                                </div>
+                                <div class="progress-info">
+                                    <div class="progress">
+                                        <span style="width: {{$match_1}}%;" class="progress-bar progress-bar-success blue-sharp">
+                                            <span class="sr-only">{{$match_3}}% grow</span>
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                    </div> 
+
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="dashboard-stat2 bordered">
+                                <div class="display">
+                                     <div class="icon">
+                                        <i class="fa fa-folder-open-o"></i>
+                                    </div>
+                                    <div class="number">
+                                        <h3 class="font-blue-sharp">
+                                            <span data-counter="counterup" data-value="567">
+                                                <a href="{{url('api/v2/updateMatchDataByStatusAdmin/3')}}">Live Match Status  </a>
+
+                                            </span>
+                                        </h3>
+                                        <small> Update Match from Cron </small>
+                                    </div>
+                                   
+                                </div>
+                                 
+                            </div>
+                    </div>
+
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="dashboard-stat2 bordered">
+                                <div class="display">
+                                      <div class="icon">
+                                        <i class="fa fa-folder-open-o"></i>
+                                    </div>
+                                    <div class="number">
+                                        <h3 class="font-blue-sharp">
+                                            <span data-counter="counterup" data-value="567">
+                                                <a href="{{url('api/v2/updateMatchDataByStatusAdmin/2')}}">Completed Match   </a>
+
+                                            </span>
+                                        </h3>
+                                        <small> Update Match from Cron </small>
+                                    </div>
+                                  
+                                </div>
+                                 
+                            </div>
+                    </div>
+
+                      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="dashboard-stat2 bordered">
+                                <div class="display">
+                                      <div class="icon">
+                                        <i class="fa fa-folder-open-o"></i>
+                                    </div>
+                                    <div class="number">
+                                        <h3 class="font-blue-sharp">
+                                            <span data-counter="counterup" data-value="567">
+                                                <a href="{{url('api/v2/updateMatchDataByStatusAdmin/1')}}" >Upcoming Match   </a>
+
+                                            </span>
+                                        </h3>
+
+
+                                        <small> Upcoming Match from Cron </small>
+                                    </div>
+                                     
+                                </div>
+                                 
+                            </div>
+                    </div>
+
+                    
+                </div>
+
+
                 <!-- END CONTENT BODY -->
             </div>
             <!-- END CONTENT -->
