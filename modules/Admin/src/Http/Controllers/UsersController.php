@@ -224,7 +224,7 @@ class UsersController extends Controller {
      */
     public function destroy(Request $request,$id) {
         
-       // User::where('id',$id)->delete();
+        User::where('id',$id)->delete();
 
         $contains = \Str::contains(URL::previous(), 'clientuser');
             
