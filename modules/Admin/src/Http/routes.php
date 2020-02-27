@@ -144,22 +144,22 @@
                 ]
         );
 
-        Route::bind('comment', function ($value, $route) {
-            return App\Models\Comments::find($value);
+        Route::bind('match', function ($value, $route) {
+            return App\Models\Match::find($value);
         });
 
         Route::resource(
-            'admin/comment',
-            'Modules\Admin\Http\Controllers\CommentController',
+            'admin/match',
+            'Modules\Admin\Http\Controllers\MatchController',
             [
             'names' => [
-                'edit' => 'comment.edit',
-                'show' => 'comment.show',
-                'destroy' => 'comment.destroy',
-                'update' => 'comment.update',
-                'store' => 'comment.store',
-                'index' => 'comment',
-                'create' => 'comment.create',
+                'edit' => 'match.edit',
+                'show' => 'match.show',
+                'destroy' => 'match.destroy',
+                'update' => 'match.update',
+                'store' => 'match.store',
+                'index' => 'match',
+                'create' => 'match.create',
             ]
                 ]
         );
@@ -378,19 +378,21 @@
         );
 
 
-
+        Route::bind('content', function ($value, $route) {
+            return Modules\Admin\Models\Page::find($value);
+        });
         Route::resource(
-            'admin/articleType',
-            'Modules\Admin\Http\Controllers\ArticleTypeController',
+            'admin/content',
+            'Modules\Admin\Http\Controllers\PageController',
             [
             'names' => [
-                'edit' => 'articleType.edit',
-                'show' => 'articleType.show',
-                'destroy' => 'articleType.destroy',
-                'update' => 'articleType.update',
-                'store' => 'articleType.store',
-                'index' => 'articleType',
-                'create' => 'articleType.create',
+                'edit' => 'content.edit',
+                'show' => 'content.show',
+                'destroy' => 'content.destroy',
+                'update' => 'content.update',
+                'store' => 'content.store',
+                'index' => 'content',
+                'create' => 'content.create',
             ]
                 ]
         );

@@ -225,10 +225,8 @@ class ApiController extends BaseController
             
         }
         
-
        $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->get();
 
-        
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 

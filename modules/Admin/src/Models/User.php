@@ -8,8 +8,14 @@ use Modules\Admin\Models\Group;
 use Modules\Admin\Models\Position;
 use Auth;
 use URL;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable {
+
+     use SoftDeletes;
+     
+    protected $dates = ['deleted_at'];
 
    
     /**
@@ -48,20 +54,7 @@ class User extends Authenticatable {
                             'status',
                             'tagLine',
                             'address',
-                            'birthday',
-                            'skills',
-                            'modeOfreach',
-                            'language',
-                            'qualification',
-                            'workExperience',
-                            'percentageCompletion',
-                            'rating', 
-                            'position',
-                            'extension',
-                            'dateOfBirth',
-                            'companyLogo',
-                            'occupation',
-                            'interests'
+                            'birthday'
                         ];  // All field of user table h
 
 

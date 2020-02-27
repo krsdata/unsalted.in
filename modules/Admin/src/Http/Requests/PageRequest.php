@@ -2,8 +2,8 @@
 
 namespace Modules\Admin\Http\Requests;
 
-use App\Http\Requests\Request; 
- 
+use App\Http\Requests\Request;
+use Input;
 
 class PageRequest  extends Request {
 
@@ -23,7 +23,7 @@ class PageRequest  extends Request {
                         return [
                             'title'             => 'required' ,  
                             'page_content'      => 'required', 
-                            'banner_image1'     => 'mimes:jpeg,bmp,png,gif|dimensions:min_width=800,min_height=350', 
+                            'images'     => 'mimes:jpeg,bmp,png,gif|dimensions:min_width=800,min_height=350'
                         ];
                     }
                 case 'PUT':
@@ -34,7 +34,7 @@ class PageRequest  extends Request {
                         return [
                             'title'             => 'required' ,  
                             'page_content'      => 'required', 
-                            'banner_image1'     => 'mimes:jpeg,bmp,png,gif|dimensions:min_width=800,min_height=350', 
+                            'images'     => 'mimes:jpeg,bmp,png,gif|dimensions:min_width=800,min_height=350'
                             ];
                     }
                 }

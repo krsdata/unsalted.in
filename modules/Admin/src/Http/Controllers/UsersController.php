@@ -206,7 +206,9 @@ class UsersController extends Controller {
         $user->save(); 
          
 
-        if($request->get('role')==3){
+        $contains = \Str::contains(URL::previous(), 'clientuser');
+          
+        if($contains){
             $Redirect = 'clientuser';
         }else{
             $Redirect = 'user';
@@ -220,11 +222,19 @@ class UsersController extends Controller {
      * @param ID
      * 
      */
-    public function destroy($id) {
+    public function destroy(Request $request,$id) {
         
-        User::where('id',$id)->delete();
+       // User::where('id',$id)->delete();
 
-        return Redirect::to(route('user'))
+        $contains = \Str::contains(URL::previous(), 'clientuser');
+            
+        if($contains){
+            $route = "clientuser";
+        }  else{
+            $route = "user";
+        }
+
+        return Redirect::to(route($route))
                         ->with('flash_alert_notice', 'User  successfully deleted.');
     }
 

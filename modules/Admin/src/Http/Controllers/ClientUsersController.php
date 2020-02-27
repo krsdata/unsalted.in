@@ -93,12 +93,10 @@ class ClientUsersController extends Controller {
                         if (!empty($role_type)) { 
                             $query->Where('role_type',$role_type);
                         }
-                    })
-                           	->where('role_type',3)
-                            ->Paginate($this->record_per_page);
+                    })->Paginate($this->record_per_page);
         } else {
             $users = User::orderBy('id','desc')
-                            ->where('role_type',3)->Paginate(15);
+                            ->Paginate(15);
             
         }
         

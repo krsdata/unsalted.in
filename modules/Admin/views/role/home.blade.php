@@ -51,7 +51,7 @@
                                            
                                         </form>
                                          <div class="col-md-2">
-                                             <a href="{{ route('contact') }}">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
+                                             <a href="#">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
                                         </div>
                                        
                                         </div>
