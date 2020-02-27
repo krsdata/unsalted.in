@@ -14,6 +14,7 @@ use App\Http\Requests;
 use App\Helpers\Helper as Helper;
 //use Modules\Admin\Models\User; 
 use Modules\Admin\Models\Category;
+use App\Models\Matches;
 use App\Admin;
 use Illuminate\Http\Request;
 use App\User;
@@ -55,10 +56,17 @@ class AdminController extends Controller {
         $users_count        =  User::count();
         $category_grp_count =  Category::where('parent_id',0)->count();
         $category_count     =  Category::where('parent_id','!=',0)->count();
-        $category_dashboard_count =1; // CategoryDashboard::count();
+        
 
+        $match_1 = Matches::where('status',1)->count();
+        $match_2 = Matches::where('status',2)->count();
+        $match_3 = Matches::where('status',3)->count();
+        $match = Matches::count();
 
-        return view('packages::dashboard.index',compact('category_count','users_count','category_grp_count','page_title','page_action','viewPage','category_dashboard_count'));
+        $contest_types = \DB::table('contest_types')->count();
+        $banner = \DB::table('banners')->count();
+
+        return view('packages::dashboard.index',compact('category_count','users_count','category_grp_count','page_title','page_action','viewPage','match_1','match_2','match_3','match','contest_types','banner'));
     }
 
    public function profile(Request $request,Admin $users)

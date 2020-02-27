@@ -220,13 +220,7 @@
 
                                     </ul>
 
-                            </li> 
-
-
-
-                          
-
-
+                            </li>  
 
                                 <li class="nav-item start active {{ (isset($page_title) && $page_title=='Payment')?'open':'' }}">
                                    <a href="javascript:;" class="nav-link nav-toggle">
