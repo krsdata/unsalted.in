@@ -52,8 +52,21 @@ Route::group([
 	
 		//mobile API
 
-      	Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
-       	
+    	Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
+      
+      Route::match(['post','get'],'updatePlayerFromCompetition', 'Api\ApiController@updatePlayerFromCompetition');  
+
+      Route::match(['post','get'],'updatePlayerByMatch/{match_id}', 'Api\ApiController@getCompetitionByMatchId');  
+
+
+      Route::match(['post','get'],'getSquad/{match_id}', 'Api\ApiController@getSquad'); 
+
+     	Route::match(['post','get'],'getPlayer/{match_id}', 'Api\ApiController@getPlayer');		
+			
+			Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');		
+		  
+		  Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');		
+		    
 		
 		 // if route not found
 	    Route::any('{any}', function(){ 
