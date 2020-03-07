@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class CreateTeam extends Eloquent
+class MatchPoint extends Eloquent
 {
 
    
@@ -13,7 +13,7 @@ class CreateTeam extends Eloquent
      *
      * @var string
      */
-    protected $table = 'create_teams';
+    protected $table = 'match_player_points';
     /**
      * The attributes that are mass assignable.
      *
@@ -31,23 +31,17 @@ class CreateTeam extends Eloquent
      *
      * @var array
      */
-
-     protected $hidden = [
-        'id', 'created_at','updated_at'
-    ];
     
 
     protected $guarded = ['created_at' , 'updated_at' , 'id' ];
 
-    public function match()
-    {
-        return $this->hasOne('App\Models\Matches', 'match_id', 'match_id') ;
-    }
 
-    public function user()
+    public function teama()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id')->select('id','first_name','last_name','name','user_name','profile_image');
+        return $this->hasOne('App\Models\TeamA', 'match_id', 'match_id') ;
     }
-
-    
+     public function teamb()
+    {
+        return $this->hasOne('App\Models\TeamB', 'match_id', 'match_id') ;
+    }
 }

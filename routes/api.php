@@ -82,7 +82,13 @@ Route::group([
 
 			Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
 			Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');	
+			Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
 
+			Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
+			Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
+			Route::match(['post','get'],'updatePoints', 'Api\ApiController@updatePoints');
+			Route::match(['post','get'],'getPointsByMatch', 'Api\ApiController@getPointsByMatch');
+			Route::match(['post','get'],'updateUserMatchPoints', 'Api\ApiController@updateUserMatchPoints');
 			
 
 

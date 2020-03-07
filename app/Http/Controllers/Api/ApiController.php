@@ -12,6 +12,9 @@ use Config,Mail,View,Redirect,Validator,Response;
 use Crypt,okie,Hash,Lang,JWTAuth,Input,Closure,URL; 
 use App\Helpers\Helper as Helper;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogUdpHandler;
 use App\Models\Competition;
 use App\Models\TeamA;
 use App\Models\TeamB;
@@ -25,6 +28,8 @@ use App\Models\CreateContest;
 use App\Models\CreateTeam;
 use App\Models\Wallet;
 use App\Models\JoinContest;
+use App\Models\WalletTransaction;
+use App\Models\MatchPoint;
 
 
 class ApiController extends BaseController
@@ -40,8 +45,209 @@ class ApiController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }
+        }     
     } 
+
+    public function getPrizeBreakup(Request $request){
+
+    }
+
+    public function updateUserMatchPoints(Request $request){
+        
+        $matches = Matches::where('status',3)
+                        ->get();
+        
+        foreach ($matches as $key => $match) {
+                                         
+            $join_contests = \DB::table('join_contests')
+                            ->select('match_id','created_team_id')
+                            ->pluck('created_team_id');
+
+            $ct = CreateTeam::whereIn('id',$join_contests)
+                            ->where('match_id',$match->match_id)
+                            ->get();
+            $data = [];
+                               
+            foreach ($ct as $key => $value) {
+                
+                $teams  = json_decode($value->teams);
+                $mp     = MatchPoint::where('match_id',$match->match_id)
+                                ->get();
+                foreach ($mp as $key => $result) {
+                    if(in_array($result->pid, $teams))
+                    {
+                        $pt = $result->point;
+                        if($value->captain==$result->pid)
+                        {
+                            $pt = 2*$result->point;
+                        }
+                        if($value->vice_captain==$result->pid)
+                        {   
+                            $pt = (1.5)*$result->point;
+                            
+                        }
+                        if($value->trump==$result->pid)
+                        {
+                            $pt = 3*$result->point;
+                        }
+                        $data['points'][] = $pt;   
+                    }
+                }
+                $total_points = array_sum($data['points']);
+
+                $create_team = CreateTeam::find($value->id);
+                $create_team->points = $total_points;
+                $create_team->save();
+                $data['points'] = [];
+            }
+        }
+
+        return [
+                'status'=>true,
+                'code' => 200,
+                'message' => 'points update',
+                'response' => []
+                
+            ];     
+    }
+    
+    public function getPoints(Request $request){
+        
+        $mp = MatchPoint::where('match_id',$request->match_id)
+                        ->select('match_id','pid','name','role','rating','point','starting11')
+                        ->get();
+        
+       // $total_points = MatchPoint::where('match_id',$request->match_id)
+         //               ->get()
+           //             ->sum('point');
+
+        $join_contests = \DB::table('join_contests')
+                        ->select('match_id','created_team_id')
+                        ->pluck('created_team_id');
+
+        $ct = CreateTeam::whereIn('id',$join_contests)
+                        ->where('match_id',$request->match_id)
+                        ->get();
+        $data = [];
+                           
+        foreach ($ct as $key => $value) {
+            
+            $teams  = json_decode($value->teams);
+            $mp     = MatchPoint::where('match_id',$request->match_id)
+                            ->get();
+            foreach ($mp as $key => $result) {
+                if(in_array($result->pid, $teams))
+                {
+                    $pt = $result->point;
+                    if($value->captain==$result->pid)
+                    {
+                        $pt = 2*$result->point;
+                    }
+                    if($value->vice_captain==$result->pid)
+                    {   
+                        $pt = (1.5)*$result->point;
+                        
+                    }
+                    if($value->trump==$result->pid)
+                    {
+                        $pt = 3*$result->point;
+                    }
+                    $data['points'][] = $pt;
+                    
+                }
+
+            }
+
+            $total_points = array_sum($data['points']);
+
+            $create_team = CreateTeam::find($value->id);
+            $create_team->points = $total_points;
+            $create_team->save();
+            $data['points'] = [];
+        }
+
+        return [
+                'status'=>true,
+                'code' => 200,
+                'message' => 'points update',
+                'response' => []
+                
+            ];  
+        
+    }
+
+    public function updatePoints(Request $request){
+        
+        $matches = Matches::where('status',3)->get();
+
+        foreach ($matches as $key => $match) {
+            # code...
+            $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
+            $points_json = json_decode($points);
+
+            foreach ($points_json->response->points as $team => $teams) {
+                if($teams==""){
+                    continue;
+                }
+                foreach ($teams as $key => $players) {
+                    foreach ($players as $key => $result) {
+                        if($result->pid==null){
+                            continue;
+                        }
+                       $m = MatchPoint::updateOrCreate(
+                            ['match_id'=>$request->match_id,'pid'=>$result->pid],
+                            (array)$result);
+                    }
+                }
+            }
+        }
+        
+        return ['Point updated'];
+    }
+    public function getPointsByMatch(Request $request){
+        
+        $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$request->match_id.'/point?token='.$this->token);
+        $points_json = json_decode($points);
+
+        foreach ($points_json->response->points as $team => $teams) {
+            foreach ($teams as $key => $players) {
+                foreach ($players as $key => $result) {
+                    if($result->pid==null){
+                        continue;
+                    }
+                   $m = MatchPoint::updateOrCreate(
+                        ['match_id'=>$request->match_id,'pid'=>$result->pid],
+                        (array)$result);
+                }
+            }
+        }
+        
+    }
+    
+
+    public function leaderBoard(Request $request){
+
+        $leader_board = CreateTeam::with('user')
+                        ->where('match_id',$request->match_id)
+                        ->select('match_id','user_id','team_count as team')
+                        ->get();
+        if($leader_board){
+            return [
+                'status'=>true,
+                'code' => 200,
+                'message' => 'leaderBoard',
+                'response' => $leader_board
+                
+            ];    
+        }else{
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'leaderBoard not available'
+            ];
+        }
+
+    }
 
      /*
      @method : createTeam
@@ -169,7 +375,7 @@ class ApiController extends BaseController
     public function createTeam(Request $request){
         
         $ct = CreateTeam::firstOrNew(['id'=>$request->create_team_id]);
-       
+        Log::channel('before_create_team')->info($request->all());
         if($request->create_team_id){
 
             if($ct->id==null){
@@ -236,6 +442,7 @@ class ApiController extends BaseController
             $ct->team_id  = $request->team_id; 
             $ct->create_team_id  = $ct->id;
 
+            Log::channel('after_create_team')->info($request->all());
             return response()->json(
                             [ 
                                 "status"=>true,
@@ -341,6 +548,7 @@ class ApiController extends BaseController
 
         if(!$matchVald){
             return [
+                'system_time'=>time(),
                 'status'=>false,
                 'code' => 201,
                 'message' => 'match id is invalid'
@@ -366,6 +574,7 @@ class ApiController extends BaseController
                     }
                             
             return Response::json(array(
+                'system_time'=>time(),
                 'status' => false,
                 "code"=> 201,
                 'message' => $error_msg[0]
@@ -422,6 +631,7 @@ class ApiController extends BaseController
             $myjoinedContest = $this->myJoinedContest($request->match_id,$request->user_id);
             return response()->json(
                             [ 
+                               'system_time'=>time(),
                                 "status"=>true,
                                 "code"=>200,
                                 "message"=>"Success",
@@ -765,26 +975,22 @@ class ApiController extends BaseController
 
             foreach ($join_contests as $key => $join_contest) {
                 # code...
-               $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end')->first();
+               $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str')->first();
                
                 $jm[] = $joinedmatches;
             }
             $data['matchdata'][] = ['viewType'=>1,'joinedmatches'=>$jm];
             
         }                                          
-        $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end')->get();
-
-
-        $d = \Carbon\Carbon::createFromTime(12, 0, 0, 'Europe/London');
+        $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')->get();
 
 
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 
 
-        return ['total_result'=>count($match),'status'=>true,'code'=>'200','message'=>'success','response'=>$data];
+        return ['total_result'=>count($match),'status'=>true,'code'=>'200','message'=>'success','system_time'=>time(),'response'=>$data];
     }
-
 
     public function getAllCompetition(){
         $com = \DB::table('competitions')->select('id','match_id','cid')->get()->toArray();
@@ -853,7 +1059,11 @@ class ApiController extends BaseController
          }
 
 
-         return Response::json(['status'=>'true','code'=>200,'message'=>'success',
+         return Response::json([
+                    'system_time'=>time(),
+                    'status'=>'true',
+                    'code'=>200,
+                    'message'=>'success',
                     'response'=>[
                         'players'=>$rs
                     ]
@@ -1019,6 +1229,7 @@ class ApiController extends BaseController
         $created_team_id    = $request->created_team_id;
         $contest_id         = $request->contest_id;
 
+        Log::channel('before_join_contest')->info($request->all());            
         
         $check_join_contest = \DB::table('join_contests')
                                 ->whereIn('created_team_id',$created_team_id)
@@ -1113,7 +1324,8 @@ class ApiController extends BaseController
         }else{
             $cont = ["error"=>"contest id not found"];
         }    
-        
+       Log::channel('after_join_contest')->info($cont);
+             
        return response()->json(
                             [ 
                                 "status"=>true,
@@ -1211,6 +1423,7 @@ class ApiController extends BaseController
              if($data){
                  return response()->json(
                             [ 
+                                'system_time'=>time(),
                                 "status"=>true,
                                 "code"=>200,
                                 "message"=>"Success",
@@ -1220,6 +1433,7 @@ class ApiController extends BaseController
               }else{
                  return response()->json(
                             [ 
+                                'system_time'=>time(),
                                 "status"=>false,
                                 "code"=>404,
                                 "message"=>"record not found"
@@ -1324,25 +1538,66 @@ class ApiController extends BaseController
         $myArr = [];
         $user = User::find($request->user_id);
         
+
+        $validator = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'deposit_amount' => 'required',
+                'transaction_id' => 'required', 
+                'payment_mode' => 'required',
+                'payment_status' => 'required'
+            ]); 
+        
+       
+        // Return Error Message
+        if ($validator->fails()) {
+                    $error_msg  =   [];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }
+                            
+            return Response::json(array(
+                'code' => 201,
+                'status' => false,
+                'message' => $error_msg
+                )
+            );
+        }
+
+        Log::channel('payment_info')->info($request->all());
+
         if($user){
             $check_user = Hash::check($user->id,$user->validate_user);    
             
             if($check_user){
-                $wallet = Wallet::where('user_id',$user->id)->first();
+                $wallet     = Wallet::where('user_id',$user->id)->first();
                 $deposit_amount = (float) $request->deposit_amount;
-                $message = "Amount not added successfully";
-                $status = false;
-                $code = 201;
+                $message    = "Amount not added successfully";
+                $status     = false;
+                $code       = 201;
                 if($wallet){
-                    $wallet->deposit_amount =  $wallet->deposit_amount+$deposit_amount;
-                    $wallet->usable_amount =  $wallet->usable_amount+$deposit_amount;
+                   \DB::beginTransaction();
+
+                    $wallet->deposit_amount   =  $wallet->deposit_amount+$deposit_amount;
+                    $wallet->usable_amount    =  $wallet->usable_amount+$deposit_amount;
                     $wallet->save();
+                    
                     $myArr['wallet_amount']   = (float) $wallet->usable_amount; 
                     $myArr['bonus_amount']    = (float)$wallet->bonus_amount;
                     $myArr['user_id']         = (float)$wallet->user_id; 
-                    $message = "Amount added successfully";
-                    $status = true;
-                    $code = 200;  
+
+                    $transaction = new WalletTransaction;
+                    $transaction->user_id        =  $request->user_id;
+                    $transaction->amount         =  $request->deposit_amount;
+                    $transaction->transaction_id =  $request->transaction_id;
+                    $transaction->payment_mode   =  $request->payment_mode;
+                    $transaction->payment_status =  $request->payment_status;
+                    $transaction->payment_details =  json_encode($request->all());
+                    $transaction->save();
+
+                    $message    = "Amount added successfully";
+                    $status     = true;
+                    $code       = 200;
+                    \DB::commit();                       
                 }
                 return response()->json(
                         [ 
