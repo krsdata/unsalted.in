@@ -42,7 +42,7 @@ class CronController extends BaseController
         \File::put(public_path('/upload/json/upcoming.txt'),$upcoming);
 
         //complted
-        $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&pre_squad=true&date='.$date.'&per_page=20&paged=1&token='.$token);
+        $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&pre_squad=true&date='.$date.'&per_page=10&paged=1&token='.$token);
 
         \File::put(public_path('/upload/json/completed.txt'),$completed);
 
@@ -76,7 +76,7 @@ class CronController extends BaseController
         $date = date('Y-m-d');
         $token = "8740931958a5c24fed8b66c7609c1c49";
         //upcoming
-        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&pre_squad=true&date='.$date.'&per_page=100&paged=1&token='.$token);
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&pre_squad=true&date='.$date.'&per_page=10&paged=1&token='.$token);
         
         \File::put(public_path('/upload/json/'.$fileName.'.txt'),$data);
 

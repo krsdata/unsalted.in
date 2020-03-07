@@ -44,4 +44,14 @@ class Player extends Eloquent
     {
        return $this->hasOne('App\Models\TeamBSquad', 'player_id', 'pid') ;
     }
+
+    public function team_a()
+    {
+       return $this->hasOne('App\Models\TeamA', 'team_id', 'team_id')->select('team_id','short_name') ;
+    }
+
+    public function team_b()
+    {
+       return $this->hasOne('App\Models\TeamB', 'team_id', 'team_id')->select('team_id','short_name') ;
+    }
 }
