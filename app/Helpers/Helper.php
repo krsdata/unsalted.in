@@ -37,47 +37,31 @@ class Helper {
      * @param = null
      */
     
-    public function generateRandomString($length) {
-        $key = '';
-        $keys = array_merge(range(0, 9), range('a', 'z'));
-
-        for ($i = 0; $i < $length; $i++) {
-            $key .= $keys[array_rand($keys)];
-        }
-
-         return $key;
-    } 
+    
 /* @method : createCompanyGroup
     * @param : email,user_id
     * Response :  string
     * Return : company name
     */
     
-/* @method : getCorporateGroupName
-    * @param : email
-    * Response :  string
-    * Return : company name
-    */
-    public function getCorporateGroupName($email=null)
+ 
+   static public function validateTeam($team_id=null)
     {
-        $fps =  strripos($email,"@");
-        $lps =  strpos(substr($email,$fps),".");
-        $company_name = substr($email,$fps+1,$lps-1);
-        return  $company_name;       
-    } 
-/* @method : getCompanyUrl
-    * @param : email
-    * Response :  string
-    * Return : company URL
-    */
-    public function getCompanyUrl($email=null)
-    {   
-        $fps =  strripos($email,"@");
-        $lps =  strpos(substr($email,$fps),".");
-        $company_url = substr($email,$fps+1);
-        return  $company_url;       
+        $user = User::where('id',$user_id)->count(); 
+        return $user;
     }
 
+    static public function validateMatchStatus($team_id=null)
+    {
+        $c = User::where('id',$user_id)->count(); 
+        return $c;
+    }
+
+    static public function validateMatch($team_id=null)
+    {
+        $c = User::where('id',$user_id)->count(); 
+        return $c;
+    }
  
 /* @method : isUserExist
     * @param : user_id
@@ -114,102 +98,8 @@ class Helper {
     public static function FormatPhoneNumber($number){
         return preg_replace('~.*(\d{3})[^\d]{0,7}(\d{3})[^\d]{0,7}(\d{4}).*~', '($1) $2-$3', $number). "\n";
     }
- 
- 
-/* @method : getCondidateNameByID
-    * @param : condidate_id
-    * Response :  string
-    * Return : string
-    */
-    public static function getCondidateNameByID($condidate_id=null)
-    {    
-        $rating = Interview::find($condidate_id);
-        if($rating==null)
-        {
-            return  null;
-        }
-        $total_evalution_required = count(str_getcsv($rating->interviewerID));
-        $total_evaluated = InterviewRating::where('condidateID',$condidate_id)->count();
-        $avg_rating = Helper::getRatingByCondidateID($condidate_id);
-        $ratingStatus = "Pending";
-        if($total_evalution_required==$total_evaluated)
-        {
-            $ratingStatus = "Evaluated";
-        }
-        if($rating!=null)
-        {
-             return $rating = [
-                                'condidateID'=>$rating->id,
-                                'condidateName'=>$rating->condidate_name,
-                                'shortDescription'=>$rating->short_description,
-                                'rating' => $avg_rating,
-                                'ratingStatus'=>$ratingStatus
-                                ];
-        } 
-        return  null;   
-        
-    }
-/* @method : getRatingDataByCondidateID
-    * @param : condidate_id
-    * Response :  string
-    * Return : string
-    */
-    public static function getRatingDataByCondidateID($condidate_id=null)
-    {
-        $rating = InterviewRating::find($condidate_id);
-        return $rating->rating;
-    }
-
-    
-    public static function getRatingData($criteria_id = null,$rating_value=null)    
-    {    
-        $total_criteria = count($criteria_id);
-        $criteria =  Criteria::whereIn('id',$criteria_id)->get();
-        $rating_value_record  = number_format(floatval((array_sum($rating_value)/$total_criteria)),1);
-        $feedback_data = RatingFeedback::lists('feedback','rating_value');
-        if($criteria->count()>0)
-        {   
-            foreach ($criteria as $key => $value) {
-                $rating_val =  isset($rating_value[$key])?$rating_value[$key]:0;
-                $date   =  date('m/d/Y',strtotime($value->updated_at)); 
-                //$rating_value = isset($rating_value[$key])?$rating_value[$key]:"";
-                
-                $data[] =  [ 
-                            'criteriaID'    => $value->id,
-                            'criteria'      => $value->interview_criteria,
-                            'ratingValue'   => $rating_val
-                         ];
-                   
-            }
-           
-            return    $data;
-                     
-        }
-        return null;  
-
-    }
-
   
-
-   /* @method : get user details
-    * @param : userid
-    * Response : json
-    * Return : User details 
-   */
-   
-    public static function getUserDetails($user_id=null)
-    {
-        $user = User::find($user_id);
-        $data['userID'] = $user->userID;
-        $data['firstName'] = $user->first_name;
-        $data['lastName'] = $user->last_name;
-       return  $data;
-    }
-/* @method : send Mail
-    * @param : email
-    * Response :  
-    * Return : true or false
-    */
+  
      
      public  function sendMailFrontEnd($email_content, $template)
     {        
