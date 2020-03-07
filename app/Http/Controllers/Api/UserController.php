@@ -13,6 +13,21 @@ use Crypt,okie,Hash,Lang,JWTAuth,Input,Closure,URL;
 use App\Helpers\Helper as Helper;
 use PHPMailerAutoload;
 use PHPMailer; 
+use App\Models\Competition;
+use App\Models\TeamA;
+use App\Models\TeamB;
+use App\Models\Toss;
+use App\Models\Venue;
+use App\Models\Matches;
+use App\Models\Player;
+use App\Models\TeamASquad;
+use App\Models\TeamBSquad;
+use App\Models\CreateContest;
+use App\Models\CreateTeam;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
+use App\Models\Rank;
+use App\Models\JoinContest;
 
 
 
@@ -28,15 +43,17 @@ class UserController extends BaseController
 
     public function registration(Request $request)
     {   
-        $input['first_name']    = $request->input('first_name');
-        $input['last_name']     = $request->input('last_name'); 
-        $input['email']         = $request->input('email'); 
+        $input['first_name']    = $request->get('first_name');
+        $input['last_name']    = $request->get('last_name');
+        
+        $input['name']          = $request->get('name'); 
+        $input['email']         = $request->get('email'); 
         $input['password']      = Hash::make($request->input('password'));
         $input['role_type']     = 3; //$request->input('role_type'); ;
-        $input['user_type']     = $request->input('user_type');
-        $input['provider_id']   = $request->input('provider_id'); 
+        $input['user_type']     = $request->get('user_type');
+        $input['provider_id']   = $request->get('provider_id'); 
 
-        $user = User::firstOrNew(['provider_id'=>$request->input('provider_id')]);
+        $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
         if($request->input('user_id')){
             $u = $this->updateProfile($request,$user);
@@ -46,14 +63,11 @@ class UserController extends BaseController
         if($input['user_type']=='googleauth' || $input['user_type']=='facebookauth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
-                   'first_name' => 'required',
                    'email' => 'required'
                 ]);
-
         }else{
             //Server side valiation
             $validator = Validator::make($request->all(), [
-               'first_name' => 'required',
                'email' => 'required|email|unique:users',
                'password' => 'required'
             ]);
@@ -70,25 +84,52 @@ class UserController extends BaseController
             return Response::json(array(
                 'status' => false,
                 'code'=>201,
-                'message' => $error_msg[0],
-                'data'  =>  $request->all()
+                'message' => $error_msg[0]
                 )
             );
         } 
          
+        \DB::beginTransaction();
+
         $helper = new Helper;
         /** --Create USER-- **/
-        $user = User::create($input); 
+        $user = new User;
+        foreach ($input as $key => $value) {
+            $user->$key = $value;    
+        }
 
+        $user->save(); 
+        if($user->id){
+            $wallet = new Wallet;
+            $wallet->user_id = $user->id;
+            $wallet->validate_user = Hash::make($user->id);
+            $wallet->save();
+            $wallet  =  Wallet::find($wallet->id);
+        }
+            
+        \DB::commit();
+        
+        $user  = User::find($user->id);
+        
+        $user->validate_user = Hash::make($user->id);
+        
+        $user->save();
+        
+        $user_data['user_id ']         =  $user->id;
+        $user_data['name']             =  $user->name; 
+        $user_data['email']            =  $user->email; 
+        $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
+        $user_data['usable_amount']    =  (float)$wallet->usable_amount;
+        
         $subject = "Welcome to Plug11! Verify your email address to get started";
         $email_content = [
                 'receipent_email'=> $request->input('email'),
                 'subject'=>$subject,
                 'greeting'=> 'PLUG11',
-                'first_name'=> $request->input('first_name')
+                'first_name'=> $request->input('name')??$request->input('first_name')
                 ];
 
-       $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
+      //$verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
         
         
         $notification = new Notification;
@@ -98,8 +139,9 @@ class UserController extends BaseController
                             [ 
                                 "status"=>1,
                                 "code"=>200,
-                                "message"=>"Thank you for registration",
-                                'data'=>$user
+                                "message"=>"Thank you for registration. Please verify  your email.",
+                                'data'=>$user_data,
+                                'token' => 1
                             ]
                         );
     }
@@ -289,7 +331,8 @@ class UserController extends BaseController
                    $user = new User;
                    
                     $user->first_name    = $request->get('first_name');
-                    $user->last_name     = $request->get('last_name'); 
+                    $user->last_name     = $request->get('last_name');
+                    $user->name          = $request->get('name'); 
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
@@ -392,21 +435,24 @@ class UserController extends BaseController
         }
 
         $data = [];
+
+        $wallet  = Wallet::find($usermodel->id);
+
         if($usermodel){
-            $data['first_name'] = $usermodel->first_name;
-            $data['last_name'] = $usermodel->last_name;
+            $data['name'] = $usermodel->name;
             $data['user_email'] = $usermodel->email;
             $data['user_id'] = $usermodel->id;
             $data['mobile_number'] = $usermodel->phone;
-     
+            $data['bonus_amount']     =  (float)$wallet->bonus_amount;
+            $data['usable_amount']    =  (float)$wallet->usable_amount;     
         }
-       
-        
+
         return response()->json([ 
                     "status"=>$status,
                     "code"=>$code,
                     "message"=> $message ,
-                    'data' => $data
+                    'data' => $data,
+                    'token' => Hash::make($usermodel->id)
                  ]);   
     }
 

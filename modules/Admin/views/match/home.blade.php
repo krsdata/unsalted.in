@@ -88,7 +88,7 @@
                                                  <th> End Date</th>
 
                                                  <th> View Details  </th> 
-                                                <th>Cron run at</th>  
+                                                <th>Last Cron run at</th>  
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -100,13 +100,34 @@
                                                  <td> {{$result->short_title}} </td>
                                                  <td> {{$result->format_str}} </td>
                                                  <td> {{$result->status_str}} </td>
-                                                 <td> {{date('d-M-Y, h:i:s A',$result->timestamp_start)}} </td>
-                                                 <td> {{date('d-M-Y, h:i:s A',$result->timestamp_end)}} </td>
+                                                 <td> 
+                                                    {!!
+                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->date_start, 'UTC')
+                                                        ->setTimezone('Asia/Kolkata')
+                                                        ->format('d-m-y, H:i:s A')
+                                                    !!}
+                                                </td>
+                                                 <td> 
+                                                    {!!
+                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->date_end, 'UTC')
+                                                        ->setTimezone('Asia/Kolkata')
+                                                        ->format('d-m-y, H:i:s A')
+                                                    !!}
+                                                   
+    
+ </td>
                                                     <td>  <a href="{{ route('match.show',$result->id)}}">
                                                             <i class="fa fa-eye" title="details"></i> 
                                                         </a> </td> 
                                                      
-                                                    <td> {!! Carbon\Carbon::parse($result->created_at)->format('d-M-Y, h:i:s A'); !!}</td> 
+                                                    <td> 
+
+                                                        {!!
+                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->created_at, 'UTC')
+                                                        ->setTimezone('Asia/Kolkata')
+                                                        ->format('d-m-y, H:i:s A')
+                                                    !!}
+                                        </td> 
                                                
                                             </tr>
                                            @endforeach

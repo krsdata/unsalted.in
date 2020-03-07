@@ -72,13 +72,16 @@ class MatchController extends Controller {
                             $query->Where('status', '=', $status);
                         }
                         if (!empty($search)) {
-                            $query->Where('title', 'LIKE', "%$search%");
+                            $query->orWhere('title', 'LIKE', "%$search%");
+                        }
+                        if (!empty($search)) {
+                            $query->orWhere('match_id', 'LIKE', "%$search%");
                         }
                         
-                    })->Paginate($this->record_per_page);
+                    })->orderBy('status','ASC')->Paginate($this->record_per_page);
              
         } else {
-            $match = Match::with('teama','teamb')->orderBy('timestamp_start','DESC')->Paginate($this->record_per_page);
+            $match = Match::with('teama','teamb')->orderBy('status','ASC')->Paginate($this->record_per_page);
         }
          
          
