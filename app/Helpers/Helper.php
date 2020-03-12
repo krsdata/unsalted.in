@@ -36,7 +36,18 @@ class Helper {
      *
      * @param = null
      */
+     
     
+    static public function generateRandomString($length=5) {
+        $key = '';
+        $keys = array_merge(range('A', 'Z') , range(0, 9) );
+
+        for ($i = 0; $i < $length; $i++) {
+            $key .= $keys[array_rand($keys)];
+        }
+
+         return $key;
+    } 
     
 /* @method : createCompanyGroup
     * @param : email,user_id

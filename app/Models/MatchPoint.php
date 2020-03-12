@@ -44,4 +44,8 @@ class MatchPoint extends Eloquent
     {
         return $this->hasOne('App\Models\TeamB', 'match_id', 'match_id') ;
     }
+    public function player()
+    {
+        return $this->hasOne('App\Models\Player', 'pid', 'pid')->select('pid','team_id','match_id','short_name','fantasy_player_rating');
+    }
 }

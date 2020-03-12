@@ -52,5 +52,10 @@ class Wallet extends Eloquent
     public function joinContest()
     {
         return $this->hasOne('App\Models\JoinContest', 'id', 'join_contest_id') ;
+    }
+
+    public function transaction()
+    {
+        return $this->hasMany('App\Models\WalletTransaction', 'user_id', 'user_id') ;
     }    
 }

@@ -274,22 +274,22 @@
         Route::get('admin/updateGroup', 'Modules\Admin\Http\Controllers\ContactGroupController@updateGroup');
         /*---------Contact Route ---------*/
 
-        Route::bind('contactGroup', function ($value, $route) {
-            return Modules\Admin\Models\ContactGroup::find($value);
+        Route::bind('defaultContest', function ($value, $route) {
+            return Modules\Admin\Models\DefaultContest::find($value);
         });
 
         Route::resource(
-            'admin/contactGroup',
-            'Modules\Admin\Http\Controllers\ContactGroupController',
+            'admin/defaultContest',
+            'Modules\Admin\Http\Controllers\DefaultContestController',
             [
             'names' => [
-                'edit' => 'contactGroup.edit',
-                'show' => 'contactGroup.show',
-                'destroy' => 'contactGroup.destroy',
-                'update' => 'contactGroup.update',
-                'store' => 'contactGroup.store',
-                'index' => 'contactGroup',
-                'create' => 'contactGroup.create',
+                'edit' => 'defaultContest.edit',
+                'show' => 'defaultContest.show',
+                'destroy' => 'defaultContest.destroy',
+                'update' => 'defaultContest.update',
+                'store' => 'defaultContest.store',
+                'index' => 'defaultContest',
+                'create' => 'defaultContest.create',
             ]
                 ]
         );

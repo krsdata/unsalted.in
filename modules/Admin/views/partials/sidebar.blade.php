@@ -154,6 +154,22 @@
 
             </ul>
         </li>
+
+         <li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='defaultContest')?'open':'' }}">
+
+            <a href="javascript:;" class="nav-link nav-toggle">
+               <i class="glyphicon glyphicon-th"></i>
+                <span class="title">Default Contest</span>
+                <span class="arrow {{ (isset($sub_page_title) && $sub_page_title=='defaultContest')?'open':'' }}"></span>
+            </a>
+            <ul class="sub-menu"  style="display: {{ (isset($sub_page_title) && $sub_page_title=='defaultContest')?'block':'' }}">
+                 
+                <li class="nav-item {{ (isset($page_action) && $page_action=='View  Match')?'open':'' }}">
+                    <a href="{{ route('defaultContest') }}" class="nav-link "  > Default Contest</a>
+                </li>
+
+            </ul>
+        </li>
        
         <li class="nav-item  {{ (isset($sub_page_title) && $sub_page_title=='Banner')?'open':'' }}">
 

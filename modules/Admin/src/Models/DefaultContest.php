@@ -1,0 +1,55 @@
+<?php
+namespace Modules\Admin\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
+class DefaultContest extends Model {
+
+   
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'default_contents';
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+     /**
+     * The primary key used by the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+
+     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+            'contest_type',
+            'entry_fees',
+            'total_spots',
+            'filled_spot',
+            'first_prize',
+            'winner_percentage',
+            'cancellation',
+            'total_winning_prize',
+            'match_id',
+            'prize_percentage'
+        ];  // All field of user table here
+}

@@ -33,9 +33,23 @@ Route::group([
 
     	//Apis used in customer application  
       Route::match(['post','get'],'member/customerLogin', 'Api\UserController@customerLogin');
+      Route::match(['post','get'],'member/logout', 'Api\UserController@logout'); 
+	
+      Route::match(['post','get'],'member/logout', 'Api\UserController@logout');
+
+      Route::match(['post','get'],'deviceNotification', 'Api\UserController@deviceNotification');
+
+      Route::match(['post','get'],'sendPushNotification', 'Api\UserController@sendPushNotification');
+
+      Route::match(['post','get'],'transactionHistory', 'Api\PaymentController@transactionHistory');
+
+
+      Route::match(['post','get'],'temporaryPassword', 'Api\UserController@temporaryPassword');
+
+      
       Route::match(['post','get'],'member/registration', 'Api\UserController@registration');
 			Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
-      Route::match(['post','get'],'email_verification','Api\UserController@emailVerification');   
+      Route::match(['post','get'],'email_verification','Api\UserController@emailVerification'); 
        
      	// cron 2 and store match by type
      	Route::match(['post','get'],'storeMatchInfo/{fileName}', 'Api\ApiController@storeMatchInfo');
@@ -59,53 +73,53 @@ Route::group([
       Route::match(['post','get'],'updatePlayerByMatch/{match_id}', 'Api\ApiController@getCompetitionByMatchId');  
 
 
-			Route::match(['post','get'],'getSquad/{match_id}', 'Api\ApiController@getSquad'); 
+	Route::match(['post','get'],'getSquad/{match_id}', 'Api\ApiController@getSquad'); 
 
-			Route::match(['post','get'],'getPlayer', 'Api\ApiController@getPlayer');		
+	Route::match(['post','get'],'getPlayer', 'Api\ApiController@getPlayer');		
 
-			Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');		
+	Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');		
 
-			Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
+	Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
 
-			Route::match(['post','get'],'createTeam', 'Api\ApiController@createTeam');
+	Route::match(['post','get'],'createTeam', 'Api\ApiController@createTeam');
 
-			Route::match(['post','get'],'getMyTeam', 'Api\ApiController@getMyTeam');
+	Route::match(['post','get'],'getMyTeam', 'Api\ApiController@getMyTeam');
 
-			Route::match(['post','get'],'createContest/{match_id}', 'Api\ApiController@createContest');
+	Route::match(['post','get'],'createContest/{match_id}', 'Api\ApiController@createContest');
 
-			Route::match(['post','get'],'updateSquad/{match_id}', 'Api\ApiController@updateSquad');
-			Route::match(['post','get'],'joinContest', 'Api\ApiController@joinContest');
+	Route::match(['post','get'],'updateSquad/{match_id}', 'Api\ApiController@updateSquad');
+	Route::match(['post','get'],'joinContest', 'Api\ApiController@joinContest');
 
-			Route::match(['post','get'],'getMyContest', 'Api\ApiController@getMyContest');
+	Route::match(['post','get'],'getMyContest', 'Api\ApiController@getMyContest');
 
-			Route::match(['post','get'],'updateMatchDataById/{match_id}', 'Api\ApiController@updateMatchDataById');
+	Route::match(['post','get'],'updateMatchDataById/{match_id}', 'Api\ApiController@updateMatchDataById');
 
-			Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
-			Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');	
-			Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
+	Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
+	Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');	
+	Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
 
-			Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
-			Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
-			Route::match(['post','get'],'updatePoints', 'Api\ApiController@updatePoints');
-			Route::match(['post','get'],'getPointsByMatch', 'Api\ApiController@getPointsByMatch');
-			Route::match(['post','get'],'updateUserMatchPoints', 'Api\ApiController@updateUserMatchPoints');
-			
+	Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
+	// get point by match ID
+	Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
+	Route::match(['post','get'],'updatePoints', 'Api\ApiController@updatePoints');
+	Route::match(['post','get'],'getPointsByMatch', 'Api\ApiController@getPointsByMatch');
+	Route::match(['post','get'],'updateUserMatchPoints', 'Api\ApiController@updateUserMatchPoints');
 
+	Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat'); 
+	
 
-
-		  		
 		    
 		
-		 // if route not found
-	    Route::any('{any}', function(){ 
-				$data = [
-							'status'=>0,
-							'code'=>400,
-							'message' => 'Bad request'
-						];
-				return \Response::json($data);
+	 // if route not found
+    Route::any('{any}', function(){ 
+			$data = [
+						'status'=>0,
+						'code'=>400,
+						'message' => 'Bad request'
+					];
+			return \Response::json($data);
 
-		});
+	});
        
 });
      
