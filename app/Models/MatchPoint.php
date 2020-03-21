@@ -13,7 +13,7 @@ class MatchPoint extends Eloquent
      *
      * @var string
      */
-    protected $table = 'match_player_points';
+    protected $table = 'match_player_points'; 
     /**
      * The attributes that are mass assignable.
      *

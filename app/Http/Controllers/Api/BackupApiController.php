@@ -40,127 +40,27 @@ class ApiController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
+
         $this->date = date('Y-m-d');
         $this->token = "8740931958a5c24fed8b66c7609c1c49";
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
- 
+       // $uname      = Helper::generateRandomString(); 
     } 
 
-    public function joinNewContestStatus(Request $request){
-
-        $match_id   = $request->match_id;
-        $contest_id = $request->contest_id;
-
-        $cc = CreateContest::where('match_id',$match_id)
-                            ->where('id',$contest_id)
-                            ->first();
-
-        $create_teams_count = \DB::table('create_teams')
-                        ->where('match_id',$match_id)
-                        ->where('user_id',$request->user_id)
-                        ->count();
-
-        $join_contests_count = \DB::table('join_contests')
-                            ->where('match_id',$match_id)
-                            ->where('user_id',$request->user_id)
-                            ->selectRaw('distinct contest_id')
-                            ->get()->count();
-                 
-
-        if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
-             return [
-                'status'=>true,
-                'code' => 200,
-                'message' => 'Contest is full',
-                'action'=>3
-            ];
-        }elseif($create_teams_count > $join_contests_count){
-            return [
-                'status'=>true,
-                'code' => 200,
-                'message' => ' Join contest ',
-                 'action'=>2
-            ];
-        }else{
-             return [
-                'status'=>true,
-                'code' => 200,
-                'message' => 'create new team to join this contest',
-                 'action'=>1
-            ];
-        }
-
-    }
     
-     public function prizeBreakup(Request $request){
 
-        $match_id   = $request->match_id;
-        $contest_id = $request->contest_id;
-        
-        $contest =  CreateContest::where('match_id',$match_id)
-                          ->where('id',$contest_id)
-                          ->get();
-                      
-        $contest->transform(function ($item, $key)   {
-                          
-                    $defaultContest  = \DB::table('prize_breakups')
-                                        ->where('default_contest_id',$item->default_contest_id)
-                                        ->where('contest_type_id',$item->contest_type)
-                                        ->get();
-                                     
-                        $rank = [];                
-                        foreach ($defaultContest as $key => $value) {
-                            $prize = $value->prize_amount;
-                            if($value->rank_from == $value->rank_upto){
-                                $rank_rang = "$value->rank_from";
-                            }else{
-                                 $rank_rang = $value->rank_from.'-'.$value->rank_upto;
-                            }
-
-                            if($item->total_spots==0 && $rank_rang==1){
-
-                                $prize = round(($item->entry_fees*$item->filled_spot)*(0.25));
-
-                                \DB::table('prize_breakups')->where('id',$value->id)
-                                            ->update(['prize_amount'=>$prize]);
-                            }
-                                
-
-                            $rank[] = [
-                                    'range' => $rank_rang,
-                                    'price' => $prize
-                                    ];
-                            
-                        }
-
-            $item->rank = $rank;
-            return $item;
-                              
-        });
-          
-        $data['prizeBreakup'] = $contest[0]->rank??null ;
-            
-
-
-        return [
-                'status'=>true,
-                'code' => 200,
-                'message' => 'Prize Breakup',
-                'response' => $data
-            ];
+    public function getPrizeBreakup(Request $request){
 
     }
 
     public function updateUserMatchPoints(Request $request){
         
-        $matches = Matches::where('status',1)
+        $matches = Matches::where('status',3)
                         ->get();
         $tp = [];
-        $data = [];
-            
         foreach ($matches as $key => $match) {
                                          
             $join_contests = \DB::table('join_contests')
@@ -171,6 +71,7 @@ class ApiController extends BaseController
             $ct = CreateTeam::whereIn('id',$join_contests)
                             ->where('match_id',$match->match_id)
                             ->get();
+            $data = [];
                               
             foreach ($ct as $key => $value) {
                 
@@ -228,6 +129,7 @@ class ApiController extends BaseController
                         ->where('id',$value->team_id)
                         ->update(['rank'=>$value->ranking]);
                 }
+
             }
         }
 
@@ -235,7 +137,7 @@ class ApiController extends BaseController
                 'status'=>true,
                 'code' => 200,
                 'message' => 'points update',
-                'response' => $data
+                'response' => [$tp]
                 
             ];     
     }
@@ -248,10 +150,9 @@ class ApiController extends BaseController
         $dbname     =  env('DB_DATABASE','fantasy');
         // Create connection
         $conn = mysqli_connect($servername, $username, $password, $dbname);
-        $sql = 'SELECT *, FIND_IN_SET( points, (SELECT GROUP_CONCAT( points ORDER BY points DESC ) FROM match_stats )) AS rank FROM match_stats where match_id='.$match_id.' ORDER BY ranking ASC';
-  
-        $result = mysqli_query($conn, $sql);
+        $sql = 'SELECT *, CASE WHEN @prevRank = points THEN @curRank WHEN @prevRank := points THEN  @curRank:= @curRank + 1 END AS rank FROM match_stats , (SELECT @curRank :=0, @prevRank := NULL) r where match_id='.$match_id.' ORDER BY points DESC';
 
+        $result = mysqli_query($conn, $sql);
         if ($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_object($result)) {
                MatchStat::updateOrCreate(
@@ -269,143 +170,7 @@ class ApiController extends BaseController
         
     }
 
-    public function getPoints(request $request){
-
-        $team_id = CreateTeam::find($request->team_id);
-
-         $validator = Validator::make($request->all(), [
-                'team_id' => 'required' 
-            ]); 
-         
-
-        // Return Error Message
-        if ($validator->fails() ||  $team_id==null) {
-                    $error_msg  =   [];
-            foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }
-                            
-            return Response::json(array(
-                'system_time'=>time(),
-                'status' => false,
-                "code"=> 201,
-                'message' => $error_msg[0]??"Team is not available"
-                )
-            );
-        }
-
-        $player_id = json_decode($team_id->teams,true);
-        $team_arr  = json_decode($team_id->team_id,true);
-                  
- 
-        $mpObject    =   MatchPoint::where('match_id',$team_id->match_id)->first();
-        
-        $playerObject = Player::where('match_id',$team_id->match_id)
-                    ->whereIn('pid',$player_id);
-
-        $player_team_id = $playerObject->pluck('team_id','pid')->toArray();
-          
-        if(!$mpObject){
-
-            $captain        =   $team_id->captain;    
-            $vice_captain   =   $team_id->vice_captain;
-            $trump          =   $team_id->trump; 
-
-            $players =$playerObject->get();
-
-            foreach ($players as $key => $result) {
-                    
-                    $data[] = [
-
-                    'pid'       => $result->pid,
-                    'team_id'   => $result->team_id,
-                    'name'      => $result->short_name,
-                    'short_name'=> $result->short_name,
-                    'points'    => 0,
-                    'rating'    => 0,
-                    'role'      => $result->playing_role,
-                    'captain'   =>  ($captain==$result->pid)?true:false,
-                    'vice_captain'   => ($vice_captain==$result->pid)?true:false,
-                    'trump'     => ($trump==$result->pid)?true:false
-                ];
-            }
-        }
-        $total_points = 0;
-        if($team_id && $mpObject!=null)  {
-            $teams_id = json_decode($team_id->team_id,true); 
-            $captain        =   $team_id->captain;    
-            $vice_captain   =   $team_id->vice_captain;
-            $trump          =   $team_id->trump; 
-
-            $player_id = json_decode($team_id->teams,true);
-
-            $mpObject = MatchPoint::where('match_id',$team_id->match_id)
-                            ->whereIn('pid',$player_id)
-                            ->select('match_id','pid','name','role','rating','point','starting11');
-            //mp=match point
-            foreach ($mpObject->get() as $key => $result) {
-                 
-                $point = $result->point;
-                if($captain==$result->pid){
-                    $point = 2*$result->point;
-                    $cname = true;
-                }
-                elseif($vice_captain==$result->pid){   
-                    $point = (1.5)*$result->point;
-                    $vcname =true;
-                }
-                elseif($trump==$result->pid){
-                    $point = 3*$result->point;
-                    $tname = true;
-                }
-
-                $array_sum[] = $point;
-
-                $name = explode(' ', $result->name);
-                 
-                $fname = $name[0]??"";
-                $lname = $name[1]??"" ;
-
-                 $fl = strlen(trim($fname.trim($lname)));
-                 if($fl<=10){
-                     $short_name = $result->short_name;
-                 }else{
-                    if(strlen($lname)>=10)
-                    {
-                        $short_name = $lname;
-                    }
-                    else{
-                        $short_name = $fname[0].' '.$lname;  
-                    }
-                 }  
-                $data[] = [
-                    'pid'       => $result->pid,
-                    'team_id'   => $player_team_id[$result->pid]??null,
-                    'name'      => $result->name,
-                    'short_name'=> $short_name??$result->name,
-                    'points'    => (float)$point,
-                    'rating'    => (float)$result->rating,
-                    'role'      => $result->role,
-                    'captain'   =>  ($captain==$result->pid)?true:false,
-                    'vice_captain'   => ($vice_captain==$result->pid)?true:false,
-                    'trump'     => ($trump==$result->pid)?true:false
-                ];
-            } 
-            $total_points = array_sum($array_sum); 
-        } 
-        return [
-                'status'=>true,
-                'code' => 200,
-                "match_id" => $team_id->match_id,
-                'message' => 'points update',
-                'total_points' => $total_points,
-                'response' => [
-                        'player_points' => $data 
-                    ]                
-            ]; 
-    }
-
-    public function getPlayerPoints(Request $request){
+    public function getPoints(Request $request){
         
         $mp = MatchPoint::where('match_id',$request->match_id)
                         ->select('match_id','pid','name','role','rating','point','starting11')
@@ -481,44 +246,9 @@ class ApiController extends BaseController
             ];  
         
     }
-
-    // update points by LIVE Match
-    public function updatePointAfterComplete(Request $request){
-        $matches = Matches::whereIn('status',[2,3])
-                ->where('timestamp_start','>=',strtotime("-1 days"))
-                ->get();
-        foreach ($matches as $key => $match) {   # code...
-            
-            $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
-            $points_json = json_decode($points);
-            $m = [];    
-            foreach ($points_json->response->points as $team => $teams) {
-                if($teams==""){
-                    continue;
-                }
-                foreach ($teams as $key => $players) {
-                    foreach ($players as $key => $result) {
-                        $result->match_id = $match->match_id;
-                        if($result->pid==null){
-                            continue;
-                        }
-                       $m[] = MatchPoint::updateOrCreate(
-                            ['match_id'=>$match->match_id,'pid'=>$result->pid],
-                            (array)$result);
-
-                    }
-                }
-            }
-        }
-        
-        echo 'points_updated';
-    }
     // update points by LIVE Match
     public function updatePoints(Request $request){
-        $matches = Matches::where('status',3)
-                        ->get();
-
-
+        $matches = Matches::where('status',3)->get();
         foreach ($matches as $key => $match) {   # code...
             
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
@@ -543,6 +273,7 @@ class ApiController extends BaseController
             }
         }
         
+        return $m;
         echo 'points_updated';
     }
 
@@ -611,16 +342,17 @@ class ApiController extends BaseController
     }
     //LeaderBoard
     public function leaderBoard(Request $request){
-       // $join_contests = [];
-        $join_contests = JoinContest::where('match_id',$request->get('match_id'))
-                                ->where('contest_id',$request->get('contest_id'))
-                                ->pluck('created_team_id')->toArray();
+        $join_contests = [];
+        $join_contests = \DB::table('join_contests')
+                            ->where('match_id',$request->match_id)
+                            ->where('contest_id',$request->contest_id)
+                            ->pluck('created_team_id');
             
+
         $leader_board = CreateTeam::with('user')
                         ->where('match_id',$request->match_id)
                         ->whereIn('id',$join_contests)
                         ->select('match_id','id as team_id','user_id','team_count as team','points as point','rank')
-                        ->orderBy('rank','ASC')
                         ->get();
 
         if($leader_board){
@@ -628,7 +360,7 @@ class ApiController extends BaseController
                 'status'=>true,
                 'code' => 200,
                 'message' => 'leaderBoard',
-                'leaderBoard' =>$leader_board
+                'response' => ['leaderBoard'=>$leader_board]
                 
             ];    
         }else{
@@ -754,7 +486,6 @@ class ApiController extends BaseController
                             [ 
                                 "status"=>true,
                                 "code"=>200,
-                                "teamCount" => $myTeam->count(),
                                 "message"=>"success",
                                 "response"=>["myteam"=>$data]
                             ]
@@ -774,11 +505,11 @@ class ApiController extends BaseController
                 return [
                     'status'=>false,
                     'code' => 201,
-                    'message' => 'Team list is empty!'
+                    'message' => 'Created team id not available'
                     
                 ];
             }
-        } 
+        }
 
         $team_count = CreateTeam::where('user_id',$request->user_id)
                         ->where('match_id',$request->match_id)->count();
@@ -792,20 +523,7 @@ class ApiController extends BaseController
         }
 
         $userVald = User::find($request->user_id);
-        $matchVald = Matches::where('match_id',$request->match_id)->first();
-
-        if($matchVald){
-            $timestamp = $matchVald->timestamp_start;
-            $t = time();
-            if($t > $timestamp){
-                 return [
-                    'status'=>false,
-                    'code' => 201,
-                    'message' => 'Match time up'
-                    
-                ];
-            } 
-        } 
+        $matchVald = Matches::where('match_id',$request->match_id)->count();
 
         if(!$userVald || !$matchVald){
             return [
@@ -868,55 +586,22 @@ class ApiController extends BaseController
                         );
         }
     }
-
-
-     public function updateContestByMatch($match_id=null){
-
-        $default_contest = \DB::table('default_contents')
-                            ->where('match_id',$match_id)
-                            ->get();
-
-        foreach ($default_contest as $key => $result) {
-            $createContest = CreateContest::firstOrNew(
-                    [
-                        'match_id'          =>  $match_id,
-                        'contest_type'      =>  $result->contest_type,
-                        'entry_fees'        =>  $result->entry_fees,
-                        'total_spots'       =>  $result->total_spots,
-                        'first_prize'       =>  $result->first_prize
-
-                    ]
-                );  
-
-            $createContest->match_id            =   $match_id;
-            $createContest->contest_type        =   $result->contest_type;
-            $createContest->total_winning_prize =   $result->total_winning_prize;
-            $createContest->entry_fees          =   $result->entry_fees;
-            $createContest->total_spots         =   $result->total_spots;
-            $createContest->first_prize         =   $result->first_prize;
-            $createContest->winner_percentage   =   $result->winner_percentage;
-            $createContest->cancellation        =   $result->cancellation;
-            $createContest->default_contest_id  =   $result->id;
-            $createContest->save();
-            return true;
-        }       
-           
-    }
     // crrate contest dyanamic
     public function createContest($match_id=null){
 
-        $default_contest = \DB::table('default_contents')
-                            ->whereNull('match_id')
-                            ->get();
+        $default_contest = \DB::table('default_contents')->get();
 
         foreach ($default_contest as $key => $result) {
             $createContest = CreateContest::firstOrNew(
                     [
                         'match_id'          =>  $match_id,
+                        'filled_spot'       =>  0,
                         'contest_type'      =>  $result->contest_type,
+                        'total_winning_prize' =>$result->total_winning_prize,
                         'entry_fees'        =>  $result->entry_fees,
                         'total_spots'       =>  $result->total_spots,
-                        'first_prize'       =>  $result->first_prize
+                        'first_prize'       =>  $result->first_prize,
+                        'winner_percentage' =>  $result->winner_percentage
 
                     ]
                 );  
@@ -929,25 +614,13 @@ class ApiController extends BaseController
             $createContest->first_prize         =   $result->first_prize;
             $createContest->winner_percentage   =   $result->winner_percentage;
             $createContest->cancellation        =   $result->cancellation;
-            $createContest->default_contest_id  =   $result->id;
             $createContest->save();
-
-            $default_contest_id = \DB::table('default_contents')
-                            ->where('match_id',$match_id)
-                            ->get();
-
-            if($default_contest_id){
-                foreach ($default_contest_id as $key => $value) {
-                    $this->updateContestByMatch($match_id);
-                }
-            }
-            
         }       
            
     }
     // get contest details by match id
     public function getContestByMatch(Request $request){
- 
+
         $match_id =  $request->match_id;
         
         $matchVald = Matches::where('match_id',$request->match_id)->count();
@@ -960,12 +633,18 @@ class ApiController extends BaseController
                 'message' => 'match id is invalid'
                 
             ];
-        } 
+        }
+
+        $contest = CreateContest::with('contestType')
+                    ->where('match_id',$match_id)
+                    ->orderBy('contest_type','ASC')
+                    ->get();
         
         $validator = Validator::make($request->all(), [
               //  'match_id' => 'required' 
             ]); 
-                 
+         
+        
         // Return Error Message
         if ($validator->fails()) {
                     $error_msg  =   [];
@@ -982,39 +661,27 @@ class ApiController extends BaseController
             );
         }
 
-        $contest = CreateContest::with('contestType')
-                    ->where('match_id',$match_id)
-                    ->orderBy('contest_type','ASC')
-                    ->get();
+        
         if($contest){
             $matchcontests = [];
             foreach ($contest as $key => $result) {  
                    // dd($result);
-                    $data2['totalSpots'] =   $result->total_spots;
-                    $data2['firstPrice'] =   $result->first_prize;
-                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
-                    if($result->total_spots==0)
-                    {
-                       $data2['totalSpots'] =   0;
-                       
-                       $twp = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-                       $data2['totalWinningPrize'] = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-
-                       $data2['firstPrice'] =   round($twp*(0.2));
-                    }
-                    elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
+                    if($result->filled_spot==$result->total_spots)
                     {
                         continue;
                     }
                     $data2['contestId'] =    $result->id;
-                    
+                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
                     $data2['entryFees'] =    $result->entry_fees;
-                    
+                    $data2['totalSpots'] =   $result->total_spots;
                     $data2['filledSpots'] =  $result->filled_spot;
-                   
+                    $data2['firstPrice'] =   $result->first_prize;
                     $data2['winnerPercentage'] = $result->winner_percentage;
                     $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
                     $data2['cancellation'] = $result->contestType->cancellable; 
+
+
+
                 $matchcontests[$result->contest_type][] = [
                     'contestTitle'=>$result->contestType->contest_type,
                     'contestSubTitle'=>$result->contestType->description,
@@ -1022,7 +689,6 @@ class ApiController extends BaseController
                 ]; 
             }
             $data = [];
-
              foreach ($matchcontests as $key => $value) {
                    
                   foreach ($value as $key2 => $value2) {
@@ -1048,6 +714,7 @@ class ApiController extends BaseController
                             ->get();
 
 
+
             $myjoinedContest = $this->myJoinedContest($request->match_id,$request->user_id);
             return response()->json(
                             [ 
@@ -1068,18 +735,20 @@ class ApiController extends BaseController
     public function getMatchDataFromApi()
     {
 
+        $date = date('Y-m-d');
+        $token = "8740931958a5c24fed8b66c7609c1c49";
         //upcoming
-        $upcoming =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=1&token='.$this->token);
+        $upcoming =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=1&token='.$token);
 
         \File::put(public_path('/upload/json/upcoming.txt'),$upcoming);
 
         //complted
-        $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&token='.$this->token);
+        $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&token='.$token);
 
         \File::put(public_path('/upload/json/completed.txt'),$completed);
 
         //live
-        $live =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=3&token='.$this->token);
+        $live =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=3&token='.$token);
 
         \File::put(public_path('/upload/json/live.txt'),$live);
 
@@ -1088,46 +757,16 @@ class ApiController extends BaseController
 
     public function updateMatchDataById($match_id=null)
     {
-        //upcoming
 
-        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+        $date = date('Y-m-d');
+        $token = "8740931958a5c24fed8b66c7609c1c49";
+        //upcoming
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$token);
 
         $this->saveMatchDataById($data);
         return [$match_id.' : match id updated successfully'];
 
     }
-
-    public function updateMatchInfo(Request $request)
-    {
-        //upcoming
-        $match_id = $request->match_id;
-        $matches =  Matches::where('status',3)
-                ->where('timestamp_start','>=',strtotime("-1 days"))
-                ->where('timestamp_start','<=',time())
-                ->get(); 
-        foreach ($matches as $key => $match) {
-            
-            $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/info?token='.$this->token);
-            $this->saveMatchDataFromAPI2DB($data);
-        }
-
-        return [$matches->count().' Match is updated successfully'];
-
-    }
-    public function updateLiveMatchFromApp()
-    {
-        //upcoming
-        $match = Matches::where('status',3)->get();
-        foreach ($match as $key => $result) {
-            
-        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$result->match_id.'/info?token='.$this->token);
-
-        $this->saveMatchDataById($data);
-        }
-        return [' Live match  updated successfully'];
-
-    }
-
     public function updateMatchDataByStatus($status=1)
     {
         if($status==1){
@@ -1138,15 +777,12 @@ class ApiController extends BaseController
         }
         elseif($status==3){
             $fileName="live";
-        }elseif($status==4){
-            $fileName="cancelled";
-        }
-        else{
+        }else{
             return ['data not available'];
         }
 
         //upcoming
-        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$this->token.'&per_page=20');
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$this->token.'&per_page=10');
           
         \File::put(public_path('/upload/json/'.$fileName.'.txt'),$data);
         
@@ -1171,14 +807,21 @@ class ApiController extends BaseController
         }else{
             $files = ['live','completed','upcoming']; 
         }
+        
         try {
+
             if(in_array($fileName, $files)){
+
                  return $this->getJsonFromLocal(public_path('/upload/json/'.$fileName.'.txt'));
+                
+               
+
             }
             
         } catch (Exception $e) {
               //  dd($e);
         }
+
         return ['match info stored'];
     }
 
@@ -1209,123 +852,14 @@ class ApiController extends BaseController
         return ["match info updated "];
 
     }
-
-    public function saveMatchDataFromAPI2DB($data){
-         
-         $data = json_decode($data);
-
-         if(isset($data->response)){
-            $result_set = $data->response;
-            $mid = [];
-          //  foreach ($results as $key => $result_set) {
-
-                    if($result_set->format==5   or $result_set->format==17){
-                       // continue;
-                    }
-                    foreach ($result_set as $key => $rs) {
-                        $data_set[$key] = $rs;
-                    }    
-                        $competition = Competition::firstOrNew(['match_id' => $data_set['match_id']]);
-                        $competition->match_id   = $data_set['match_id'];
-
-                        foreach ($data_set['competition'] as $key => $value) {
-                            $competition->$key = $value;
-                        }
-                        $competition->save();
-                        $competition_id = $competition->id;
-
-                        /*TEAM A*/
-                        $team_a = TeamA::firstOrNew(['match_id' => $data_set['match_id']]);
-                        $team_a->match_id   = $data_set['match_id'];
-
-                        foreach ($data_set['teama'] as $key => $value) {
-                            $team_a->$key = $value;
-                        }
-
-                        $team_a->save();
-
-                        $team_a_id = $team_a->id;
-
-
-                        /*TEAM B*/
-                        $team_b = TeamB::firstOrNew(['match_id' => $data_set['match_id']]);
-                        $team_b->match_id   = $data_set['match_id'];
-
-                        foreach ($data_set['teamb'] as $key => $value) {
-                            $team_b->$key = $value;
-                        }
-
-                        $team_b->save();
-                        $team_b_id = $team_b->id;
-
-
-                          /*Venue */
-                        $venue = Venue::firstOrNew(['match_id' => $data_set['match_id']]);
-                        $venue->match_id   = $data_set['match_id'];
-
-                        foreach ($data_set['venue'] as $key => $value) {
-                            $venue->$key = $value;
-                        }
-
-                        $venue->save();
-                        $venue_id = $venue->id;
-
-
-                          /*Venue */
-                        $toss = Toss::firstOrNew(['match_id' => $data_set['match_id']]);
-                        $toss->match_id   = $data_set['match_id'];
-
-                        foreach ($data_set['toss'] as $key => $value) {
-                            $toss->$key = $value;
-                        }
-
-                        $toss->save();
-                        $toss_id = $toss->id;
-                 
-                        $remove_data = ['toss','venue','teama','teamb','competition'];
-
-                       
-                        $matches = Matches::firstOrNew(['match_id' => $data_set['match_id']]);
-                        
-                        foreach ($data_set as $key => $value) {
-                            
-                            if(in_array($key, $remove_data)){
-                                continue;
-                            }
-                            $matches->$key = $value;
-
-                        }
-                        $matches->toss_id = $toss_id;
-                        $matches->venue_id = $venue_id;
-                        $matches->teama_id = $team_a_id;
-                        $matches->teamb_id = $team_b_id;
-                        $matches->competition_id = $toss_id;
-
-                        $matches->save();
-
-                        $mid[] = $data_set['match_id'];
-                        $this->createContest($data_set['match_id']);
-                      //  
-           // }            
-
-            if(count($mid)){
-                $this->getSquad($mid);
-               // $this->saveSquad($mid);
-            }
-            
-        }  
-      //  
-        return [$mid,"match info updated "];
-    }
-
     public function saveMatchDataFromAPI($data){
-        
-        if(isset($data->response) && count($data->response->items)){
+
+        if(count($data->response->items)){
 
             $results = $data->response->items;
             $mid = [];
             foreach ($results as $key => $result_set) {
-                    if($result_set->format==5   or $result_set->format==17){
+                    if($result_set->format==5 or $result_set->format==4 or $result_set->format==17){
                         continue;
                     }
                     foreach ($result_set as $key => $rs) {
@@ -1415,8 +949,8 @@ class ApiController extends BaseController
             }            
 
             if(count($mid)){
-                $this->getSquad($mid);
-               // $this->saveSquad($mid);
+               // $this->getSquad($mid);
+                $this->saveSquad($mid);
             }
             
         }  
@@ -1431,7 +965,7 @@ class ApiController extends BaseController
             $cid = Competition::where('match_id',$match_id)->first();
 
             $token =  $this->token;
-            $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token='.$this->token;
+            $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token=8740931958a5c24fed8b66c7609c1c49';
 
             $data = $this->getJsonFromLocal($path); 
 
@@ -1478,7 +1012,7 @@ class ApiController extends BaseController
             $cid = Competition::where('match_id',$match_id)->first();
 
             $token =  $this->token;
-            $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token='.$this->token;
+            $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token=8740931958a5c24fed8b66c7609c1c49';
 
             $data = $this->getJsonFromLocal($path); 
 
@@ -1525,52 +1059,39 @@ class ApiController extends BaseController
 
         $banner = \DB::table('banners')->select('title','url','actiontype')->get();
 
-        $join_contests =  \DB::table('join_contests')->where('user_id',$user)->get('match_id');
+        $join_contests =  \DB::table('join_contests')
+                            ->where('user_id',$user)
+                            ->orderBy('id','ASC')
+                            ->first();
         $jm = [];
 
+       
+        if($join_contests){  
+
+
+        $join_contests_count =  \DB::table('join_contests')
+                            ->where('user_id',$user)
+                            ->where('match_id',$join_contests->match_id)
+                            ->count();
 
         $created_team = \DB::table('create_teams')
-                        ->where('user_id',$user) 
-                        ->select('match_id','user_id','id')
-                        ->orderBy('id','DESC')
-                        ->distinct('match_id')
-                        ->get(); 
-
-        if($created_team->count()){  
-            foreach ($created_team as $key => $join_contest) {
+                        ->where('user_id',$user)
+                        ->where('match_id',$join_contests->match_id)
+                        ->count();
                 # code...
-               $jmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
-
-               $join_match = $jmatches->first();
-               $join_match_count[] = $jmatches->count();
-            //   $join_contest_count = $jmatches->count();
-
-               $join_contests_count =  \DB::table('join_contests')
-                            ->where('user_id',$user)
-                            ->where('match_id',$join_contest->match_id)
-                            ->selectRaw('distinct contest_id')
-                            ->get();
-                          
-                $join_match->total_joined_team   =  count($join_match_count);
-                $join_match->total_join_contests =  $join_contests_count->count();
-                $jm[$join_contest->match_id] = $join_match;
-            }
-
+               $joinedmatches = Matches::with('teama','teamb')->where('match_id',$join_contests->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str')->first();
+               
+                $jm[] = $joinedmatches;
+          //  }
             $data['matchdata'][] = [
-                    'viewType'=>1,
-                   // 'total_joined_team' => $join_match_count,
-                   // 'total_join_contests' => $join_contests_count,
-                    'joinedmatches'=>array_values($jm)
-                ];
+                        'viewType'=>1,
+                        'total_joined_team'=>$created_team,
+                        'total_join_contests' => $join_contests_count,
+                        'joinedmatches'=>$jm
+                    ];
             
         }                                          
-        $match = Matches::with('teama','teamb')
-                ->whereIn('status',[1,3])
-                ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
-                ->orderBy('timestamp_start','ASC')
-             ->where('timestamp_start','>=' , time())
-             ->limit(10)
-            ->get();
+        $match = Matches::with('teama','teamb')->where('status',1)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')->get();
 
 
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
@@ -1599,19 +1120,11 @@ class ApiController extends BaseController
                 
             ];
         }
-
-         $players =  Player::with(['teama'=>function($q) use ($match_id){
-                     $q->where('match_id',$match_id);
-                    }])
-                    ->with(['teamb'=>function($q)use ($match_id){
-                     $q->where('match_id',$match_id);
-                     }])
-                    ->with('team_b','team_a')
-                    ->where(function($q) use($match_id){
+        $players =  Player::with('teama','teamb','team_a','team_b')->where('match_id',$match_id)
+                    ->where(function($q){
                         $q->groupBy('playing_role');
-                        $q->where('match_id',$match_id);
-                    })->get(); 
-               
+                    })->get();
+
         if(!$players->count()){  
             return ['status'=>'true','code'=>404,'message'=>'record not found',
                     'response'=>[
@@ -1623,18 +1136,13 @@ class ApiController extends BaseController
          $bat['bat'] = [];
          $bat['all'] = [];
          $bat['bowl'] = [];
-
-         $match_points= MatchPoint::where('match_id',$match_id)->pluck('point','pid')->toArray();
- 
          foreach ($players as $key => $results) { 
-            if($results->teama ){
-               
-                $data['playing11'] =  filter_var($results->teama->playing11, FILTER_VALIDATE_BOOLEAN); 
 
-             }
-             elseif($results->teamb){
+             if($results->teama){
+                    $data['playing11'] = $results->teama->playing11;
+             }else{
                  
-                 $data['playing11'] =  filter_var($results->teamb->playing11, FILTER_VALIDATE_BOOLEAN);
+                 $data['playing11'] = isset($results->teamb->playing11)?$results->teamb->playing11:'false';
              }
               
             if($results->team_a){
@@ -1647,7 +1155,7 @@ class ApiController extends BaseController
              $data['pid'] = $results->pid;
              $data['match_id'] = $results->match_id;
              $data['team_id'] = $results->team_id;
-             $data['points'] = ($match_points[$results->pid])??0;
+             
              $fname = $results->first_name;
              $lname = $results->last_name;
 
@@ -1826,12 +1334,12 @@ class ApiController extends BaseController
 
     public function updateAllSquad(){
         echo date('h:i:s').'--time--';
-       
-        $com =  Matches::where('status',3)->select('match_id')->get();
+        $token = $this->token ;
+        $com =  Matches::where('status',1)->select('match_id')->get();
         $players = []; 
-        
+      
         foreach ($com as $key => $value) {
-            $this->getSquad([$value->match_id]); 
+            $this->getSquad($value->match_id); 
         }
 
         echo date('h:i:s');  
@@ -1845,31 +1353,6 @@ class ApiController extends BaseController
         $created_team_id    = $request->created_team_id;
         $contest_id         = $request->contest_id;
 
-         $validator = Validator::make($request->all(), [
-                'match_id' => 'required',
-                'user_id' => 'required',
-                'contest_id' => 'required',
-                'created_team_id' => 'required'
-
-            ]); 
-         
-        
-        // Return Error Message
-        if ($validator->fails() || !isset($created_team_id)) {
-                    $error_msg  =   [];
-            foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }
-            
-            return Response::json(array(
-                'system_time'=>time(),
-                'status' => false,
-                "code"=> 201,
-                'message' => $error_msg[0]??'Team id missing'
-                )
-            );
-        }
-
         Log::channel('before_join_contest')->info($request->all());            
         
         $check_join_contest = \DB::table('join_contests')
@@ -1878,7 +1361,7 @@ class ApiController extends BaseController
                                 ->where('user_id',$user_id)
                                 ->where('contest_id',$contest_id)
                                 ->get();
-         
+        
         if(count($created_team_id)==1 AND  $check_join_contest->count()==1){
             return [
                 'status'=>false,
@@ -1887,10 +1370,11 @@ class ApiController extends BaseController
                 
             ];
         }
+       // usleep(100000);
         
         $cc = CreateContest::find($contest_id);
 
-        if($cc && ($cc->total_spots!=0 && $cc->filled_spot>=$cc->total_spots)){
+        if($cc && $cc->filled_spot>=$cc->total_spots){
             return [
                 'status'=>false,
                 'code' => 201,
@@ -1917,10 +1401,9 @@ class ApiController extends BaseController
                     ->whereIn('id',$created_team_id)->count();
 
         if($ct)
-        {  
-            \DB::beginTransaction();
+        {
             foreach ($created_team_id as $key => $ct_id) {
-              
+                \DB::beginTransaction();
 
                 $check_join_contest = \DB::table('join_contests')
                                 ->where('created_team_id',$ct_id)
@@ -1928,63 +1411,40 @@ class ApiController extends BaseController
                                 ->where('user_id',$user_id)
                                 ->where('contest_id',$contest_id)
                                 ->first();
-                                
-                if($check_join_contest){ 
-
+                if($check_join_contest){
                     continue;
-                } 
+                }
+
                 $data['match_id'] = $match_id;
                 $data['user_id'] = $user_id;
                 $data['created_team_id'] = $ct_id;
                 $data['contest_id'] = $contest_id;
                 
-                $ctid  = CreateTeam::find($ct_id); 
-                $data['team_count'] = $ctid->team_count??null;
+                // increase spot count
+                $cc = CreateContest::find($contest_id);
 
-                if($cc->total_spots==0 || $cc->total_spots > $cc->filled_spot){
-                   
-                    $cc->filled_spot = CreateTeam::where('match_id',$match_id)
-                                        ->where('team_join_status',1)->count();
+                if($cc->total_spots>$cc->filled_spot){
+                    $cc_count = $cc->filled_spot+1;
+                    $cc->filled_spot = $cc_count;
                     $cc->save();
-                    // payment deduct
-
-                    $total_fee                  =  $cc->entry_fees;
-                    $deduct_from_bonus          =  $total_fee*(0.1);
-                    $deduct_from_usable_amount  =  $total_fee-$deduct_from_bonus;
-
-                    $wallets = Wallet::where('user_id',$user_id)->first();
-
-                    $wallets->usable_amount = $wallets->usable_amount-$deduct_from_usable_amount;
-                    $wallets->bonus_amount = $wallets->bonus_amount-$deduct_from_bonus;
-                    $wallets->save();
-
                 }else{
-
                     continue;
                 }
 
                 $jcc = \DB::table('join_contests')
                         ->where('match_id',$match_id)
                         ->where('contest_id',$contest_id)
-                        ->count(); 
-                if($jcc<=$cc->total_spots || $cc->total_spots==0){
-                    
-                $t =   JoinContest::updateOrCreate($data,$data); 
- 
+                        ->count();
+                if($jcc<=$cc->total_spots){
+                    \DB::table('join_contests')->insert($data);
                 }        
                 // End spot count
                 $cont[] = $data;
                 $ct = \DB::table('create_teams')
-                       ->where('id',$ct_id)
-                  ->update(['team_join_status'=>1]); 
-
-                $cc->filled_spot = CreateTeam::where('match_id',$match_id)
-                                        ->where('team_join_status',1)->count();
-                $cc->save();
-              
+                        ->where('id',$ct_id)
+                    ->update(['team_join_status'=>1]);
+                \DB::commit();
             }
-             \DB::commit();
-
         }else{
             $cont = ["error"=>"contest id not found"];
         }    
@@ -2001,112 +1461,7 @@ class ApiController extends BaseController
     }
 
 
-    // get contest details by match id
-    public function getMyContest(Request $request){
-
-        $match_id =  $request->match_id;
-        
-        $matchVald = Matches::where('match_id',$request->match_id)->count();
-
-        if(!$matchVald){
-            return [
-                'system_time'=>time(),
-                'status'=>false,
-                'code' => 201,
-                'message' => 'match id is invalid'
-                
-            ];
-        }
-
-        $join_contests = JoinContest::where('user_id',$request->user_id)
-                            ->where('match_id',$match_id)
-                            ->pluck('contest_id')->toArray(); 
-                           
-        $validator = Validator::make($request->all(), [
-              //  'match_id' => 'required' 
-            ]); 
-         
-        // Return Error Message
-        if ($validator->fails()) {
-                    $error_msg  =   [];
-            foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }
-                            
-            return Response::json(array(
-                'system_time'=>time(),
-                'status' => false,
-                "code"=> 201,
-                'message' => $error_msg[0]
-                )
-            );
-        }
-
-        $contest = CreateContest::with('contestType')
-                    ->where('match_id',$match_id)
-                    ->whereIn('id',$join_contests)
-                    ->orderBy('contest_type','ASC')
-                    ->get();
- 
-        if($contest){
-            $matchcontests = [];
-            
-            foreach ($contest as $key => $result) { 
-                    $myjoinedContest = $this->myJoinedTeam($request->match_id,$request->user_id,$result->id);
-             
-                   // dd($result);
-                    $data2['totalSpots'] =   $result->total_spots;
-                    $data2['firstPrice'] =   $result->first_prize;
-                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
-                    if($result->total_spots==0)
-                    {
-                       $data2['totalSpots'] =   0;
-                       
-                       $twp = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-                       $data2['totalWinningPrize'] = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-
-                       $data2['firstPrice'] =   round($twp*(0.2));
-                    }
-                    elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
-                    {
-                        continue;
-                    }
-
-                    $data2['contestTitle'] = $result->contestType->contest_type;
-                    $data2['contestSubTitle'] =$result->contestType->description;
-                    $data2['contestId'] =    $result->id;
-                  //  $data2['totalWinningPrize'] =    $result->total_winning_prize;
-                    $data2['entryFees'] =    $result->entry_fees;
-                   // $data2['totalSpots'] =   $result->total_spots;
-                    $data2['filledSpots'] =  $result->filled_spot;
-                  //  $data2['firstPrice'] =   $result->first_prize;
-                    $data2['winnerPercentage'] = $result->winner_percentage;
-                    $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
-                    $data2['cancellation'] = $result->cancellable; 
-                    $data2['maxEntries'] =  $result->contestType->max_entries;
-                    $data2['joinedTeams'] = $myjoinedContest;
-
-
-                $matchcontests[] = $data2;
-            } 
-            $data = $matchcontests;
-
-            return response()->json(
-                            [ 
-                               'system_time'=>time(),
-                                "status"=>true,
-                                "code"=>200,
-                                "message"=>"Success",
-                                "response"=>[
-                                    'my_joined_contest'=>$data
-                                    ]
-                            ]
-                        );
-        }
-    }
-
-
-    public function getMyContest2(Request $request)
+    public function getMyContest(Request $request)
     {
         $match_id =  $request->match_id;
         $user_id  = $request->user_id;
@@ -2127,7 +1482,7 @@ class ApiController extends BaseController
                 ->where('user_id',$user_id);
 
 
-        $contest_id = $check_my_contest->pluck('contest_id');
+        $contest_id = $check_my_contest->pluck('created_team_id');
 
         $myContest  =     $check_my_contest->first();
 
@@ -2144,8 +1499,7 @@ class ApiController extends BaseController
         $joinMyContest =  JoinContest::with('createTeam','contest')
                             ->where('match_id',$match_id)
                             ->where('user_id',$user_id)
-                          //  ->whereIn('created_team_id',$contest_id)
-                            ->whereIn('contest_id',$contest_id)
+                            ->whereIn('created_team_id',$contest_id)
                             ->get();
 
         if($joinMyContest){
@@ -2214,45 +1568,6 @@ class ApiController extends BaseController
         }
     }
 
-    public function myJoinedTeam($match_id=null,$user_id=null,$contest_id=null)
-    {
-/*
-        $check_my_contest = \DB::table('join_contests')
-                ->where('match_id',$match_id)
-                ->where('user_id',$user_id);
-
-
-        $created_team_id = $check_my_contest->pluck('created_team_id')->toArray();
-        $contest_id      = $check_my_contest->pluck('contest_id')->toArray();
-        $myContest       =     $check_my_contest->first();*/
-
-    
-        $joinMyContest =  JoinContest::with('createTeam','contest')
-                            ->where('match_id',$match_id)
-                            ->where('user_id',$user_id)
-                            ->where('contest_id',$contest_id)
-                            ->get();
-        $userVald = User::find($user_id);
-        if($joinMyContest){
-            $matchcontests = [];
-            
-            foreach ($joinMyContest as $key => $result) {  
-                    $t_c = $result->createTeam->team_count;
-                    $data2['team_name'] = ($userVald->user_name).'('.$t_c.')'; 
-                   // $data2['team'] = $result->createTeam->team_count;
-                    $data2['createdTeamId'] =    $result->created_team_id;
-                    $data2['contestId'] =    $result->contest_id;
-                    $data2['isWinning'] =    filter_var($result->createTeam->isWinning??'false', FILTER_VALIDATE_BOOLEAN); 
-                    $data2['rank']      = $result->createTeam->rank;
-                    $data2['points']    = $result->createTeam->points; 
-                    $matchcontests[] =  $data2 ;
-                    $data2 = [];
-            }
-              
-             return $matchcontests;
-           
-        }
-    }
     public function myJoinedContest($match_id=null,$user_id=null)
     {
 
@@ -2435,66 +1750,5 @@ class ApiController extends BaseController
                         ]
                     );
         }
-    }
-
-    public function getScore(Request $request){
-
-
-        $score = Matches::with(['teama' => function ($query) {
-            $query->select('match_id', 'team_id', 'name','short_name','scores_full','scores','overs');
-        }])
-        ->with(['teamb' => function ($query) {
-            $query->select('match_id', 'team_id', 'name','short_name','scores_full','scores','overs');
-        }])->where('match_id',$request->match_id)
-                    ->select('match_id','title','short_title','status','status_str','result','status_note')
-                    ->first();
-        
-            return response()->json(
-                        [ 
-                            "status"=>true,
-                            "code"=>200,
-                            "message" => "Match Score",
-                            "scores"=>$score
-                        ]
-                    );        
-    }
-
-
-    public function cloneMyTeam(Request $request){
-
-
-        $clone_team =   CreateTeam::where('id',$request->team_id)->where('user_id',$request->user_id)->first();
-      //  dd($clone_team);
-        $data = null;
-        if($clone_team){
-            $clone_team2  = new CreateTeam;
-            
-            $clone_team2->match_id      =   $clone_team->match_id;
-            $clone_team2->user_id       =   $clone_team->user_id;
-            $clone_team2->contest_id    =   $clone_team->contest_id;
-            $clone_team2->team_id       =   $clone_team->team_id;
-            $clone_team2->teams         =   $clone_team->teams;
-            $clone_team2->captain       =   $clone_team->captain;
-            $clone_team2->vice_captain  =   $clone_team->vice_captain;
-            $clone_team2->trump         =   $clone_team->trump;
-
-            $clone_team2->team_count    =   $clone_team->team_count;
-            $clone_team2->team_join_status =   $clone_team->team_join_status;
-            $clone_team2->rank          =   $clone_team->rank;
-            $clone_team2->edit_team_count =   $clone_team->edit_team_count;
-                    
-            $clone_team2->save();
-
-            $data = ['created_team_id'=> $clone_team2->id];
-        }        
-        
-        return response()->json(
-                        [ 
-                            "status"=>true,
-                            "code"=>200,
-                            "message" => "team created",
-                            "response"=>$data
-                        ]
-                    );        
     }
 }

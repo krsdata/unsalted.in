@@ -1,0 +1,21 @@
+[2020-03-07 22:11:58] local.INFO: array (
+  'user_id' => 230,
+  'deposit_amount' => 50,
+  'transaction_id' => '132343434',
+  'payment_mode' => 'paytm',
+  'payment_status' => 'success',
+)  
+[2020-03-07 22:12:28] local.INFO: array (
+  'user_id' => 230,
+  'deposit_amount' => 50,
+  'transaction_id' => '132343434',
+  'payment_mode' => 'paytm',
+  'payment_status' => 'success',
+)  
+[2020-03-07 22:17:50] local.INFO: array (
+  'user_id' => 230,
+  'deposit_amount' => 50,
+  'transaction_id' => '132343434',
+  'payment_mode' => 'paytm',
+  'payment_status' => 'success',
+)  

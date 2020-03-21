@@ -70,6 +70,12 @@ class MatchController extends Controller {
             $match = Match::with('teama','teamb')->where(function($query) use($search,$status) {    
                         if (!empty($status)) {
                             $query->Where('status', '=', $status);
+                            if($status==1){
+                                $query->where('timestamp_start','>=',time());
+                            }
+                             if($status==2){
+                                $query->orderBy('timestamp_start','DESC');
+                            }
                         }
                         if (!empty($search)) {
                             $query->orWhere('title', 'LIKE', "%$search%");
@@ -79,9 +85,9 @@ class MatchController extends Controller {
                         }
                         if (!empty($search)) {
                             $query->orWhere('short_title', 'LIKE', "%$search%");
-                        }
-                        
+                        } 
                     })->orderBy('timestamp_start','DESC')->Paginate($this->record_per_page);
+ 
              
         } else {
             $match = Match::with('teama','teamb')->orderBy('status','ASC')->Paginate($this->record_per_page);
@@ -112,15 +118,8 @@ class MatchController extends Controller {
      * */
 
     public function edit($id) {
-        $program = Program::find($id);
-        $page_title     = 'Promotion';
-        $page_action    = 'Edit Promotion'; 
-        $status         = [
-                            'last_15_days'=>'inactive from last 15 days',
-                            'last_30_days'=>'inactive from last 30 days',
-                            'last_45_days'=>'inactive from last 45 days'
-                        ];
-        return view('packages::program.edit', compact('program','status', 'page_title', 'page_action'));
+        
+        return view('packages::match.edit');
     }
 
     public function update(Request $request, $id) {

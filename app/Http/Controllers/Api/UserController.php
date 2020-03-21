@@ -126,6 +126,8 @@ class UserController extends BaseController
         $user  = User::find($user->id);
         $user->validate_user = Hash::make($user->id);      
         $user->save();
+
+        $token = $user->createToken('SportsFight')->accessToken;
         
         $user_data['user_id ']         =  $user->id;
         $user_data['name']             =  $user->name; 
@@ -169,7 +171,7 @@ class UserController extends BaseController
                                 "code"=>200,
                                 "message"=>"Thank you for registration. Please verify  your email.",
                                 'data' => $user_data,
-                                'token' => 1
+                                'token' => $token??null
                             ]
                         );
     }
@@ -470,6 +472,8 @@ class UserController extends BaseController
 
                 if ($auth ){
                     $usermodel = Auth::user();
+                    $token = $usermodel->createToken('SportsFight')->accessToken;
+ 
                     $status = true;
                     $code = 200;
                     $message = "login successfully";
@@ -523,19 +527,24 @@ class UserController extends BaseController
 
         $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
 
+        $token = Hash::make(1);
+        if($usermodel){
+            $token = $usermodel->createToken('SportsFight')->accessToken;
+        }
+            
         if($data){
             return response()->json([ 
                     "status"=>$status,
                     "code"=>$code,
                     "message"=> $message ,
                     'data'=> $data??$request->all(),
-                    'token' => $usermodel?Hash::make($usermodel->id):1
+                    'token' => $token 
                  ]);   
         }else{
             return response()->json([ 
                     "status"=>$status,
                     "code"=>$code,
-                    'token' => $usermodel?Hash::make($usermodel->id):1
+                    'token' =>$token 
                  ]); 
         }
           

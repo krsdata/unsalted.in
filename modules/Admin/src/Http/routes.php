@@ -60,6 +60,27 @@
             ]
                 ]
         );
+
+         Route::bind('errorLog', function ($value, $route) {
+            return Modules\Admin\Models\ErrorLog::find($value);
+        });
+
+        Route::resource(
+            'admin/errorLog',
+            'Modules\Admin\Http\Controllers\ErrorLogController',
+            [
+            'names' => [
+                'edit' => 'errorLog.edit',
+                'show' => 'errorLog.show',
+                'destroy' => 'errorLog.destroy',
+                'update' => 'errorLog.update',
+                'store' => 'errorLog.store',
+                'index' => 'errorLog',
+                'create' => 'errorLog.create',
+            ]
+                ]
+        );
+
         Route::resource(
             'admin/clientuser',
             'Modules\Admin\Http\Controllers\ClientUsersController',

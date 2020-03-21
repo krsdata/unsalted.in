@@ -12,9 +12,9 @@
         "fideloper/proxy": "^4.0",
         "illuminate/support": "^6.8",
         "laravel/framework": "^6.2",
-        "laravel/passport": "^8.0",
+        "laravel/passport": "^8.4",
         "laravel/tinker": "^1.0",
-        "laravelcollective/html": "^6.0", 
+        "laravelcollective/html": "^6.0",
         "phpmailer/phpmailer": "^5.2"
     },
     "require-dev": {
