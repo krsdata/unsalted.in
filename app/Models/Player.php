@@ -54,4 +54,17 @@ class Player extends Eloquent
     {
        return $this->hasOne('App\Models\TeamB', 'team_id', 'team_id')->select('team_id','short_name') ;
     }
+
+    public function matchPoints()
+    {
+       return $this->hasOne('App\Models\MatchPoint', 'pid','pid');
+    }
+     public function teamAId()
+    {
+        return $this->hasOne('App\Models\TeamA', 'match_id', 'match_id') ;
+    }
+    public function teamBId()
+    {
+       return $this->hasOne('App\Models\TeamB', 'match_id', 'match_id') ;
+    }
 }

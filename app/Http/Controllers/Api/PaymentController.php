@@ -31,6 +31,8 @@ use App\Models\JoinContest;
 use App\Models\WalletTransaction;
 use App\Models\MatchPoint;
 use App\Models\MatchStat;
+use App\Models\PrizeDistribution;
+
 
 
 class PaymentController extends BaseController
@@ -50,6 +52,138 @@ class PaymentController extends BaseController
        // $uname      = Helper::generateRandomString(); 
     } 
 
+    public function prizeDistribution(Request $request)
+    {
+        $match_id = $request->match_id;
+        $get_join_contest = JoinContest::where('match_id',  $match_id)
+          ->get()
+          ->transform(function ($item, $key)   {
+
+            $ct = CreateTeam::where('match_id',$item->match_id)
+                            ->where('user_id',$item->user_id)
+                            ->where('id',$item->created_team_id)
+                            ->first(); 
+
+            $user = User::where('id',$item->user_id)->select('id','first_name','last_name','user_name','email','profile_image','validate_user','phone','device_id','name')->first();
+             
+            $team_id  =   $ct->id;
+            $match_id =   $ct->match_id;
+            $user_id  =   $ct->user_id;
+            $rank     =   $ct->rank; 
+            $team_name =  $ct->team_count;
+   
+            $contest =  CreateContest::with('contestType','defaultContest')
+                          ->with(['prizeBreakup'=>function($q) use($rank )
+                            {
+                              $q->where('rank_from','>=',$rank);
+                              $q->orwhere('rank_upto','<=',$rank)->where('rank_from','>=',$rank); 
+                            }
+                          ]
+                        )
+                          ->where('match_id',$item->match_id)
+                          ->where('id',$item->contest_id) 
+                          ->get()
+                          ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name)  {
+                             
+                            if($contestItem->prizeBreakup){
+                             $contestItem->prize_amount = $contestItem->prizeBreakup->prize_amount; 
+                            }else{
+                              $contestItem->prize_amount = 0;
+                            }
+                             $contestItem->team_id = $team_id;
+                             $contestItem->match_id = $match_id;
+                             $contestItem->user_id = $user_id;
+                             $contestItem->rank = $rank;
+                             $contestItem->team_name = $team_name;
+                             return $contestItem;
+                           });
+
+
+           // $item->createdTeam = $ct;
+            $item->user = $user;
+            $item->team_id = $team_id;
+            $item->match_id = $match_id;
+            $item->user_id = $user_id;
+            $item->rank = $rank;
+            $item->team_name = $team_name;
+            $item->contest  = $contest[0]??null ;
+            $item->createdTeam = $ct;
+             
+            $prize_dist =  PrizeDistribution::updateOrCreate(
+                          [
+                            'match_id'        => $match_id,
+                            'user_id'         => $user_id,
+                            'created_team_id' => $team_id
+                          ],
+                          [
+                            'match_id'        => $match_id,
+                            'user_id'         => $user_id,
+                            'created_team_id' => $team_id,
+                            'rank'            => $rank,
+                            'contest_id'        => $item->contest_id,
+
+                            'team_name'        => $item->team_name,
+                            'user_name'        => $item->user->user_name,
+                            'name'             => $item->user->first_name??$item->user->name,
+                            'mobile'           => $item->user->phone,
+                            'email'            => $item->user->email,
+                            'device_id'        => $item->user->device_id,
+
+                            'contest_name'     => $item->contest->contestType->contest_type??null,
+                            'entry_fees'       => $item->contest->entry_fees,
+                            'total_spots'      => $item->contest->total_spots,
+                            'filled_spot'      => $item->contest->filled_spot,
+
+                            'first_prize'        => $item->contest->first_prize,
+                            'default_contest_id'=> $item->contest->default_contest_id,
+ 
+                            'prize_amount'      => $item->contest->prize_amount,
+                            'contest_type_id'   => $item->contest->prizeBreakup->contest_type_id??null,
+
+
+                            'captain'           => $item->createdTeam->captain,
+                            'vice_captain'      => $item->createdTeam->vice_captain,
+                            'trump'             => $item->createdTeam->trump,
+                            'match_team_id'     => $item->createdTeam->team_id,
+                            'user_teams'        => $item->createdTeam->teams
+
+                          ]
+                        );
+        }) ; 
+
+        
+        $prize_distributions = PrizeDistribution::where('match_id',$match_id)
+                                ->get()
+                                ->transform(function($item,$key){
+
+                                  $cid = \DB::table('matches')
+                                        ->where('match_id',44305)
+                                        ->first();
+                                     $subject = "You won prize for match - ".$cid->title??null;
+                                 
+                                 if((int)$item->prize_amount > 0){
+                                     $email_content = [
+                                            'receipent_email'=> $item->email,
+                                            'subject'=>$subject,
+                                            'greeting'=> 'SportsFight',
+                                            'first_name'=> ucfirst($item->name),
+                                            'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$cid->title.'</b> match.',
+                                            'rank' => $item->rank
+                                            ];
+                                      $helper = new Helper;
+                                      $m =   $helper->sendMailFrontEnd($email_content,'prize');
+
+                                      $item->user_id = $item->user_id;
+                                      $item->email = $item->email;
+                                 }     
+                                 return $item;
+                                });
+
+        return 'successfully prize distributed';
+  
+
+       
+    }
     
     // Add Money
     public function addMoney(Request $request){

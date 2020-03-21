@@ -63,6 +63,14 @@
                                             <div class="col-md-3">
                                                 <input value="{{ (isset($_REQUEST['search']))?$_REQUEST['search']:''}}" placeholder="Search " type="text" name="search" id="search" class="form-control" >
                                             </div>
+                                              <div class="col-md-3">
+                                                <select class="form-control" name="status">
+                                                    <option value="1" @if(isset($_REQUEST['status']) && $_REQUEST['status']==1) selected @endif>Upcoming</option>
+                                                     <option value="2" <?php if(isset($_REQUEST['status']) && $_REQUEST['status']==2) { echo "selected"; }  ?>> Completed</option>
+                                                      <option value="3" @if(isset($_REQUEST['status']) && $_REQUEST['status']==3) selected @endif>Live</option>
+                                                      <option value="4" @if(isset($_REQUEST['status']) && $_REQUEST['status']==4) selected @endif>Cancelled</option>
+                                                </select>
+                                            </div>
                                             <div class="col-md-2">
                                                 <input type="submit" value="Search" class="btn btn-primary form-control">
                                             </div>
@@ -82,13 +90,13 @@
                                                 <th> Match Id </th>
                                                 <th> Match Between </th> 
                                                 <th> Add Contest</th> 
-                                                <th> Type </th> 
+                                                <th> Player List </th> 
                                                 <th> Status</th> 
                                                 <th> Start Date</th> 
-                                                 <th> End Date</th>
+                                                 <th> Distribute Prize</th>
 
                                                  <th> View Details  </th> 
-                                                <th>Last Cron run at</th>  
+                                                <th>  Cron run at</th>  
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -101,7 +109,9 @@
                                                     Add Contest
                                                  </a>
                                                   </td>
-                                                 <td> {{$result->format_str}} </td>
+                                                 <td> <a class="btn btn-success" href="{{route('match.show',$result->id)}}?player={{$result->match_id}}">
+                                                    View Players
+                                                 </a></td>
                                                  <td> {{$result->status_str}} </td>
                                                  <td> 
                                                     {!!
@@ -111,14 +121,14 @@
                                                     !!}
                                                 </td>
                                                  <td> 
-                                                    {!!
-                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->date_end, 'UTC')
-                                                        ->setTimezone('Asia/Kolkata')
-                                                        ->format('d-m-y, H:i:s A')
-                                                    !!}
-                                                   
-    
- </td>
+                                                    @if($result->status==2)
+                                                   <a class="btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
+                                                     Distribute Prize
+                                                        </a> 
+                                                    @else
+                                                     Pending
+                                                    @endif
+                                                    </td>
                                                     <td>  <a href="{{ route('match.show',$result->id)}}">
                                                             <i class="fa fa-eye" title="details"></i> 
                                                         </a> </td> 
@@ -128,7 +138,7 @@
                                                         {!!
                                                         \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->created_at, 'UTC')
                                                         ->setTimezone('Asia/Kolkata')
-                                                        ->format('d-m-y, H:i:s A')
+                                                        ->format('H:i:s A')
                                                     !!}
                                         </td> 
                                                
@@ -140,7 +150,7 @@
                                     <span>
                                       Showing {{($match->currentpage()-1)*$match->perpage()+1}} to {{$match->currentpage()*$match->perpage()}}
                                     of  {{$match->total()}} entries
-                                     <div class="center" align="center">  {!! $match->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
+                                     <div class="center" align="center">  {!! $match->appends(['search' => isset($_GET['search'])?$_GET['search']:'','status' => isset($_GET['status'])?$_GET['status']:''])->render() !!}</div>
                                 </div>
                             </div>
                             <!-- END EXAMPLE TABLE PORTLET-->

@@ -70,6 +70,12 @@ class MatchController extends Controller {
             $match = Match::with('teama','teamb')->where(function($query) use($search,$status) {    
                         if (!empty($status)) {
                             $query->Where('status', '=', $status);
+                            if($status==1){
+                                $query->where('timestamp_start','>=',time());
+                            }
+                             if($status==2){
+                                $query->orderBy('timestamp_start','DESC');
+                            }
                         }
                         if (!empty($search)) {
                             $query->orWhere('title', 'LIKE', "%$search%");
@@ -77,14 +83,15 @@ class MatchController extends Controller {
                         if (!empty($search)) {
                             $query->orWhere('match_id', 'LIKE', "%$search%");
                         }
+                        if (!empty($search)) {
+                            $query->orWhere('short_title', 'LIKE', "%$search%");
+                        }
                         
-                    })->orderBy('status','ASC')->Paginate($this->record_per_page);
+                    })->Paginate($this->record_per_page);
              
         } else {
             $match = Match::with('teama','teamb')->orderBy('status','ASC')->Paginate($this->record_per_page);
-        }
-         
-         
+        } 
         
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));
     }
@@ -111,15 +118,8 @@ class MatchController extends Controller {
      * */
 
     public function edit($id) {
-        $program = Program::find($id);
-        $page_title     = 'Promotion';
-        $page_action    = 'Edit Promotion'; 
-        $status         = [
-                            'last_15_days'=>'inactive from last 15 days',
-                            'last_30_days'=>'inactive from last 30 days',
-                            'last_45_days'=>'inactive from last 45 days'
-                        ];
-        return view('packages::program.edit', compact('program','status', 'page_title', 'page_action'));
+        
+        return view('packages::match.edit');
     }
 
     public function update(Request $request, $id) {
@@ -142,13 +142,29 @@ class MatchController extends Controller {
     }
 
     public function show($id) {
-        $match = Match::find($id);
+        $matches = Match::find($id);
         $page_title     = 'Match';
         $page_action    = 'Show Match'; 
-        $result = $match;
-        $match = Match::where('id',$match->id)->first()->toArray();
+        $result = $matches;
+        $match = Match::where('id',$matches->id)
+            ->select('match_id','title','short_title','status_str','status_note','date_start','timestamp_start')->first()->toArray(); 
+
+        $conetst = \DB::table('create_contests')->where('match_id',$matches->match_id)->get();    
+         
+
+        $team_a =  \DB::table('team_a_squads')->where('match_id',$matches->match_id)->pluck('player_id')->toArray();
+        $team_b =  \DB::table('team_b_squads')->where('match_id',$matches->match_id)->pluck('player_id')->toArray(); 
+
+        $team = array_merge($team_a,$team_b);
         
-        return view('packages::match.show', compact( 'result','match','page_title', 'page_action'));
+
+        $player =  \DB::table('players')
+                    ->whereIn('pid',$team) 
+                    ->where('match_id',$matches->match_id)
+                    ->orderBy('title','ASC')
+                    ->get(); 
+        
+        return view('packages::match.show', compact('player','conetst', 'result','match','page_title', 'page_action'));
 
     }
 

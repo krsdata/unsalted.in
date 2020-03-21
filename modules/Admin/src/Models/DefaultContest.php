@@ -52,4 +52,10 @@ class DefaultContest extends Model {
             'match_id',
             'prize_percentage'
         ];  // All field of user table here
+
+
+    public function contestType()
+    {
+        return $this->hasOne('Modules\Admin\Models\ContestType','id','contest_type');
+    }
 }

@@ -44,4 +44,16 @@ class CreateContest extends Eloquent
     {
         return $this->hasOne('App\Models\ContestType', 'id', 'contest_type') ;
     }
+
+    public function defaultContest()
+    {
+        return $this->hasOne('App\Models\DefaultContest', 'id', 'default_contest_id') ;
+    }
+
+    public function prizeBreakup()
+    {
+        return $this->hasOne('App\Models\PrizeBreakup', 'default_contest_id', 'default_contest_id') ;
+    }
+
+    
 }

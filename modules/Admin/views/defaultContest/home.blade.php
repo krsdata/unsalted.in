@@ -69,7 +69,7 @@
                                                 <th> Winner percentage </th>
                                                 <th> Total winning prize </th> 
                                                   
-                                                <th>Created date</th> 
+                                                <th>Prize Breakup</th> 
                                                 <th>Action</th> 
                                             </tr>
                                         </thead>
@@ -85,7 +85,7 @@
                                                 <td> {{$result->total_winning_prize}} </td>
 
                                                 <td>
-                                                {!! Carbon\Carbon::parse($result->created_at)->format('d-m-Y'); !!}
+                                                <a href="{{route('defaultContest.show',$result->id)}}">Add Prize Breakup</a>
                                                 </td>
                                                     
                                                 <td> 
