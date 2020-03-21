@@ -100,7 +100,7 @@ Route::middleware('auth:api')->group( function () {
 		Route::match(['post','get'],'joinNewContestStatus', 'Api\ApiController@joinNewContestStatus'); 
 		Route::match(['post','get'],'getScore', 'Api\ApiController@getScore'); 
 		Route::match(['post','get'],'transactionHistory', 'Api\PaymentController@transactionHistory');
-		//Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
+		Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
 		Route::match(['post','get'],'getPlayer', 'Api\ApiController@getPlayer');
 		Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
 		Route::match(['post','get'],'cloneMyTeam', 'Api\ApiController@cloneMyTeam');

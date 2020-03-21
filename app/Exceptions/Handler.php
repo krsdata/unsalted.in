@@ -17,6 +17,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use URL;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
+use Symfony\Component\Debug\Exception\FatalErrorException;
+
 
 class Handler extends ExceptionHandler
 {
@@ -70,6 +73,7 @@ class Handler extends ExceptionHandler
             $api_url = $path_info_url;
         }
 
+
          if ($exception instanceof AuthenticationException) {
 
             $data['url']        = url($path_info_url);
@@ -79,7 +83,7 @@ class Handler extends ExceptionHandler
              $this->errorLog($data, $exception);
 
             if ($api_url) {
-                return json_encode(
+                echo  json_encode(
                     [
                         'status'        => false,
                         'code'          => 500,
@@ -88,8 +92,96 @@ class Handler extends ExceptionHandler
                     ]
                 );
             } 
+            exit();
             
          }
+
+          if ($exception instanceof ErrorException) {
+
+            $data['url']        = url($path_info_url);
+            $data['message']    = $exception->getMessage() .' , line_number :'.$exception->getline();
+            $data['error_type'] = 'ErrorException';
+            
+
+             $this->errorLog($data, $exception);
+
+            if ($api_url) {
+                echo json_encode(
+                    [
+                        'status'        => false,
+                        'code'          => 500,
+                        'message'       => $exception->getMessage(),
+                        'line_number'   => $exception->getline(),
+                        'response'      => $data,
+                    ]
+                );
+            } 
+            exit();
+            
+         }
+
+          if ($exception instanceof FatalErrorException) {
+           
+            $data['url']        = url($path_info_url);
+            $data['message']    = $exception->getMessage();
+            $data['error_type'] = 'FatalErrorException';
+                 
+             $this->errorLog($data, $exception);
+
+            if ($api_url) {
+                echo json_encode(
+                    [
+                        'status'        => false,
+                        'code'          => 500,
+                        'message'       => $exception->getMessage(),
+                        'response'      => $data,
+                    ]
+                );
+            } 
+            exit();
+         }
+
+          if ($exception instanceof FatalThrowableError) { 
+                 $data['url']        = url($path_info_url);
+                $data['message']    = $exception->getMessage();
+                $data['error_type'] = 'FatalThrowableError';
+                
+                 $this->errorLog($data, $exception);
+
+                if ($api_url) {
+                    echo  json_encode(
+                        [
+                            'status'        => false,
+                            'code'          => 500,
+                            'message'       => $exception->getMessage(),
+                            'response'      => $data,
+                        ]
+                    );
+                } 
+                 exit();
+          }
+
+           if ($exception instanceof QueryException) {
+
+            $data['url']        = url($path_info_url);
+            $data['message']    = $exception->getMessage();
+            $data['error_type'] = 'QueryException';
+            
+             $this->errorLog($data, $exception);
+
+            if ($api_url) {
+                echo json_encode(
+                    [
+                        'status'        => false,
+                        'code'          => 500,
+                        'message'       => $exception->getMessage(),
+                        'response'      => $data,
+                    ]
+                );
+            } 
+            exit();
+         }
+
         return parent::render($request, $exception);
     }
 
@@ -97,7 +189,7 @@ class Handler extends ExceptionHandler
     {
         
         $data['log']        = json_encode($e);
-        $data['message']    = $e->getMessage();
+        $data['message']    = $e->getMessage() .' , line_number :'.$e->getline();
         $data['file']       = $e->getFile();
         $data['statusCode'] = 500;
        

@@ -45,8 +45,7 @@ class ApiController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }  
- 
+        }   
     } 
 
     public function joinNewContestStatus(Request $request){
