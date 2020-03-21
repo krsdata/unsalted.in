@@ -155,7 +155,7 @@ class ApiController extends BaseController
 
     public function updateUserMatchPoints(Request $request){
         
-        $matches = Matches::where('status',1)
+        $matches = Matches::where('status',3)
                         ->get();
         $tp = [];
         $data = [];
