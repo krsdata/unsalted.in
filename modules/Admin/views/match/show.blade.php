@@ -70,6 +70,81 @@
                                            @endforeach 
                                         </tbody>
                                     </table>  
+
+                                    <table class="table table-striped table-hover table-bordered" id="contact">
+                                        <thead>
+                                            <tr> <td colspan="9">
+                                               <b> <center> Contest List </center> </b>
+                                            </td> </tr>
+                                        </thead>
+                                        <thead>
+                                            <tr> 
+                                                 <th> Ctrate contest Id </th>
+                                                <th> Match Id </th>
+                                                <th> contest_type</th> 
+                                                <th> total_winning_prize </th> 
+                                                <th> entry_fees </th> 
+                                                <th> total_spots</th> 
+                                                <th> filled_spot </th> 
+                                                 <th> first_prize </th>  
+                                                 <th> cancellation </th>   
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($conetst as $key => $result)
+                                            <tr>
+                                                 <td> {{$result->id}} </td>
+                                                 <td> {{$result->match_id}} </td>
+                                                 <td> {{$result->contest_type}} </td>
+                                                <td> {{$result->total_winning_prize}} </td>
+
+                                                <td> {{$result->entry_fees}} </td>
+                                                <td> {{$result->total_spots}} </td>
+                                                <td> {{$result->filled_spot}} </td>
+                                                <td> {{$result->first_prize}} </td>
+                                                <td> {{$result->cancellation}} </td>
+                                               
+                                            </tr>
+                                           @endforeach
+                                            
+                                        </tbody>
+                                    </table>
+
+                                      <table class="table table-striped table-hover table-bordered" id="contact">
+                                        <thead>
+                                            <tr> <td colspan="9">
+                                               <b> <center> Player List </center> </b>
+                                            </td> </tr>
+                                        </thead>
+                                        <thead>
+                                            <tr>  <th> Sno.</th>
+                                                 <th> Match Id </th>
+                                                <th> PID</th> 
+                                                <th> Player Team ID </th> 
+                                                <th> Player Name </th> 
+                                                <th> Country</th> 
+                                                <th> Playing role </th> 
+                                                 <th> Nationality </th>   
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach($player as $key => $result)
+                                            <tr>
+                                                <td> {{++$key}} </td>
+                                                  <td> {{$result->match_id}} </td>
+                                                 <td> {{$result->pid}} </td>
+                                                <td> {{$result->team_id}} </td>
+
+                                                <td> {{$result->title}} </td>
+                                                <td> {{$result->country}} </td>
+                                                <td> {{$result->playing_role}} </td>
+                                                <td> {{$result->nationality}} </td> 
+                                               
+                                            </tr>
+                                           @endforeach
+                                            
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <!-- END EXAMPLE TABLE PORTLET-->
@@ -84,30 +159,5 @@
             <!-- END QUICK SIDEBAR -->
         </div>
         
-        
-     <div id="responsive" class="modal fade" tabindex="-1" data-width="300">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Contact Group</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4>Contact Group Name</h4>
-                        <p>
-                            <input type="text" class="col-md-12 form-control" name="contact_group" id="contact_group"> </p>
-                            <input type="hidden" name="contacts_id" value="">
-                    </div>
-                </div> 
-            </div>
-            <div class="modal-footer">
-            <span id="error_msg"></span>
-                <button type="button" data-dismiss="modal" class="btn dark btn-outline">Close</button>
-                <button type="button" class="btn red" id="csave"  onclick="createGroup('{{url("admin/createGroup")}}','save')" >Save</button>
-            </div>
-        </div>
-    </div>
-</div>  
+      
 @stop

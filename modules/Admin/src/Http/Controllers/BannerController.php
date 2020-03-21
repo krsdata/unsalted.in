@@ -114,7 +114,7 @@ class BannerController extends Controller {
         $banner = new Banner;
         $banner->title        =  $request->get('title');
         $banner->photo        =  $photo_name; 
-	$banner->url          =  url('storage/uploads/banner/'.$photo_name);
+	    $banner->url          =  url('storage/uploads/banner/'.$photo_name);
         $banner->description  =  $request->get('description');
         
         $banner->save();   
@@ -157,16 +157,13 @@ class BannerController extends Controller {
             $destinationPath = storage_path('uploads/banner');
             $photo->move($destinationPath, time().$photo->getClientOriginalName());
             $photo_name = time().$photo->getClientOriginalName();
-            $request->merge(['photo'=>$photo_name]);	
+            $request->merge(['photo'=>$photo_name]);
+            $banner->photo        =  $photo_name; 
+            $banner->url          =  url('storage/uploads/banner/'.$photo_name);	
         } 
 
         $banner->title         =  $request->get('title'); 
-        $banner->description           =  $request->get('description');
-
-        if(isset($photo_name))
-        { 
-	  $banner->url          =  url('storage/uploads/banner/'.$photo_name);
-        }
+        $banner->description           =  $request->get('description'); 
          
         $banner->save();    
 

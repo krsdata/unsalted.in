@@ -40,13 +40,13 @@ class ApiController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
+
         $this->date = date('Y-m-d');
         $this->token = "8740931958a5c24fed8b66c7609c1c49";
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
- 
     } 
 
     public function joinNewContestStatus(Request $request){
@@ -66,18 +66,16 @@ class ApiController extends BaseController
         $join_contests_count = \DB::table('join_contests')
                             ->where('match_id',$match_id)
                             ->where('user_id',$request->user_id)
-                            ->selectRaw('distinct contest_id')
-                            ->get()->count();
-                 
+                            ->count();
 
-        if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
+        if($cc && $cc->total_spots==$cc->filled_spot){
              return [
                 'status'=>true,
                 'code' => 200,
                 'message' => 'Contest is full',
                 'action'=>3
             ];
-        }elseif($create_teams_count > $join_contests_count){
+        }elseif($create_teams_count>$join_contests_count){
             return [
                 'status'=>true,
                 'code' => 200,
@@ -95,54 +93,42 @@ class ApiController extends BaseController
 
     }
     
-     public function prizeBreakup(Request $request){
+    public function prizeBreakup(Request $request){
 
-        $match_id   = $request->match_id;
-        $contest_id = $request->contest_id;
-        
-        $contest =  CreateContest::where('match_id',$match_id)
-                          ->where('id',$contest_id)
-                          ->get();
-                      
-        $contest->transform(function ($item, $key)   {
-                          
-                    $defaultContest  = \DB::table('prize_breakups')
-                                        ->where('default_contest_id',$item->default_contest_id)
-                                        ->where('contest_type_id',$item->contest_type)
-                                        ->get();
-                                     
-                        $rank = [];                
-                        foreach ($defaultContest as $key => $value) {
-                            $prize = $value->prize_amount;
-                            if($value->rank_from == $value->rank_upto){
-                                $rank_rang = "$value->rank_from";
-                            }else{
-                                 $rank_rang = $value->rank_from.'-'.$value->rank_upto;
-                            }
+        $array = [
+            [
+                "range"=>"1",
+                "price" => 5000
+            ],
+            [
+                "range"=>"2",
+                "price"=>1000
+            ],
+             [
+                "range"=>"3-5",
+                "price"=>300
+            ],
+             [
+                "range"=>"6-15",
+                "price"=>100
+            ]
+            ,
+             [
+                "range"=>"16-50",
+                "price"=>75
+            ]
+             ,
+             [
+                "range"=>"51-100",
+                "price"=>40
+            ] 
+        ];
 
-                            if($item->total_spots==0 && $rank_rang==1){
-
-                                $prize = round(($item->entry_fees*$item->filled_spot)*(0.25));
-
-                                \DB::table('prize_breakups')->where('id',$value->id)
-                                            ->update(['prize_amount'=>$prize]);
-                            }
-                                
-
-                            $rank[] = [
-                                    'range' => $rank_rang,
-                                    'price' => $prize
-                                    ];
-                            
-                        }
-
-            $item->rank = $rank;
-            return $item;
-                              
-        });
-          
-        $data['prizeBreakup'] = $contest[0]->rank??null ;
-            
+        $data['prizeBreakup'][] = [
+                "match_id"      => $request->match_id??null,
+                "contest_id"    => $request->contest_id??null,
+                "rank"  => $array 
+            ];
 
 
         return [
@@ -879,10 +865,13 @@ class ApiController extends BaseController
             $createContest = CreateContest::firstOrNew(
                     [
                         'match_id'          =>  $match_id,
+                        'filled_spot'       =>  0,
                         'contest_type'      =>  $result->contest_type,
+                        'total_winning_prize' =>$result->total_winning_prize,
                         'entry_fees'        =>  $result->entry_fees,
                         'total_spots'       =>  $result->total_spots,
-                        'first_prize'       =>  $result->first_prize
+                        'first_prize'       =>  $result->first_prize,
+                        'winner_percentage' =>  $result->winner_percentage
 
                     ]
                 );  
@@ -895,7 +884,6 @@ class ApiController extends BaseController
             $createContest->first_prize         =   $result->first_prize;
             $createContest->winner_percentage   =   $result->winner_percentage;
             $createContest->cancellation        =   $result->cancellation;
-            $createContest->default_contest_id  =   $result->id;
             $createContest->save();
             return true;
         }       
@@ -928,7 +916,6 @@ class ApiController extends BaseController
             $createContest->first_prize         =   $result->first_prize;
             $createContest->winner_percentage   =   $result->winner_percentage;
             $createContest->cancellation        =   $result->cancellation;
-            $createContest->default_contest_id  =   $result->id;
             $createContest->save();
 
             $default_contest_id = \DB::table('default_contents')
@@ -946,7 +933,7 @@ class ApiController extends BaseController
     }
     // get contest details by match id
     public function getContestByMatch(Request $request){
- 
+
         $match_id =  $request->match_id;
         
         $matchVald = Matches::where('match_id',$request->match_id)->count();
@@ -959,7 +946,12 @@ class ApiController extends BaseController
                 'message' => 'match id is invalid'
                 
             ];
-        } 
+        }
+
+        $contest = CreateContest::with('contestType')
+                    ->where('match_id',$match_id)
+                    ->orderBy('contest_type','ASC')
+                    ->get();
         
         $validator = Validator::make($request->all(), [
               //  'match_id' => 'required' 
@@ -981,39 +973,27 @@ class ApiController extends BaseController
             );
         }
 
-        $contest = CreateContest::with('contestType')
-                    ->where('match_id',$match_id)
-                    ->orderBy('contest_type','ASC')
-                    ->get();
+        
         if($contest){
             $matchcontests = [];
             foreach ($contest as $key => $result) {  
                    // dd($result);
-                    $data2['totalSpots'] =   $result->total_spots;
-                    $data2['firstPrice'] =   $result->first_prize;
-                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
-                    if($result->total_spots==0)
-                    {
-                       $data2['totalSpots'] =   0;
-                       
-                       $twp = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-                       $data2['totalWinningPrize'] = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-
-                       $data2['firstPrice'] =   round($twp*(0.2));
-                    }
-                    elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
+                    if($result->filled_spot==$result->total_spots)
                     {
                         continue;
                     }
                     $data2['contestId'] =    $result->id;
-                    
+                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
                     $data2['entryFees'] =    $result->entry_fees;
-                    
+                    $data2['totalSpots'] =   $result->total_spots;
                     $data2['filledSpots'] =  $result->filled_spot;
-                   
+                    $data2['firstPrice'] =   $result->first_prize;
                     $data2['winnerPercentage'] = $result->winner_percentage;
                     $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
                     $data2['cancellation'] = $result->contestType->cancellable; 
+
+
+
                 $matchcontests[$result->contest_type][] = [
                     'contestTitle'=>$result->contestType->contest_type,
                     'contestSubTitle'=>$result->contestType->description,
@@ -1021,7 +1001,6 @@ class ApiController extends BaseController
                 ]; 
             }
             $data = [];
-
              foreach ($matchcontests as $key => $value) {
                    
                   foreach ($value as $key2 => $value2) {
@@ -1045,6 +1024,7 @@ class ApiController extends BaseController
                             ->where('user_id',$request->user_id)
                             ->select('id as team_id')
                             ->get();
+
 
 
             $myjoinedContest = $this->myJoinedContest($request->match_id,$request->user_id);
@@ -1529,37 +1509,37 @@ class ApiController extends BaseController
 
 
         $created_team = \DB::table('create_teams')
-                        ->where('user_id',$user) 
-                        ->select('match_id','user_id','id')
+                        ->where('user_id',$user)
+                        //->where('match_id',$request->match_id)
                         ->orderBy('id','DESC')
-                        ->distinct('match_id')
-                        ->get(); 
+                        ->distinct()
+                        ->limit(3)
+                        ->get(['match_id','id','user_id']);
 
         if($created_team->count()){  
+
             foreach ($created_team as $key => $join_contest) {
                 # code...
                $jmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
 
                $join_match = $jmatches->first();
-               $join_match_count[] = $jmatches->count();
+               $join_match_count = $jmatches->count();
             //   $join_contest_count = $jmatches->count();
 
                $join_contests_count =  \DB::table('join_contests')
                             ->where('user_id',$user)
                             ->where('match_id',$join_contest->match_id)
-                            ->selectRaw('distinct contest_id')
-                            ->get();
-                          
-                $join_match->total_joined_team   =  count($join_match_count);
-                $join_match->total_join_contests =  $join_contests_count->count();
-                $jm[$join_contest->match_id] = $join_match;
-            }
+                            ->count();
 
+                $join_match->total_joined_team   = $join_match_count;
+                $join_match->total_join_contests = $join_contests_count;
+                $jm[] = $join_match;
+            }
             $data['matchdata'][] = [
                     'viewType'=>1,
                    // 'total_joined_team' => $join_match_count,
                    // 'total_join_contests' => $join_contests_count,
-                    'joinedmatches'=>array_values($jm)
+                    'joinedmatches'=>$jm
                 ];
             
         }                                          
@@ -1568,7 +1548,7 @@ class ApiController extends BaseController
                 ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
                 ->orderBy('timestamp_start','ASC')
              ->where('timestamp_start','>=' , time())
-             ->limit(10)
+             ->limit(7)
             ->get();
 
 
@@ -1844,6 +1824,7 @@ class ApiController extends BaseController
         $created_team_id    = $request->created_team_id;
         $contest_id         = $request->contest_id;
 
+
          $validator = Validator::make($request->all(), [
                 'match_id' => 'required',
                 'user_id' => 'required',
@@ -1877,7 +1858,7 @@ class ApiController extends BaseController
                                 ->where('user_id',$user_id)
                                 ->where('contest_id',$contest_id)
                                 ->get();
-         
+        
         if(count($created_team_id)==1 AND  $check_join_contest->count()==1){
             return [
                 'status'=>false,
@@ -1886,10 +1867,11 @@ class ApiController extends BaseController
                 
             ];
         }
+       // usleep(100000);
         
         $cc = CreateContest::find($contest_id);
 
-        if($cc && ($cc->total_spots!=0 && $cc->filled_spot>=$cc->total_spots)){
+        if($cc && $cc->filled_spot>=$cc->total_spots){
             return [
                 'status'=>false,
                 'code' => 201,
@@ -1916,10 +1898,9 @@ class ApiController extends BaseController
                     ->whereIn('id',$created_team_id)->count();
 
         if($ct)
-        {  
-            \DB::beginTransaction();
+        {
             foreach ($created_team_id as $key => $ct_id) {
-              
+                \DB::beginTransaction();
 
                 $check_join_contest = \DB::table('join_contests')
                                 ->where('created_team_id',$ct_id)
@@ -1927,24 +1908,23 @@ class ApiController extends BaseController
                                 ->where('user_id',$user_id)
                                 ->where('contest_id',$contest_id)
                                 ->first();
-                                
-                if($check_join_contest){ 
-
+                if($check_join_contest){
                     continue;
-                } 
+                }
+
                 $data['match_id'] = $match_id;
                 $data['user_id'] = $user_id;
                 $data['created_team_id'] = $ct_id;
                 $data['contest_id'] = $contest_id;
                 
-                $ctid  = CreateTeam::find($ct_id); 
-                $data['team_count'] = $ctid->team_count??null;
+                // increase spot count
+                $cc = CreateContest::find($contest_id);
 
-                if($cc->total_spots==0 || $cc->total_spots > $cc->filled_spot){
-                   
-                    $cc->filled_spot = CreateTeam::where('match_id',$match_id)
-                                        ->where('team_join_status',1)->count();
+                if($cc->total_spots>$cc->filled_spot){
+                    $cc_count = $cc->filled_spot+1;
+                    $cc->filled_spot = $cc_count;
                     $cc->save();
+
                     // payment deduct
 
                     $total_fee                  =  $cc->entry_fees;
@@ -1957,33 +1937,26 @@ class ApiController extends BaseController
                     $wallets->bonus_amount = $wallets->bonus_amount-$deduct_from_bonus;
                     $wallets->save();
 
-                }else{
 
+
+                }else{
                     continue;
                 }
 
                 $jcc = \DB::table('join_contests')
                         ->where('match_id',$match_id)
                         ->where('contest_id',$contest_id)
-                        ->count(); 
-                if($jcc<=$cc->total_spots || $cc->total_spots==0){
-                    
-                $t =   JoinContest::updateOrCreate($data,$data); 
- 
+                        ->count();
+                if($jcc<=$cc->total_spots){
+                    \DB::table('join_contests')->insert($data);
                 }        
                 // End spot count
                 $cont[] = $data;
                 $ct = \DB::table('create_teams')
-                       ->where('id',$ct_id)
-                  ->update(['team_join_status'=>1]); 
-
-                $cc->filled_spot = CreateTeam::where('match_id',$match_id)
-                                        ->where('team_join_status',1)->count();
-                $cc->save();
-              
+                        ->where('id',$ct_id)
+                    ->update(['team_join_status'=>1]);
+                \DB::commit();
             }
-             \DB::commit();
-
         }else{
             $cont = ["error"=>"contest id not found"];
         }    
@@ -2019,8 +1992,16 @@ class ApiController extends BaseController
 
         $join_contests = JoinContest::where('user_id',$request->user_id)
                             ->where('match_id',$match_id)
-                            ->pluck('contest_id')->toArray(); 
-                           
+                            ->pluck('contest_id')->toArray();
+                            
+
+        $contest = CreateContest::with('contestType')
+                    ->where('match_id',$match_id)
+                    ->whereIn('id',$join_contests)
+                    ->orderBy('contest_type','ASC')
+                    ->get();
+
+        
         $validator = Validator::make($request->all(), [
               //  'match_id' => 'required' 
             ]); 
@@ -2041,48 +2022,29 @@ class ApiController extends BaseController
             );
         }
 
-        $contest = CreateContest::with('contestType')
-                    ->where('match_id',$match_id)
-                    ->whereIn('id',$join_contests)
-                    ->orderBy('contest_type','ASC')
-                    ->get();
- 
+        
         if($contest){
             $matchcontests = [];
+            $myjoinedContest = $this->myJoinedTeam($request->match_id,$request->user_id);
             
-            foreach ($contest as $key => $result) { 
-                    $myjoinedContest = $this->myJoinedTeam($request->match_id,$request->user_id,$result->id);
-             
+            foreach ($contest as $key => $result) {  
                    // dd($result);
-                    $data2['totalSpots'] =   $result->total_spots;
-                    $data2['firstPrice'] =   $result->first_prize;
-                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
-                    if($result->total_spots==0)
-                    {
-                       $data2['totalSpots'] =   0;
-                       
-                       $twp = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-                       $data2['totalWinningPrize'] = round(($result->filled_spot)*($result->entry_fees)*(0.5));
-
-                       $data2['firstPrice'] =   round($twp*(0.2));
-                    }
-                    elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
+                    if($result->filled_spot==$result->total_spots)
                     {
                         continue;
                     }
-
                     $data2['contestTitle'] = $result->contestType->contest_type;
                     $data2['contestSubTitle'] =$result->contestType->description;
                     $data2['contestId'] =    $result->id;
-                  //  $data2['totalWinningPrize'] =    $result->total_winning_prize;
+                    $data2['totalWinningPrize'] =    $result->total_winning_prize;
                     $data2['entryFees'] =    $result->entry_fees;
-                   // $data2['totalSpots'] =   $result->total_spots;
+                    $data2['totalSpots'] =   $result->total_spots;
                     $data2['filledSpots'] =  $result->filled_spot;
-                  //  $data2['firstPrice'] =   $result->first_prize;
+                    $data2['firstPrice'] =   $result->first_prize;
                     $data2['winnerPercentage'] = $result->winner_percentage;
                     $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
-                    $data2['cancellation'] = $result->cancellable; 
-                    $data2['maxEntries'] =  $result->contestType->max_entries;
+                    $data2['cancellation'] = $result->contestType->cancellable; 
+                    $data2['maxEntries'] =  11;
                     $data2['joinedTeams'] = $myjoinedContest;
 
 
@@ -2213,23 +2175,22 @@ class ApiController extends BaseController
         }
     }
 
-    public function myJoinedTeam($match_id=null,$user_id=null,$contest_id=null)
+    public function myJoinedTeam($match_id=null,$user_id=null)
     {
-/*
+
         $check_my_contest = \DB::table('join_contests')
                 ->where('match_id',$match_id)
                 ->where('user_id',$user_id);
 
 
-        $created_team_id = $check_my_contest->pluck('created_team_id')->toArray();
-        $contest_id      = $check_my_contest->pluck('contest_id')->toArray();
-        $myContest       =     $check_my_contest->first();*/
+        $contest_id = $check_my_contest->pluck('created_team_id');
+        $myContest  =     $check_my_contest->first();
 
-    
+ 
         $joinMyContest =  JoinContest::with('createTeam','contest')
                             ->where('match_id',$match_id)
                             ->where('user_id',$user_id)
-                            ->where('contest_id',$contest_id)
+                            ->whereIn('created_team_id',$contest_id)
                             ->get();
         $userVald = User::find($user_id);
         if($joinMyContest){
@@ -2245,7 +2206,6 @@ class ApiController extends BaseController
                     $data2['rank']      = $result->createTeam->rank;
                     $data2['points']    = $result->createTeam->points; 
                     $matchcontests[] =  $data2 ;
-                    $data2 = [];
             }
               
              return $matchcontests;

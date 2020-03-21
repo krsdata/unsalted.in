@@ -4,7 +4,7 @@ namespace Modules\Admin\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class DefaultContest extends Model {
+class PrizeBreakups extends Model {
 
    
     /**
@@ -12,7 +12,7 @@ class DefaultContest extends Model {
      *
      * @var string
      */
-    protected $table = 'default_contents';
+    protected $table = 'prize_breakups';
     /**
      * The attributes that are mass assignable.
      *
@@ -41,21 +41,22 @@ class DefaultContest extends Model {
      * @var array
      */
     protected $fillable = [
-            'contest_type',
-            'entry_fees',
-            'total_spots',
-            'filled_spot',
-            'first_prize',
-            'winner_percentage',
-            'cancellation',
-            'total_winning_prize',
-            'match_id',
-            'prize_percentage'
+            'default_contest_id',
+            'contest_type_id',
+            'rank_from',
+            'rank_upto',
+            'prize_amount',
+            'match_id' 
         ];  // All field of user table here
 
 
     public function contestType()
     {
-        return $this->hasOne('Modules\Admin\Models\ContestType','id','contest_type');
+        return $this->hasOne('Modules\Admin\Models\ContestType','id','contest_type_id');
+    }
+
+     public function defaultContest()
+    {
+        return $this->hasOne('Modules\Admin\Models\DefaultContest','id','default_contest_id');
     }
 }

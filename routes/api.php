@@ -80,7 +80,9 @@ Route::group([
 	Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');		
 
 	Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
+	Route::match(['post','get'],'cloneMyTeam', 'Api\ApiController@cloneMyTeam');
 
+	
 	Route::match(['post','get'],'createTeam', 'Api\ApiController@createTeam');
 
 	Route::match(['post','get'],'getMyTeam', 'Api\ApiController@getMyTeam');
@@ -93,7 +95,14 @@ Route::group([
 	Route::match(['post','get'],'getMyContest', 'Api\ApiController@getMyContest');
 
 	Route::match(['post','get'],'updateMatchDataById/{match_id}', 'Api\ApiController@updateMatchDataById');
+	Route::match(['post','get'],'updateMatchInfo', 'Api\ApiController@updateMatchInfo');
 
+
+	Route::match(['post','get'],'updateLiveMatchFromApp', 'Api\ApiController@updateLiveMatchFromApp');
+
+	
+	Route::match(['post','get'],'prizeDistribution', 'Api\PaymentController@prizeDistribution');	
+	
 	Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
 	Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');	
 	Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
@@ -103,10 +112,21 @@ Route::group([
 	Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
 	Route::match(['post','get'],'updatePoints', 'Api\ApiController@updatePoints');
 	Route::match(['post','get'],'getPointsByMatch', 'Api\ApiController@getPointsByMatch');
+	
+	Route::match(['post','get'],'updatePointAfterComplete', 'Api\ApiController@updatePointAfterComplete');
+	
 	Route::match(['post','get'],'updateUserMatchPoints', 'Api\ApiController@updateUserMatchPoints');
 
 	Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat'); 
+	Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@prizeBreakup'); 
 	
+	Route::match(['post','get'],'joinNewContestStatus', 'Api\ApiController@joinNewContestStatus'); 
+	
+	Route::match(['post','get'],'getScore', 'Api\ApiController@getScore'); 
+	
+	
+	
+
 
 		    
 		

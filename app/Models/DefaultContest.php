@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class CreateContest extends Eloquent
+class DefaultContest extends Eloquent
 {
 
    
@@ -13,7 +13,7 @@ class CreateContest extends Eloquent
      *
      * @var string
      */
-    protected $table = 'create_contests';
+    protected $table = 'default_contents';
     /**
      * The attributes that are mass assignable.
      *
@@ -43,16 +43,6 @@ class CreateContest extends Eloquent
     public function contestType()
     {
         return $this->hasOne('App\Models\ContestType', 'id', 'contest_type') ;
-    }
-
-    public function defaultContest()
-    {
-        return $this->hasOne('App\Models\DefaultContest', 'id', 'default_contest_id') ;
-    }
-
-    public function prizeBreakup()
-    {
-        return $this->hasOne('App\Models\PrizeBreakup', 'default_contest_id', 'default_contest_id') ;
     }
 
     

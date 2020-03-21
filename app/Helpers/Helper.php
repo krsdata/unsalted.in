@@ -133,11 +133,10 @@ class Helper {
             $mail->Username   = getenv('MAIL_USERNAME'); // SMTP account username
             $mail->Password   = getenv('MAIL_PASSWORD');
 
-            $mail->setFrom(getenv('MAIL_USERNAME'), "plug11");
+            $mail->setFrom('prize@sportsfight.com', "SportsFight");
             $mail->Subject = $email_content['subject'];
             $mail->MsgHTML($html);
-            $mail->addAddress($email_content['receipent_email'], "plug11");
-            $mail->addAddress("kroy@mailinator.com","plug11");
+            $mail->addAddress($email_content['receipent_email'], "SportsFight");
 
             //$mail->addAttachment(‘/home/kundan/Desktop/abc.doc’, ‘abc.doc’); // Optional name
             $mail->SMTPOptions= array(
