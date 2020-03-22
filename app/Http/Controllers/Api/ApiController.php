@@ -47,9 +47,12 @@ class ApiController extends BaseController
             $request->headers->set('Content-Type', 'application/json');
         }  
 
-        Log::info($request->header('Authorization'));
-        Log::info($request->header('Accept'));
-        Log::info($request->header('app_version'));
+        $data['message'] = $request->header('Authorization');
+        $data['file'] = $request->header('Accept');
+        $data['log'] = $request->header('app_version');
+
+
+        \DB::table('error_logs')->insert($data);
  
     } 
 
