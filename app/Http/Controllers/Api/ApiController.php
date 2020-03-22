@@ -48,6 +48,53 @@ class ApiController extends BaseController
         }   
     } 
 
+    public function apkUpdate(Request $request ){
+
+        $version_code = $request->version_code;
+
+        if($version_code){
+
+           $apk_update_status = \DB::table('apk_updates')
+                        ->where('version_code','>',$version_code)
+                        ->first();
+            if($apk_update_status){
+                return [
+                    'status'        =>  true,
+                    'code'          =>  200,
+                    'message'       =>  $apk_update_status->message?$apk_update_status->message:'Update is available',
+                    'url'           =>  $apk_update_status->url,
+                    'title'         =>  $apk_update_status->title,
+                    'url'           =>  $apk_update_status->url,
+                    'release_note'  =>  $apk_update_status->release_note
+                ];
+            }else{
+                return [
+                    'status'        =>  false,
+                    'code'          =>  201,
+                    'message'       =>  'No update available',
+                    'url'           =>  null,
+                    'title'         =>  null,
+                    'url'           =>  null,
+                    'release_note'  =>  null
+                ];
+            }
+
+        }else{
+            return [
+                    'status'        =>  false,
+                    'code'          =>  201,
+                    'message'       =>  'No update available',
+                    'url'           =>  null,
+                    'title'         =>  null,
+                    'url'           =>  null,
+                    'release_note'  =>  null
+                ];
+        }
+
+
+
+    }
+
     public function joinNewContestStatus(Request $request){
 
         $match_id   = $request->match_id;

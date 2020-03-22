@@ -60,7 +60,8 @@ Route::middleware('auth:api')->group( function () {
 	    'prefix' => 'v2'
 	], function()
     {
-
+    	Route::match(['post','get'],'apkUpdate', 'Api\ApiController@apkUpdate');
+		
 		Route::match(['post','get'],'deviceNotification', 'Api\UserController@deviceNotification');
 		Route::match(['post','get'],'sendPushNotification', 'Api\UserController@sendPushNotification');
 
