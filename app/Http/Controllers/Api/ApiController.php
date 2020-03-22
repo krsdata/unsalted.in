@@ -1583,7 +1583,7 @@ class ApiController extends BaseController
                         ->where('user_id',$user) 
                         ->select('match_id','user_id','id')
                         ->orderBy('id','DESC')
-                        ->distinct('match_id')
+                        ->selectRaw('distinct match_id')
                         ->get(); 
 
         if($created_team->count()){  
