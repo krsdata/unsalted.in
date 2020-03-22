@@ -113,7 +113,7 @@ Route::middleware('auth:api')->group( function () {
 		Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
 		Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');	
 		Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
-		Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
+		Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@prizeBreakup');
 		Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat'); 
 		Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
 	
