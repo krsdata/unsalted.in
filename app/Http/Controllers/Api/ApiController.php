@@ -43,11 +43,12 @@ class ApiController extends BaseController
         $this->date = date('Y-m-d');
         $this->token = "8740931958a5c24fed8b66c7609c1c49";
 
+        $request->headers->set('Accept', 'application/json');
+
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
-
-        
+ 
  
     } 
 
