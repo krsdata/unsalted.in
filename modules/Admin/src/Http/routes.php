@@ -61,7 +61,7 @@
                 ]
         );
 
-         Route::bind('errorLog', function ($value, $route) {
+        Route::bind('errorLog', function ($value, $route) {
             return Modules\Admin\Models\ErrorLog::find($value);
         });
 
@@ -77,6 +77,26 @@
                 'store' => 'errorLog.store',
                 'index' => 'errorLog',
                 'create' => 'errorLog.create',
+            ]
+                ]
+        );
+
+        Route::bind('apkUpdate', function ($value, $route) {
+            return Modules\Admin\Models\ApkUpdate::find($value);
+        });
+
+        Route::resource(
+            'admin/apkUpdate',
+            'Modules\Admin\Http\Controllers\ApkUpdateController',
+            [
+            'names' => [
+                'edit' => 'apkUpdate.edit',
+                'show' => 'apkUpdate.show',
+                'destroy' => 'apkUpdate.destroy',
+                'update' => 'apkUpdate.update',
+                'store' => 'apkUpdate.store',
+                'index' => 'apkUpdate',
+                'create' => 'apkUpdate.create',
             ]
                 ]
         );
