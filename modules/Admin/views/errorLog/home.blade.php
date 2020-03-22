@@ -68,7 +68,11 @@
                                             <tr>
                                              <th>  {{++$key}} </th>
                                                 <td> 
-                                                Error Date :  {!! Carbon\Carbon::parse($result->created_at)->format('d M, h:i A'); !!} <br>
+                                                Error Date :   {!!
+                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->updated_at, 'UTC')
+                                                        ->setTimezone('Asia/Kolkata')
+                                                        ->format('H:i:s A')
+                                                    !!}<br>
                                                     {{$result->message}}  </td> 
                                                    
                                                     <td>  <a href="{{ route('errorLog.show',$result->id)}}">
