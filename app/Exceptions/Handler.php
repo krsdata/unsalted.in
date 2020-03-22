@@ -72,8 +72,7 @@ class Handler extends ExceptionHandler
         if (strpos($path_info_url, 'api/v2') !== false) {
             $api_url = $path_info_url;
         }
-
-
+         
          if ($exception instanceof AuthenticationException) {
 
             $data['url']        = url($path_info_url);
@@ -187,9 +186,9 @@ class Handler extends ExceptionHandler
 
     public function errorLog($data, $e)
     {
-        
-        $data['log']        = json_encode($e);
-        $data['message']    = $e->getMessage() .' , line_number :'.$e->getline();
+   
+        $data['log']        =  json_encode($e);
+        $data['message']    = $e->getMessage().' line number : '.$e->getline()??null;
         $data['file']       = $e->getFile();
         $data['statusCode'] = 500;
        

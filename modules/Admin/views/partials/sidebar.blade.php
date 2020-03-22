@@ -289,8 +289,27 @@
                                                 Create Page
                                             </span>
                                         </a>
+                                        </li>  
+                                </ul>
+                            </li>
+
+
+                             <li class="nav-item start active {{ (isset($page_title) && $page_title=='ErrorLog')?'open':'' }}">
+                                    <a href="javascript:;" class="nav-link nav-toggle">
+                                        <i class="glyphicon glyphicon-th"></i>
+                                        <span class="title">Error Message </span>
+                                        <span class="arrow {{ (isset($page_title) && $page_title=='ErrorLog')?'open':'' }}"></span>
+                                    </a>
+                                    <ul class="sub-menu" style="display: {{ (isset($page_title) && $page_title=='ErrorLog')?'block':'none' }}">
+                                        <li class="nav-item  {{ (isset($page_title) && $page_action=='View ErrorLog')?'active':'' }}">
+                                        <a href="{{ route('errorLog') }}" class="nav-link ">
+                                           <i class="glyphicon glyphicon-eye-open"></i> 
+                                            <span class="title">
+                                                View ErrorLog
+                                            </span>
+                                        </a>
                                         </li> 
-                                         
+ 
                                 </ul>
                             </li>
                         

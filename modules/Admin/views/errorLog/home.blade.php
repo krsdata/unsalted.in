@@ -57,39 +57,35 @@
                                         <thead>
                                             <tr>
                                                  <th>Sno.</th>
-                                                <th> message </th>
-                                                <th> error_type </th> 
-                                                <th> url </th> 
-                                                <th> view Details </th>  
-                                                 <th>statusCode</th>
-                                                <th>Created date</th> 
-                                                <th>Action</th> 
+                                                <th> Message </th> 
+                                               
+                                                 <th> Details </th> 
+                                                  <th> Error Type </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         @foreach($errorLog as $key => $result)
                                             <tr>
                                              <th>  {{++$key}} </th>
-                                                <td> {{$result->message}} </td>
-                                                 <td> {{$result->error_type}} </td>
-                                                 <td> {{$result->url}} </td>
+                                                <td> 
+                                                Error Date :  {!! Carbon\Carbon::parse($result->created_at)->format('d M, h:i A'); !!} <br>
+                                                    {{$result->message}}  </td> 
+                                                   
                                                     <td>  <a href="{{ route('errorLog.show',$result->id)}}">
-                                                            <i class="fa fa-eye" title="details"></i> 
+                                                          <i class="fa fa-eye" title="details"></i> 
                                                         </a> </td> 
  
-                                                        <td> {{$result->statusCode}} </td> 
-                                                     <td>
-                                                        {!! Carbon\Carbon::parse($result->created_at)->format('d-m-Y'); !!}
-                                                    </td>
+                                                       <td> {{$result->error_type}}</td>
+                                                   
                                                     
-                                                    <td> 
+                                                    <!-- <td> 
                                                       
                                                         {!! Form::open(array('class' => 'form-inline pull-left deletion-form', 'method' => 'DELETE',  'id'=>'deleteForm_'.$result->id, 'route' => array('errorLog.destroy', $result->id))) !!}
                                                         <button class='delbtn btn btn-danger btn-xs' type="submit" name="remove_levels" value="delete" id="{{$result->id}}"><i class="fa fa-fw fa-trash" title="Delete"></i></button>
                                                         
                                                          {!! Form::close() !!}
 
-                                                    </td>
+                                                    </td> -->
                                                
                                             </tr>
                                            @endforeach
