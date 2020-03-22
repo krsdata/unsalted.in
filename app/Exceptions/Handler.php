@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
     {   
         $headers = getallheaders();
        
-       echo json_encode($headers);
+       //echo json_encode($headers);
    
         $data2['message']    = json_encode($headers);
         $data2['file']       = $request->header('Accept');

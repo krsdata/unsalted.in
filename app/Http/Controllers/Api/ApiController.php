@@ -1580,11 +1580,11 @@ class ApiController extends BaseController
 
 
         $created_team = \DB::table('create_teams')
-                        ->where('user_id',$user) 
-                        ->select('match_id','user_id','id')
-                        ->orderBy('id','DESC')
-                        ->selectRaw('distinct match_id')
+                        ->selectRaw('distinct match_id,user_id,id')
+                        ->where('user_id',$user)  
+                        ->orderBy('id','DESC') 
                         ->get(); 
+     
 
         if($created_team->count()){  
             foreach ($created_team as $key => $join_contest) {
@@ -1605,7 +1605,7 @@ class ApiController extends BaseController
                 $join_match->total_join_contests =  $join_contests_count->count();
                 $jm[$join_contest->match_id] = $join_match;
             }
-
+             
             $data['matchdata'][] = [
                     'viewType'=>1,
                    // 'total_joined_team' => $join_match_count,
