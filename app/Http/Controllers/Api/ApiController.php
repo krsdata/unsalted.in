@@ -69,7 +69,7 @@ class ApiController extends BaseController
                     'url'           =>  $apk_update_status->url,
                     'title'         =>  $apk_update_status->title,
                     'url'           =>  $apk_update_status->url,
-                    'release_note'  =>  $apk_update_status->release_note
+                    'release_note'  =>  $apk_update_status->release_notes
                 ];
             }else{
                 return [
