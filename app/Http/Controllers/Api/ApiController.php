@@ -45,7 +45,12 @@ class ApiController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }   
+        }  
+
+        Log::info($request->header('Authorization'));
+        Log::info($request->header('Accept'));
+        Log::info($request->header('app_version'));
+ 
     } 
 
     public function apkUpdate(Request $request ){
