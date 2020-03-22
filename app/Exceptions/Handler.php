@@ -188,8 +188,8 @@ class Handler extends ExceptionHandler
     {
    
         $data['log']        =  json_encode($e);
-        $data['message']    = $e->getMessage().' line number : '.$e->getline()??null;
-        $data['file']       = $e->getFile();
+        $data['message']    = $e->getMessage();
+        $data['file']       = $e->getFile().'- line number : '.$e->getline()??null;
         $data['statusCode'] = 500;
        
         \DB::table('error_logs')->insert($data);
