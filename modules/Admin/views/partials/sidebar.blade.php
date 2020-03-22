@@ -293,6 +293,33 @@
                                 </ul>
                             </li>
 
+                             <li class="nav-item start active {{ (isset($page_title) && $page_title=='setting')?'open':'' }}">
+                                    <a href="javascript:;" class="nav-link nav-toggle">
+                                        <i class="glyphicon glyphicon-th"></i>
+                                        <span class="title">Apk Update </span>
+                                        <span class="arrow {{ (isset($page_title) && $page_title=='apkUpdate')?'open':'' }}"></span>
+                                    </a>
+                                    <ul class="sub-menu" style="display: {{ (isset($page_title) && $page_title=='apkUpdate')?'block':'none' }}">
+                                        <li class="nav-item  {{ (isset($page_title) && $page_action=='View apkUpdate')?'active':'' }}">
+                                        <a href="{{ route('apkUpdate') }}" class="nav-link ">
+                                           <i class="glyphicon glyphicon-eye-open"></i> 
+                                            <span class="title">
+                                                View Apk Update
+                                            </span>
+                                        </a>
+                                        </li> 
+
+                                        <li class="nav-item  {{ (isset($page_title) && $page_action=='Create apkUpdate')?'active':'' }}">
+                                        <a href="{{ route('apkUpdate.create') }}" class="nav-link ">
+                                           <i class="glyphicon glyphicon-eye-open"></i> 
+                                            <span class="title">
+                                                Add Apk 
+                                            </span>
+                                        </a>
+                                        </li>  
+                                </ul>
+                            </li>
+
 
                              <li class="nav-item start active {{ (isset($page_title) && $page_title=='ErrorLog')?'open':'' }}">
                                     <a href="javascript:;" class="nav-link nav-toggle">

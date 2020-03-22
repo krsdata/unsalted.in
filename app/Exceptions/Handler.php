@@ -71,11 +71,11 @@ class Handler extends ExceptionHandler
        
        //echo json_encode($headers);
    
-        $data2['message']    = json_encode($headers);
-        $data2['file']       = $request->header('Accept');
-        $data2['log']        = $request->header('app_version');
+        // $data2['message']    = json_encode($headers);
+        // $data2['file']       = $request->header('Accept');
+        // $data2['log']        = $request->header('app_version');
 
-        \DB::table('error_logs')->insert($data2);
+        // \DB::table('error_logs')->insert($data2);
 
 
         $path_info_url = $request->getpathInfo();

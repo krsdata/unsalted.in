@@ -28,14 +28,14 @@
                     <div class="portlet-title">
                         <div class="caption">
                             <i class="icon-settings font-red"></i>
-                            <span class="caption-subject font-red sbold uppercase">Create   apkUpload</span>
+                            <span class="caption-subject font-red sbold uppercase">Create   apkUpdate</span>
                         </div> 
                     </div>
                     <div class="portlet-body">
                         <!-- BEGIN FORM-->
                     
-                      {!! Form::model($apkUpload, ['route' => ['apkUpload.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
-                        @include('packages::apkUpload.form')
+                      {!! Form::model($apkUpdate, ['route' => ['apkUpdate.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
+                        @include('packages::apkUpdate.form')
                       
                       {!! Form::close() !!}   
                         <!-- END FORM-->

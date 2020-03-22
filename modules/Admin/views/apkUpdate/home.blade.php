@@ -78,7 +78,7 @@
                                                   <td> {{$result->message}} </td>
                                                    <td> {{$result->release_notes}} </td>
                                                 <td>
-                                                <a href="{{$result->release_notes}}" target="_blank" >
+                                                <a href="{{$result->url}}" target="_blank" >
                                                     Dwonload apk
                                                  </a>  </td>
                                                 

@@ -33,8 +33,8 @@
                             </div>
                             <div class="portlet-body">
                                 <!-- BEGIN FORM-->   
-                            {!! Form::model($apkUpload, ['method' => 'PATCH', 'route' => ['apkUpload.update', $apkUpload->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
-                                @include('packages::apkUpload.form', compact('apkUpload'))
+                            {!! Form::model($apkUpdate, ['method' => 'PATCH', 'route' => ['apkUpdate.update', $apkUpdate->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
+                                @include('packages::apkUpdate.form', compact('apkUpdate'))
                             {!! Form::close() !!} 
                                 <!-- END FORM-->
                             </div>

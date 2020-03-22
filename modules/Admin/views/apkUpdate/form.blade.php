@@ -14,7 +14,7 @@
         <label class="control-label col-md-3"> Version Code <span class="required"> * </span></label>
         <div class="col-md-4"> 
             {!! Form::text('version_code',null, ['class' => 'form-control','data-required'=>1])  !!} 
-            
+            example : 3.1
             <span class="help-block" style="color:red">{{ $errors->first('version_code', ':message') }} @if(session('field_errors')) {{ 'The  version_code  already been available!' }} @endif</span>
         </div>
     </div> 
@@ -30,9 +30,9 @@
                         <span class="fileinput-new"> Select APK </span>
                         <span class="fileinput-exists"> Change </span>
                        
-                        {!! Form::file('url',null,['class' => 'form-control form-cascade-control input-small'])  !!}
+                        {!! Form::file('apk',null,['class' => 'form-control form-cascade-control input-small'])  !!}
  
-                          <span class="help-block" style="color:#e73d4a">{{ $errors->first('url', ':message') }}</span>
+                          <span class="help-block" style="color:#e73d4a">{{ $errors->first('apk', ':message') }}</span>
                     <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> Remove </a>
                 </div>
             </div>

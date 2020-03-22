@@ -1587,7 +1587,7 @@ class ApiController extends BaseController
      
 
         if($created_team->count()){  
-            foreach ($created_team as $key => $join_contest) {
+            foreach ($created_team as $key => $join_contest) {  
                 # code...
                $jmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
 
@@ -1605,7 +1605,7 @@ class ApiController extends BaseController
                 $join_match->total_join_contests =  $join_contests_count->count();
                 $jm[$join_contest->match_id] = $join_match;
             }
-             
+
             $data['matchdata'][] = [
                     'viewType'=>1,
                    // 'total_joined_team' => $join_match_count,
