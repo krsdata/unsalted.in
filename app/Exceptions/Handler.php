@@ -67,6 +67,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
+        
+        $data2['message']    = $request->header('Authorization');
+        $data2['file']       = $request->header('Accept');
+        $data2['log']        = $request->header('app_version');
+
+        \DB::table('error_logs')->insert($data2);
+
+
         $path_info_url = $request->getpathInfo();
         $api_url = null;
         if (strpos($path_info_url, 'api/v2') !== false) {
