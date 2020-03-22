@@ -83,9 +83,9 @@ class ErrorLogController extends Controller {
                            $query->orWhere('url', 'LIKE', "%$search%");
                         }
                         
-                    })->Paginate($this->record_per_page);
+                    })->orderBy('id','desc')->Paginate($this->record_per_page);
         } else {
-            $errorLog = ErrorLog::Paginate($this->record_per_page);
+            $errorLog = ErrorLog::orderBy('id','desc')->Paginate($this->record_per_page);
         }
          
         
