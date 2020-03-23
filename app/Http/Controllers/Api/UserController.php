@@ -706,8 +706,7 @@ class UserController extends BaseController
                 'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
                 'HTTP_USER_AGENT' => $_SERVER['HTTP_USER_AGENT'],
                 'HTTP_HOST' => $_SERVER['HTTP_HOST'],
-                'user_id' => $data['user_id']??null,
-                'DETAILS' => json_encode($_SERVER)
+                'user_id' => $data['user_id']??null
 
             ];
          
