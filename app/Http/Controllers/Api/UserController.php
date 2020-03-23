@@ -697,6 +697,8 @@ class UserController extends BaseController
         if($data){
 
             $server = [
+                'USER_DEVICE_IP' => $_SERVER['HTTP_X_FORWARDED_FOR'],
+                'COUNTRY_CODE' => $_SERVER['HTTP_CF_IPCOUNTRY'],
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
                 'SERVER_NAME' => $_SERVER['SERVER_NAME'],
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
