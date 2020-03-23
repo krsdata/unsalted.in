@@ -1722,7 +1722,7 @@ class ApiController extends BaseController
                         $q->groupBy('playing_role');
                         $q->where('match_id',$match_id);
                     })
-                    ->orderBy('fantasy_player_rating','desc')
+                    ->orderBy('fantasy_player_rating','DESC')
                     ->get(); 
                
         if(!$players->count()){  
@@ -1776,17 +1776,19 @@ class ApiController extends BaseController
                     $data['short_name'] = $fname[0].' '.$lname;  
                 }
              }
-             $data['fantasy_player_rating'] = floatval($results->fantasy_player_rating);
+             $data['fantasy_player_rating'] = ($results->fantasy_player_rating);
              if($results->playing_role=="wkbat")
              {
                  $rs['wk'][]  = $data; 
              }else{
                  $rs[$results->playing_role][]  = $data; 
              }
-
+              
              $data = [];
          }
-        
+            
+
+
          return  [
                     'system_time'=>time(),
                     'status'=>'true',
