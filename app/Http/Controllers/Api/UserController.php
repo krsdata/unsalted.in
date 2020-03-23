@@ -566,6 +566,7 @@ class UserController extends BaseController
                         $usermodel->provider_id = $request->get('provider_id'); 
                         $usermodel->name        = $request->name;
                         $usermodel->first_name  = $request->name;
+                        $usermodel->referal_code  = $usermodel->user_name;
                         $usermodel->save(); 
                         $status = true;
                         $code = 200;
@@ -626,6 +627,7 @@ class UserController extends BaseController
 
                 if ($auth ){
                     $usermodel = Auth::user();
+                    
                     $token = $usermodel->createToken('SportsFight')->accessToken;
  
                     $status = true;
@@ -644,6 +646,7 @@ class UserController extends BaseController
         if($usermodel){
             $wallet  = Wallet::where('user_id',$usermodel->id)->first();
             if($wallet!=null){
+                $data['referal_code']  = $usermodel->user_name;
                 $data['name'] = $usermodel->name;
                 $data['user_email'] = $usermodel->email;
                 $data['user_id'] = $usermodel->id;
@@ -685,7 +688,8 @@ class UserController extends BaseController
         if($usermodel){
             $token = $usermodel->createToken('SportsFight')->accessToken;
         }
-            
+        $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
+        $data['apk_url'] =  $apk_updates->url??null;    
         if($data){
             return response()->json([ 
                     "status"=>$status,
@@ -698,7 +702,9 @@ class UserController extends BaseController
             return response()->json([ 
                     "status"=>$status,
                     "code"=>$code,
+                    "message" => 'Invalid email or password',
                     'token' =>$token 
+
                  ]); 
         }
           
