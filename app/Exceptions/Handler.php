@@ -19,6 +19,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use URL;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\Debug\Exception\FatalErrorException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 
 class Handler extends ExceptionHandler
@@ -171,6 +173,25 @@ class Handler extends ExceptionHandler
                  exit();
           }
 
+          if ($exception instanceof FileException) { 
+                 $data['url']        = url($path_info_url);
+                $data['message']    = $exception->getMessage();
+                $data['error_type'] = 'FileException';
+                
+                 $this->errorLog($data, $exception);
+
+                if ($api_url) {
+                    echo  json_encode(
+                        [
+                            'status'        => false,
+                            'code'          => 500,
+                            'message'       => $exception->getMessage(),
+                            'response'      => $data,
+                        ]
+                    );
+                } 
+                 exit();
+          }
            if ($exception instanceof QueryException) {
 
             $data['url']        = url($path_info_url);
