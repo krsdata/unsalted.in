@@ -129,16 +129,14 @@ class UserController extends BaseController
                     )
                 ); 
 
-    }
-
-
+    } 
 
     public function registration(Request $request)
     {   
         $input['first_name']    = $request->get('first_name')??$request->get('name');
-        $input['last_name']    = $request->get('last_name');
+        $input['last_name']     = $request->get('last_name');
         
-        $input['name']          = $request->get('name')??$request->get('first_name'); 
+        $input['name']          = $request->name; 
         $input['email']         = $request->get('email'); 
         $input['password']      = Hash::make($request->input('password'));
         $input['role_type']     = 3; //$request->input('role_type'); ;
@@ -442,9 +440,9 @@ class UserController extends BaseController
                 }else{ 
                    $user = new User;
                    
-                    $user->first_name    = $request->get('first_name');
                     $user->last_name     = $request->get('last_name');
-                    $user->name          = $request->get('name'); 
+                    $usermodel->name        = $request->name;
+                    $usermodel->first_name  = $request->name;
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
@@ -496,8 +494,10 @@ class UserController extends BaseController
 
                 if (User::where('email',$request->email)->first()) {
                         $usermodel = User::where('email',$request->email)->first();
-                       // $usermodel->provider_id = $request->get('provider_id'); 
-                       // $usermodel->save(); 
+                        $usermodel->provider_id = $request->get('provider_id'); 
+                        $usermodel->name        = $request->name;
+                        $usermodel->first_name  = $request->name;
+                        $usermodel->save(); 
                         $status = true;
                         $code = 200;
                         $message = "login successfully"; 
@@ -505,9 +505,9 @@ class UserController extends BaseController
                 else{    
                     $user = new User;
                    
-                    $user->first_name    = $request->get('first_name')??$request->get('name');
+                    $user->first_name    = $request->get('first_name');
                     $user->last_name     = $request->get('last_name');
-                    $user->name         = $request->get('name');
+                    $user->name          = $request->name;
                      
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
@@ -520,7 +520,6 @@ class UserController extends BaseController
 
                     if (User::where(['email'=>$request->email])->first()) {
                        
-                                
                         return Response::json(array(
                             'status' => false,
                             'code'=>201,
@@ -733,14 +732,11 @@ class UserController extends BaseController
 
         }else{
             return response()->json([ "status"=>false,'code'=>201,"message"=>"Email does not exist!"]);
-
         }
     }
    
     public function logout(Request $request){
-
         $user_id =  User::find($request->user_id);
-
         if($user_id){
             $user_id->login_status = false;
             $user_id->save();
@@ -748,7 +744,6 @@ class UserController extends BaseController
         }else{
             return response()->json([ "status"=>false,'code'=>201,"message"=>"User does not"]); 
         }
-
     }
 
     public function deviceNotification(Request $request){
