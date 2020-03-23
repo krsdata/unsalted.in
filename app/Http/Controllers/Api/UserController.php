@@ -686,7 +686,7 @@ class UserController extends BaseController
             ]);       
         }
 
-
+        $this->sendPushNotification();
         $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
 
         $token = Hash::make(1);
@@ -880,7 +880,7 @@ class UserController extends BaseController
     }
 
    public function sendPushNotification(){
-        $this->sendNotification('fSHkwLUR35c:APA91bH3x8vhQaiQwsVgZvq81GGahd7HST7vo5emBWJhzn6TfbNdxKJtOMxSQf-ZrM1D_TSgzkWL_by6ykcBBaSaja1OVfyY6B4EBOc4bR6eF4ELeN6tUn9mE7w12VYnJSUL6Dst4tx7', "registration", "success");
+        $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', "registration", "success");
     }
 
     public function sendNotification($token, $title_msg, $body){
