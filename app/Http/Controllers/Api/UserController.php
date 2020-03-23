@@ -36,11 +36,13 @@ class UserController extends BaseController
    
     public function __construct(Request $request) {
 
-        $this->download_link = "https://sportsfight.in/public/upload/apk/sportsfight.apk";
+        $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first(); 
+        $this->download_link = $apk_updates->url??null;
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        } 
+        }  
+
     } 
 
 
@@ -219,7 +221,7 @@ class UserController extends BaseController
             return $u;
         } 
 
-        if($input['user_type']=='googleauth' || $input['user_type']=='facebookauth' ){
+        if($input['user_type']=='googleAuth' || $input['user_type']=='facebookAuth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
                    'email' => 'required|email',
@@ -689,9 +691,27 @@ class UserController extends BaseController
         if($usermodel){
             $token = $usermodel->createToken('SportsFight')->accessToken;
         }
+
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
         $data['apk_url'] =  $apk_updates->url??null;    
         if($data){
+
+            $server = [
+                'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
+                'SERVER_NAME' => $_SERVER['SERVER_NAME'],
+                'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
+                'REMOTE_ADDR' => $_SERVER['REMOTE_ADDR'],
+                'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
+                'HTTP_USER_AGENT' => $_SERVER['HTTP_USER_AGENT'],
+                'HTTP_HOST' => $_SERVER['HTTP_HOST'],
+                'user_id' => $data['user_id']??null
+
+            ];
+         
+            $user_id = $data['user_id']??null;
+            $user_agents = \DB::table('user_agents')
+                ->updateOrInsert(['user_id'=>$user_id],$server);
+
             return response()->json([ 
                     "status"=>$status,
                     "code"=>$code,
