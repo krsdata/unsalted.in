@@ -41,7 +41,7 @@ class UserController extends BaseController
             $request->headers->set('Content-Type', 'application/json');
         } 
 
-        $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', 'Welcome', 'Thank you using SportsFight app'); 
+
 
     } 
 
@@ -469,6 +469,9 @@ class UserController extends BaseController
      */
     public function customerLogin(Request $request)
     {
+       
+       $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', 'Welcome', 'Thank you using SportsFight app');
+
        // echo "Email:".$request->email;
         $input = $request->all();
        // print_r ($input);
