@@ -40,6 +40,4 @@ Route::get('how-to-play', function () {
       echo "how-to-play";
 });
 
-Route::get('fantasy-points-system', function () {
-      echo "fantasy-points-system";
-});
+ 
