@@ -144,7 +144,7 @@ class UserController extends BaseController
         $input['role_type']     = 3; //$request->input('role_type'); ;
         $input['user_type']     = $request->get('user_type');
         $input['provider_id']   = $request->get('provider_id'); 
-        $input['mobile_number']     = $request->get('mobile_number')
+        $input['mobile_number']     = $request->get('mobile_number');
        // $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
         if($request->input('user_id')){
@@ -449,7 +449,7 @@ class UserController extends BaseController
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
                     $user->provider_id   = $request->get('provider_id');
-                    $user->mobile_number = $request->get('mobile_number') 
+                    $user->mobile_number = $request->get('mobile_number') ;
                     $user->password   = "";
                     $user->user_name =$this->generateUserName();
                      // strtoupper(substr($request->get('name'), 0, 3)).
