@@ -26,6 +26,9 @@ Route::middleware('auth:api')->group( function () {
 	], function()
     {	
     	Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
+    	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
+        
+    	
     	// getMatch
     	Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
     	// Contest
@@ -60,7 +63,8 @@ Route::middleware('auth:api')->group( function () {
 	    'prefix' => 'v2'
 	], function()
     {
-    	
+    	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
+        
     	Route::match(['post','get'],'verifyDocument', 'Api\UserController@verifyDocument');
     	Route::match(['post','get'],'apkUpdate', 'Api\ApiController@apkUpdate');
 		
@@ -98,7 +102,7 @@ Route::middleware('auth:api')->group( function () {
 		Route::match(['post','get'],'member/logout', 'Api\UserController@logout');
 		Route::match(['post','get'],'temporaryPassword', 'Api\UserController@temporaryPassword');
 		Route::match(['post','get'],'resetPassword', 'Api\UserController@resetPassword');
-				
+
 
 		// auth required API
 		Route::match(['post','get'],'joinNewContestStatus', 'Api\ApiController@joinNewContestStatus'); 

@@ -36,10 +36,79 @@ class UserController extends BaseController
    
     public function __construct(Request $request) {
 
+        $this->download_link = "https://sportsfight.in/public/upload/apk/sportsfight.apk";
+
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         } 
     } 
+
+
+    public function inviteUser(Request $request,User $inviteUser)
+    {   
+        $messages = [
+            'user_id.required' => 'Invalid User id', 
+            'email.required' => 'Provide email id'
+
+        ];
+        $validator = Validator::make($request->all(), [
+                'user_id' => 'required',   
+                 'email' => 'required|email'
+            ],$messages);  
+         
+        $user_id = $request->get('user_id'); 
+        $invited_user = User::find($user_id); 
+        // Return Error Message
+        if ($validator->fails() || $invited_user ==null) {
+            $error_msg =[];        
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }  
+                return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => $error_msg??'Opps! This user is not available'
+                    )
+                ); 
+        } 
+        
+        $user_first_name = $invited_user->name ;
+        
+        $user_email = $request->input('email');
+
+        /** --Send Mail after Sign Up-- **/
+        
+        $user_data     = User::find($user_id); 
+        $sender_name   = $user_data->name;
+        $invited_by    = $user_data->name==null?$invited_user->first_name.' '.$invited_user->last_name:$user_data->name;
+        $referal_code  = $user_data->user_name;
+        $receipent_name = "Hi,";
+        $subject       = ucfirst($sender_name)." has invited you to join SportsFight";  
+
+        $email_content = [
+                'receipent_email'=> $user_email,
+                'subject'=>$subject,
+                'receipent_name'=>$receipent_name,
+                'invite_by'=>$invited_by,
+                'download_link' => $this->download_link,
+                'referal_code' => $referal_code
+            ];
+        
+        $helper = new Helper;
+        
+        $invite_notification_mail = $helper->sendNotificationMail($email_content,'invite_notification_mail');
+        
+        //$user->save();
+
+        return  response()->json([ 
+                    "status"=>1,
+                    "code"=> 200,
+                    "message"=>"You've invited your colleague, nice work!",
+                    'data' => ['receipentEmail'=>$user_email]
+                   ]
+                );
+
+    }
 
     public function generateUserName(){
         $uname =  Helper::generateRandomString();
@@ -431,9 +500,9 @@ class UserController extends BaseController
                     ];
                     
                 if (User::where($credentials)->first() ){
-                   $usermodel =  User::where('email',$request->email)->first();
-                  // $usermodel->provider_id = $request->get('provider_id'); 
-                  // $usermodel->save(); 
+                    $usermodel =  User::where('email',$request->email)->first();
+                    $usermodel->provider_id = $request->get('provider_id'); 
+                    $usermodel->save(); 
                     $status = true;
                     $code = 200;
                     $message = "login successfully"; 
