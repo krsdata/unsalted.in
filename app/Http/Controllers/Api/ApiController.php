@@ -662,23 +662,82 @@ class ApiController extends BaseController
     //LeaderBoard
     public function leaderBoard(Request $request){
        // $join_contests = [];
+
         $join_contests = JoinContest::where('match_id',$request->get('match_id'))
                                 ->where('contest_id',$request->get('contest_id'))
                                 ->pluck('created_team_id')->toArray();
-            
-        $leader_board = CreateTeam::with('user')
+        $user_id = $request->user_id;  
+
+        $leader_board1 = CreateTeam::with('user')
                         ->where('match_id',$request->match_id)
                         ->whereIn('id',$join_contests)
                         ->select('match_id','id as team_id','user_id','team_count as team','points as point','rank')
-                        ->orderBy('rank','ASC')
+                        ->where(function($q) use($user_id){
+                            $q->where('user_id',$user_id);
+                        })
+                        ->orderBy('id','ASC')
                         ->get();
 
-        if($leader_board){
+        $point = (int)($leader_board1[0]->point??null);
+        
+        $leader_board2 = CreateTeam::with('user')
+                        ->where('match_id',$request->match_id)
+                        ->whereIn('id',$join_contests)
+                        ->select('match_id','id as team_id','user_id','team_count as team','points as point','rank')
+                        ->where(function($q) use($user_id,$point){
+                            $q->where('user_id','!=',$user_id);
+                            if($point){
+                                $q->orderBy('rank','DESC');
+                            }else{
+                                $q->orderBy('rank','ASC');    
+                            }     
+                        })
+                        ->get();
+       
+        foreach ($leader_board1 as $key => $value) {
+
+            $data['match_id'] = $value->match_id;
+            $data['team_id'] = $value->team_id;
+            $data['user_id'] = $value->user_id;
+            $data['team'] = $value->team;
+            $data['point'] = $value->point; 
+            $data['rank'] = $value->rank;
+
+            $data['user'] = [
+                    'first_name'    => $value->user->first_name,
+                    'last_name'     => $value->user->last_name,
+                    'name'          => $value->user->name,
+                    'user_name'     => $value->user->user_name,
+                    'profile_image' => $value->user->profile_image
+            ];
+            $lb[] = $data;
+        }
+
+        foreach ($leader_board2 as $key => $value) {
+             
+            $data['match_id'] = $value->match_id;
+            $data['team_id'] = $value->team_id;
+            $data['user_id'] = $value->user_id;
+            $data['team'] = $value->team;
+            $data['point'] = $value->point; 
+            $data['rank'] = $value->rank;
+
+            $data['user'] = [
+                    'first_name'    => $value->user->first_name,
+                    'last_name'     => $value->user->last_name,
+                    'name'          => $value->user->name,
+                    'user_name'     => $value->user->user_name,
+                    'profile_image' => $value->user->profile_image
+            ];
+            $lb[] = $data;
+        }
+
+        if($lb){
             return [
                 'status'=>true,
                 'code' => 200,
                 'message' => 'leaderBoard',
-                'leaderBoard' =>$leader_board
+                'leaderBoard' =>$lb
                 
             ];    
         }else{
