@@ -53,6 +53,86 @@ class UserController extends BaseController
         return $uname;
     }
 
+    public function verifyDocument(Request $request){
+        
+        $user = User::find($request->user_id); 
+
+        $messages = [
+            'user_id.required' => 'Invalid User id', 
+            'adhar.required' => 'Please upload Adhar card'
+
+        ];
+        $validator = Validator::make($request->all(), [
+                'user_id' => 'required',  
+              //   'adhar' => 'required|mimes:jpeg,bmp,jpg,png,gif,pdf',
+                 'pan' => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
+            ],$messages);  
+         
+
+        // Return Error Message
+        if ($validator->fails() || $user ==null) {
+            $error_msg =[];        
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }  
+                return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => $error_msg??'Opps! This user is not available'
+                    )
+                ); 
+        } 
+         $doc = \DB::table('verify_documents')
+                    ->where('user_id',$user->id)
+                    ->first();
+        if($doc){
+            
+            return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => $doc->status==1?'Document already verified':'Waiting for approval'
+                    )
+                );    
+        }
+
+        $data['user_id'] = $user->id;
+
+        if ($request->file('pan')) {
+            $pan = $request->file('pan');
+            $destinationPath = public_path('upload/document/pan');
+            $pan->move($destinationPath, $user->id.'_'.$pan->getClientOriginalName());
+            $pan_name = $user->id.'_'.$pan->getClientOriginalName();
+            $request->merge(['pan_url'=>$pan_name]);  
+            $data['pan_url']  = url::to(asset('public/upload/document/pan/'.$pan_name));
+            $data['pan'] = $pan_name;
+            $data['upload_status'] = 'uploaded';
+        } 
+
+        if ($request->file('adhar')) {
+            $adhar = $request->file('adhar');
+            $destinationPath = public_path('upload/document');
+            $adhar->move($destinationPath, $user->id.'_'.$adhar->getClientOriginalName());
+            $adhar_name = $user->id.'_'.$adhar->getClientOriginalName();
+            $request->merge(['adhar_url'=>$adhar_name]);  
+            $data['adhar_url']  = url::to(asset('public/upload/document/adhar/'.$adhar_name));
+            $data['adhar'] = $adhar_name;
+            $data['upload_status'] = 'uploaded';
+        } 
+
+        $doc = \DB::table('verify_documents')
+                ->updateOrInsert(['user_id'=>$user->id],$data);
+
+        return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => "Document uploaded.We'll notify you soon."
+                    )
+                ); 
+
+    }
+
+
+
     public function registration(Request $request)
     {   
         $input['first_name']    = $request->get('first_name')??$request->get('name');
@@ -581,14 +661,68 @@ class UserController extends BaseController
         }
     }
 
+
+    public function resetPassword(Request $request){
+
+        $user_id =  $request->user_id;
+        $old_password =  $request->old_password;
+        $current_password =  $request->current_password;
+
+        $messages = [
+            'user_id.required' => 'Invalid User id', 
+            'old_password.required' => 'Old password is required',
+            'current_password.required' => 'Current password is required'
+
+        ];
+        $validator = Validator::make($request->all(), [
+                'user_id' => 'required',   
+                 'old_password' => 'required',
+                 'current_password' => 'required|min:6'
+            ],$messages);  
+         
+        $user = User::where('id',$user_id)->first(); 
+        
+        // Return Error Message
+        if ($validator->fails() || $user ==null) {
+            $error_msg =[];        
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }  
+                return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => $error_msg[0]??'Opps! This user is not available'
+                    )
+                ); 
+        } 
+
+        $credentials = [
+                        'email'=>$user->email,
+                        'password'=>$old_password
+                    ];
+
+         $auth = Auth::attempt($credentials); 
+        if($auth){
+            $user->password = Hash::make($current_password);
+            $user->save();
+            return response()->json(
+                [ 
+                    "status"=>true,
+                    'code'=>200,
+                    "message"=>"Password reset successfully"
+                ]);
+
+        }else{
+            return response()->json([ "status"=>false,'code'=>201,"message"=>"Old password do not match. Try again!"]);
+
+        }
+    }
+
     public function temporaryPassword(Request $request){
 
-        $email =  $request->email;
-        $user = User::where('email',$email)->first();
-
+        $user_id =  $request->user_id;
+        $user = User::where('id',$user_id)->first();
         if($user){
-
-
             return response()->json([ "status"=>true,'code'=>200,"message"=>"Temporary Password sent"]);
 
         }else{

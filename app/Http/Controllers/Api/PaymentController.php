@@ -288,9 +288,28 @@ class PaymentController extends BaseController
         $user = User::find($request->user_id);
 
         if($user){
+            $wallet = Wallet::where('user_id',$user->id)
+                    ->get(['user_id','bonus_amount','referal_amount','prize_amount','deposit_amount','usable_amount'])
+                    ->transform(function($item,$key){ 
+                        $transaction = [];
+                        $wallet_transactions = \DB::table('wallet_transactions')->where('user_id',$item->user_id)->get();
 
-            $wallet = Wallet::with('transaction')->get();
+                        foreach ($wallet_transactions as $key => $value) {
+                            $t = json_decode($value->payment_details);
+                          
+                             $transaction[] =  [
+                                'deposit_amount' => $t->deposit_amount,
+                                'payment_mode' => $t->payment_mode,
+                                'payment_status' => $t->payment_status,
+                                'transaction_id' => $t->transaction_id,
 
+                             ];
+                        } 
+                        $item->transaction = $transaction;
+                        return $item;
+
+                    }); 
+                     
             return response()->json(
                         [ 
                             "status"=>true,
@@ -306,7 +325,7 @@ class PaymentController extends BaseController
                             "status"=>true,
                             "code"=>200,
                             "message" => "Transaction history",
-                            "walletInfo"=>""
+                            "walletInfo"=>null
                         ]
                     );
 
