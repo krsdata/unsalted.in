@@ -48,10 +48,8 @@ class ApiController extends BaseController
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
- 
- 
     } 
-
+    
     public function apkUpdate(Request $request ){
 
         $version_code = $request->version_code;
@@ -1783,7 +1781,7 @@ class ApiController extends BaseController
              }else{
                  $rs[$results->playing_role][]  = $data; 
              }
-              
+
              $data = [];
          }
             

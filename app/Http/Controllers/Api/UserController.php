@@ -29,11 +29,9 @@ use App\Models\WalletTransaction;
 use App\Models\Rank;
 use App\Models\JoinContest;
 
-
-
 class UserController extends BaseController
 {
-   
+    public $download_link;
     public function __construct(Request $request) {
 
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first(); 
@@ -41,10 +39,11 @@ class UserController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }  
+        } 
+
+        $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', 'Welcome', 'Thank you using SportsFight app'); 
 
     } 
-
 
     public function inviteUser(Request $request,User $inviteUser)
     {   
