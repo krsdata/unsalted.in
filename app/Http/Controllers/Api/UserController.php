@@ -473,7 +473,7 @@ class UserController extends BaseController
        $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
 
 
-       $data['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
+       $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
       $this->sendNotification($key,$data);
 
       $data = [];
