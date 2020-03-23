@@ -714,7 +714,7 @@ class ApiController extends BaseController
         }
 
         foreach ($leader_board2 as $key => $value) {
-             
+
             $data['match_id'] = $value->match_id;
             $data['team_id'] = $value->team_id;
             $data['user_id'] = $value->user_id;
@@ -731,12 +731,13 @@ class ApiController extends BaseController
             ];
             $lb[] = $data;
         }
-
+        $lb = $lb??null;
         if($lb){
             return [
                 'status'=>true,
                 'code' => 200,
                 'message' => 'leaderBoard',
+                'total_team' =>  count($lb),
                 'leaderBoard' =>$lb
                 
             ];    
