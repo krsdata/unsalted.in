@@ -470,7 +470,14 @@ class UserController extends BaseController
     public function customerLogin(Request $request)
     {
        
-       $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', 'Welcome', 'Thank you using SportsFight app');
+       $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
+
+
+       $data['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => '']
+      $this->sendNotification($key,$data);
+
+      $data = [];
+
 
        // echo "Email:".$request->email;
         $input = $request->all();
@@ -883,12 +890,14 @@ class UserController extends BaseController
         $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', "registration", "success");
     }
 
-    public function sendNotification($token, $title_msg, $body){
+
+
+    public function sendNotification($token, $data){
        
         $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
-       $extraNotificationData = ["message" => $body, "title" => $title_msg];
+       $extraNotificationData = $data;
 
        $fcmNotification = [
            //'registration_ids' => $tokenList, //multple token array
