@@ -276,15 +276,15 @@ class UserController extends BaseController
         $user->save();
 
         $token = $user->createToken('SportsFight')->accessToken;
-        
-        $user_data['user_id']         =  $user->id;
+        $user_data['referal_code']     =  $user->user_name;
+        $user_data['user_id']          =  $user->id;
         $user_data['name']             =  $user->name; 
         $user_data['email']            =  $user->email; 
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
         $user_data['usable_amount']    =  (float)$wallet->usable_amount;
-        $user_data['mobile_number']    = $user->mobile_number; 
+        $user_data['mobile_number']    =  $user->mobile_number; 
         
-        $subject = "Welcome to Plug11! Verify your email address to get started";
+        $subject = "Welcome to SportsFight! Verify your email address to get started";
         $email_content = [
                 'receipent_email'=> $request->input('email'),
                 'subject'=>$subject,
@@ -313,7 +313,8 @@ class UserController extends BaseController
             'device_details' => $deviceDetails
             ]); 
         }
-       
+        $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
+        $data['apk_url'] =  $apk_updates->url??null;    
         return response()->json(
                             [ 
                                 "status"=>true,
