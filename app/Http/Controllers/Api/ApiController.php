@@ -1776,7 +1776,7 @@ class ApiController extends BaseController
                     $data['short_name'] = $fname[0].' '.$lname;  
                 }
              }
-             $data['fantasy_player_rating'] = $results->fantasy_player_rating;
+             $data['fantasy_player_rating'] = floatval($results->fantasy_player_rating);
              if($results->playing_role=="wkbat")
              {
                  $rs['wk'][]  = $data; 
@@ -1786,9 +1786,8 @@ class ApiController extends BaseController
 
              $data = [];
          }
-       
-
-         return Response::json([
+        
+         return  [
                     'system_time'=>time(),
                     'status'=>'true',
                     'code'=>200,
@@ -1796,7 +1795,7 @@ class ApiController extends BaseController
                     'response'=>[
                         'players'=>$rs
                     ]
-                ]);
+                ];
     }
     // update player by match_id
 

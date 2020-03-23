@@ -209,7 +209,7 @@ class UserController extends BaseController
 
         $token = $user->createToken('SportsFight')->accessToken;
         
-        $user_data['user_id ']         =  $user->id;
+        $user_data['user_id']         =  $user->id;
         $user_data['name']             =  $user->name; 
         $user_data['email']            =  $user->email; 
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;

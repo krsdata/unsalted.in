@@ -101,7 +101,7 @@
                                                 <td class="center"> 
                                                
                                                     @if($result->role_type==3)
-                                                    <a href="{{url('admin/mytask/'.$result->id)}}">
+                                                    <a href="#">
                                                         View Detail
                                                         <i class="glyphicon glyphicon-eye-open" title="edit"></i> 
 
