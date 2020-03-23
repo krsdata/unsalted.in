@@ -721,11 +721,12 @@ class ApiController extends BaseController
             $data['team'] = $value->team;
             $data['point'] = $value->point; 
             $data['rank'] = $value->rank;
+            $fn = explode(" ",$value->user->first_name); 
 
             $data['user'] = [
-                    'first_name'    => $value->user->first_name,
-                    'last_name'     => $value->user->last_name,
-                    'name'          => $value->user->name,
+                    'first_name'    => reset($fn),
+                    'last_name'     => end($fn),
+                    'name'          => reset($fn).' '.end($fn),
                     'user_name'     => $value->user->user_name,
                     'profile_image' => $value->user->profile_image
             ];
