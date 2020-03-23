@@ -144,6 +144,7 @@ class UserController extends BaseController
         $input['role_type']     = 3; //$request->input('role_type'); ;
         $input['user_type']     = $request->get('user_type');
         $input['provider_id']   = $request->get('provider_id'); 
+        $input['mobile_number']     = $request->get('mobile_number')
        // $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
         if($request->input('user_id')){
@@ -214,6 +215,7 @@ class UserController extends BaseController
         $user_data['email']            =  $user->email; 
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
         $user_data['usable_amount']    =  (float)$wallet->usable_amount;
+        $user_data['mobile_number']    = $user->mobile_number; 
         
         $subject = "Welcome to Plug11! Verify your email address to get started";
         $email_content = [
@@ -446,7 +448,8 @@ class UserController extends BaseController
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
-                    $user->provider_id   = $request->get('provider_id'); 
+                    $user->provider_id   = $request->get('provider_id');
+                    $user->mobile_number = $request->get('mobile_number') 
                     $user->password   = "";
                     $user->user_name =$this->generateUserName();
                      // strtoupper(substr($request->get('name'), 0, 3)).
@@ -503,10 +506,13 @@ class UserController extends BaseController
                     $user = new User;
                    
                     $user->first_name    = $request->get('first_name')??$request->get('name');
-                    $user->last_name     = $request->get('last_name'); 
+                    $user->last_name     = $request->get('last_name');
+                    $user->name         = $request->get('name');
+                     
                     $user->email         = $request->get('email'); 
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
+                    $user->mobile_number     = $request->get('mobile_number');
                     $user->provider_id   = $request->get('provider_id'); 
                     $user->password   = ""; 
                     
@@ -573,7 +579,7 @@ class UserController extends BaseController
                 $data['name'] = $usermodel->name;
                 $data['user_email'] = $usermodel->email;
                 $data['user_id'] = $usermodel->id;
-                $data['mobile_number'] = $usermodel->phone;
+                $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
                 $data['usable_amount']    = (float)$wallet->usable_amount;  
                 $status = true;  
