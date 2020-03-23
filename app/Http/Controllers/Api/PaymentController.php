@@ -309,13 +309,13 @@ class PaymentController extends BaseController
                         return $item;
 
                     }); 
-                     
+                  
             return response()->json(
                         [ 
                             "status"=>true,
                             "code"=>200,
                             "message" => "Transaction history",
-                            "walletInfo"=>$wallet
+                            "transaction_history"=>$wallet[0]??null
                         ]
                     );
         }else{
