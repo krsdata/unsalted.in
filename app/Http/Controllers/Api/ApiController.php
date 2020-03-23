@@ -1721,7 +1721,9 @@ class ApiController extends BaseController
                     ->where(function($q) use($match_id){
                         $q->groupBy('playing_role');
                         $q->where('match_id',$match_id);
-                    })->get(); 
+                    })
+                    ->orderBy('fantasy_player_rating','desc')
+                    ->get(); 
                
         if(!$players->count()){  
             return ['status'=>'true','code'=>404,'message'=>'record not found',
