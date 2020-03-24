@@ -296,12 +296,16 @@ class PaymentController extends BaseController
 
                         foreach ($wallet_transactions as $key => $value) {
                             $t = json_decode($value->payment_details);
-                          
+                            $d =  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value->created_at, 'UTC')
+                                ->setTimezone('Asia/Kolkata')
+                                ->format('d-m-Y, h:i A');
+                                                    
                              $transaction[] =  [
                                 'deposit_amount' => $t->deposit_amount,
                                 'payment_mode' => $t->payment_mode,
                                 'payment_status' => $t->payment_status,
                                 'transaction_id' => $t->transaction_id,
+                                'date' => $d 
 
                              ];
                         } 
