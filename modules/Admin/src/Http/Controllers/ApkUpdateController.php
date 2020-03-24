@@ -102,7 +102,7 @@ class ApkUpdateController extends Controller {
      * Save Group method
      * */
     public function sendNotification($token, $data){
-       
+     
         $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
@@ -160,7 +160,7 @@ class ApkUpdateController extends Controller {
                 ->transform(function($item, $key) use($apkUpdate){
                     
                     $token = $item->device_id;
-                    $data = ['action' => 'notify' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => url('public/upload/apk/'.$apkUpdate->apkUrl)];
+                    $data = ['action' => 'update' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => url('public/upload/apk/'.$apkUpdate->apkUrl)];
                     $this->sendNotification($token,$data);
                 });
        
