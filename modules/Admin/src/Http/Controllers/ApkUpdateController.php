@@ -101,10 +101,43 @@ class ApkUpdateController extends Controller {
     /*
      * Save Group method
      * */
+    public function sendNotification($token, $data){
+       
+        $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
+       $extraNotificationData = $data;
+
+       $fcmNotification = [
+           //'registration_ids' => $tokenList, //multple token array
+           'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+       ];
+
+       $headers = [
+           'Authorization: key='.$serverLKey,
+           'Content-Type: application/json'
+       ];
+
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+       $result = curl_exec($ch);
+       //echo "result".$result;
+       //die;
+       curl_close($ch);
+       return true;
+    }
     public function store(ApkUpdateRequest $request, ApkUpdate $apkUpdate) 
     {  
         
+         
         $apk = $request->file('apk');
         $destinationPath = public_path('upload/apk');
         $apk->move($destinationPath, $apk->getClientOriginalName());
@@ -122,6 +155,17 @@ class ApkUpdateController extends Controller {
          
         $apkUpdate->save();   
         
+        User::whereNotNull('device_id')
+                ->get()
+                ->transform(function($item, $key){
+                    
+                    $token = $item->device_id;
+                    $data = ['action' => 'notify' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => url('public/upload/apk/'.$apkUpdate->apkUrl];
+                    $this->sendNotification($key,$data);
+
+                });
+       
+
         return Redirect::to(route('apkUpdate'))
                             ->with('flash_alert_notice', 'New apkUpdate  successfully uploaded !');
         }
@@ -153,7 +197,6 @@ class ApkUpdateController extends Controller {
                 'field_errors','The ApkUpdate version_code already been uploaded!'
             );
         } 
-
 
         if ($request->file('url')) 
         {

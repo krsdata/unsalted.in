@@ -39,9 +39,7 @@ class UserController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        } 
-
-
+        }  
 
     } 
 
@@ -474,9 +472,9 @@ class UserController extends BaseController
 
 
        $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
-      $this->sendNotification($key,$data);
+       $this->sendNotification($key,$data);
 
-      $data = [];
+       $data = [];
 
 
        // echo "Email:".$request->email;
@@ -924,5 +922,5 @@ class UserController extends BaseController
        //die;
        curl_close($ch);
        return true;
-   }    
+    }    
 }
