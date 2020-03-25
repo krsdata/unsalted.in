@@ -1634,33 +1634,30 @@ class ApiController extends BaseController
         $join_contests =  \DB::table('join_contests')->where('user_id',$user)->get('match_id');
         $jm = [];
 
-        $created_team = \DB::table('create_teams')
-                        ->selectRaw('distinct match_id,user_id,id')
-                        ->where('user_id',$user)  
-                        ->orderBy('id','DESC') 
-                        ->get(); 
-     
+        $created_team = CreateTeam::where('user_id',$user)
+                        ->select(\DB::raw('distinct match_id'),'user_id','id')
+                        ->get()
+                        ->groupBy('match_id'); 
+                        
 
         if($created_team->count()){  
-            foreach ($created_team as $key => $join_contest) {  
+            foreach ($created_team as $match_id => $join_contest) {  
+                
                 # code...
-               $jmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
+               $jmatches = Matches::with('teama','teamb')->where('match_id',$match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
 
-               $join_match_count = \DB::table('create_teams')
-                            ->where('match_id',$join_contest->match_id)
-                            ->get()
-                            ->count();
-
-               $join_match = $jmatches->first(); 
-               $join_contests_count =  \DB::table('join_contests')
+                
+                $join_match_count   =   $join_contest->count();
+                $join_match = $jmatches->first(); 
+                $join_contests_count =  \DB::table('join_contests')
                             ->where('user_id',$user)
-                            ->where('match_id',$join_contest->match_id)
+                            ->where('match_id',$match_id)
                             ->selectRaw('distinct contest_id')
                             ->get();
                           
                 $join_match->total_joined_team   =  $join_match_count;
                 $join_match->total_join_contests =  $join_contests_count->count();
-                $jm[$join_contest->match_id] = $join_match;
+                $jm[$match_id] = $join_match;
             }
 
             $data['matchdata'][] = [
