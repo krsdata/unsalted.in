@@ -69,8 +69,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
-        $headers = getallheaders();
-       dd($exception);
+        $headers = getallheaders(); 
        //echo json_encode($headers);
    
         // $data2['message']    = json_encode($headers);

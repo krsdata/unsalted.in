@@ -1628,15 +1628,11 @@ class ApiController extends BaseController
 
     // get Match by status and all
     public function getMatch(Request $request){
-
         //$status =  $request->status;
         $user = $request->user_id;
-
         $banner = \DB::table('banners')->select('title','url','actiontype')->get();
-
         $join_contests =  \DB::table('join_contests')->where('user_id',$user)->get('match_id');
         $jm = [];
-
 
         $created_team = \DB::table('create_teams')
                         ->selectRaw('distinct match_id,user_id,id')
@@ -1650,25 +1646,27 @@ class ApiController extends BaseController
                 # code...
                $jmatches = Matches::with('teama','teamb')->where('match_id',$join_contest->match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
 
-               $join_match = $jmatches->first();
-               $join_match_count[] = $jmatches->count();
-            //   $join_contest_count = $jmatches->count();
+               $join_match_count = \DB::table('create_teams')
+                            ->where('match_id',$join_contest->match_id)
+                            ->get()
+                            ->count();
 
+               $join_match = $jmatches->first();
+               $join_match_count[$join_contest->match_id][] = $jmatches->count();
+            //   $join_contest_count = $jmatches->count();
                $join_contests_count =  \DB::table('join_contests')
                             ->where('user_id',$user)
                             ->where('match_id',$join_contest->match_id)
                             ->selectRaw('distinct contest_id')
                             ->get();
                           
-                $join_match->total_joined_team   =  count($join_match_count);
+                $join_match->total_joined_team   =  $join_match_count;
                 $join_match->total_join_contests =  $join_contests_count->count();
                 $jm[$join_contest->match_id] = $join_match;
             }
 
             $data['matchdata'][] = [
                     'viewType'=>1,
-                   // 'total_joined_team' => $join_match_count,
-                   // 'total_join_contests' => $join_contests_count,
                     'joinedmatches'=>array_values($jm)
                 ];
             
