@@ -1651,9 +1651,7 @@ class ApiController extends BaseController
                             ->get()
                             ->count();
 
-               $join_match = $jmatches->first();
-               $join_match_count[$join_contest->match_id][] = $jmatches->count();
-            //   $join_contest_count = $jmatches->count();
+               $join_match = $jmatches->first(); 
                $join_contests_count =  \DB::table('join_contests')
                             ->where('user_id',$user)
                             ->where('match_id',$join_contest->match_id)
