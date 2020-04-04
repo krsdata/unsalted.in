@@ -321,9 +321,9 @@ class ApiController extends BaseController
 
         $team_id = CreateTeam::find($request->team_id);
 
-         $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
                 'team_id' => 'required' 
-            ]); 
+        ]); 
          
 
         // Return Error Message
