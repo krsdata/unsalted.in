@@ -884,11 +884,7 @@ class UserController extends BaseController
         }
     }
 
-   public function sendPushNotification(){
-        $this->sendNotification('eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-', "registration", "success");
-    }
-
-
+  
 
     public function sendNotification($token, $data){
        
