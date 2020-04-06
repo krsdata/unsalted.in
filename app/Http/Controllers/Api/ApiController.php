@@ -114,6 +114,7 @@ class ApiController extends BaseController
         $join_contests_count = \DB::table('join_contests')
                             ->where('match_id',$match_id)
                             ->where('user_id',$request->user_id)
+                            ->where('contest_id',$request->contest_id)
                             ->selectRaw('distinct contest_id')
                             ->get()->count();
                  
