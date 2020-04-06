@@ -691,7 +691,6 @@ class UserController extends BaseController
             ]);       
         }
 
-        $this->sendPushNotification();
         $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
 
         $token = Hash::make(1);
