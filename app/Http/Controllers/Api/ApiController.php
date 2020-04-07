@@ -1749,6 +1749,16 @@ class ApiController extends BaseController
                         return $items;
                     });
         
+        if(count($upcomingMatches)==0){
+            $upcomingMatches = null;
+        }
+        if(count($completedMatches)==0){
+            $completedMatches = null;
+        }
+        if(count($liveMatches)==0){
+            $liveMatches = null;
+        }
+
         $data['matchdata'][] = ['viewType'=>1,'upcomingMatches'=>$upcomingMatches];    
         $data['matchdata'][] = ['viewType'=>2,'completedMatches'=>$completedMatches];    
         $data['matchdata'][] = ['viewType'=>3,'liveMatches'=>$liveMatches];
