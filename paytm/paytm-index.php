@@ -8,7 +8,7 @@ require_once("./lib/encdec_paytm.php");
 $paytmParams = array(
     
 	/* Find your MID in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
-	"MID" => "qGajnK26062442947748",
+	"MID" => "GfQMJs53038044110630",
     
 	/* Find your WEBSITE in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
 	"WEBSITE" => "DEFAULT",
@@ -26,10 +26,10 @@ $paytmParams = array(
 	"CUST_ID" => "CUST_103",
     
 	/* customer's mobile number */
-	"MOBILE_NO" => "8767572614",
+	"MOBILE_NO" => "8828002531",
     
 	/* customer's email */
-	"EMAIL" => "manoj.i.prasad@gmail.com",
+	"EMAIL" => "radhadevitech@gmail.com",
     
 	/**
 	* Amount in INR that is payble by customer
@@ -45,7 +45,7 @@ $paytmParams = array(
 * Generate checksum for parameters we have
 * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
 */
-$checksum = getChecksumFromArray($paytmParams, "4R_ZPWNmplUfdDH8");
+$checksum = getChecksumFromArray($paytmParams, "GfQMJs53038044110630");
 
 /* for Staging */
 //$url = "https://securegw-stage.paytm.in/order/process";

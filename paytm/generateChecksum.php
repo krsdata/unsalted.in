@@ -11,7 +11,7 @@ header("Access-Control-Allow-Origin: *");
 require_once("./lib/config_paytm.php");
 require_once("./lib/encdec_paytm.php");
 header("Content-Type: application/json");
-define('PAYTM_MERCHANT_KEY', '4R_ZPWNmplUfdDH8'); 
+define('PAYTM_MERCHANT_KEY', 'jWBrK0hmx%Ok7rTd'); 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 $checkSum = "";
@@ -54,7 +54,7 @@ if($_POST){
 
   
 //Here checksum string will return by getChecksumFromArray() function.
-$checkSum = getChecksumFromArray($paramList,"4R_ZPWNmplUfdDH8");
+$checkSum = getChecksumFromArray($paramList,"jWBrK0hmx%Ok7rTd");
 //print_r($_POST);
  echo json_encode(array("CHECKSUMHASH" => $checkSum,"order_id" => $_POST["ORDER_ID"], "status" => "1"));
  
