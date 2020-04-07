@@ -40,6 +40,7 @@ class ApiController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
+
         $this->date = date('Y-m-d');
         $this->token = "8740931958a5c24fed8b66c7609c1c49";
 
@@ -1626,6 +1627,134 @@ class ApiController extends BaseController
         //return ['saved'];
     }
 
+    public function getMatchHistory(Request $request){
+        //$status =  $request->status;
+        $user_id = $request->user_id;
+        
+         $is_user = Auth::loginUsingId($user_id);
+         if($is_user === false){
+              return  [
+                    'system_time'=>time(),
+                    'status'=>false,
+                    'code'=>201,
+                    'message'=>'User not found'
+                ];
+         }
+
+        $status = '(
+                        CASE
+                        WHEN status_str = "Scheduled" THEN "Upcoming"
+                        ELSE
+                        "Scheduled" end) as status_str';
+      
+        $upcomingMatches = Matches::with('teama','teamb')
+                ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str',\DB::raw($status))
+                    ->whereIn('match_id', 
+                        \DB::table('join_contests')->where('user_id',$user_id)
+                    ->groupBy('match_id')
+                    ->pluck('match_id')->toArray()
+                    )
+                    ->where('status',1)
+                    ->get()
+                    ->transform(function($items,$key)use($user_id){
+                      //  dd($items);
+                        $total_joined_team = \DB::table('join_contests')
+                                            ->where('match_id' ,$items->match_id)
+                                            ->where('user_id',$user_id)
+                                            ->count();
+                        $items->total_joined_team = $total_joined_team;
+
+                        $total_join_contests =  \DB::table('join_contests')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->groupBy('contest_id')
+                                ->count();
+                        $items->total_join_contests = $total_join_contests;
+
+                        $total_created_team =  \DB::table('create_teams')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->count();
+                        $items->total_created_team = $total_created_team;
+
+                        return $items;
+                    });
+
+        $completedMatches = Matches::with('teama','teamb')
+                ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
+                    ->whereIn('match_id', 
+                        \DB::table('join_contests')->where('user_id',$user_id)
+                    ->groupBy('match_id')
+                    ->pluck('match_id')
+                    ->toArray()
+                    )
+                    ->where('status',2)
+                    ->get()
+                    ->transform(function($items,$key)use($user_id){
+                      //  dd($items);
+                        $total_joined_team = \DB::table('join_contests')
+                                                ->where('match_id' ,$items->match_id)
+                                                ->where('user_id',$user_id)
+                                                ->count();
+                        $items->total_joined_team = $total_joined_team;
+
+                        $total_join_contests =  \DB::table('join_contests')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->groupBy('contest_id')
+                                ->count();
+                        $items->total_join_contests = $total_join_contests;
+
+                        $total_created_team =  \DB::table('create_teams')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->count();
+                        $items->total_created_team = $total_created_team;
+
+                        return $items;
+                    });
+
+
+        $liveMatches = Matches::with('teama','teamb')
+                ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
+                    ->whereIn('match_id', 
+                        \DB::table('join_contests')->where('user_id',$user_id)
+                    ->groupBy('match_id')
+                    ->pluck('match_id')
+                    ->toArray()
+                    )
+                    ->where('status',3)
+                    ->get()
+                    ->transform(function($items,$key)use($user_id){
+                        
+                        $total_joined_team = \DB::table('join_contests')
+                                                ->where('match_id' ,$items->match_id)
+                                                ->where('user_id',$user_id)
+                                                ->count();
+                        $items->total_joined_team = $total_joined_team;
+
+                        $total_join_contests =  \DB::table('join_contests')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->groupBy('contest_id')
+                                ->count();
+                        $items->total_join_contests = $total_join_contests;
+
+                        $total_created_team =  \DB::table('create_teams')
+                                ->where('match_id',$items->match_id)
+                                ->where('user_id',$user_id)
+                                ->count();
+                        $items->total_created_team = $total_created_team;
+
+                        return $items;
+                    });
+        
+        $data['matchdata'][] = ['viewType'=>1,'upcomingMatches'=>$upcomingMatches];    
+        $data['matchdata'][] = ['viewType'=>2,'completedMatches'=>$completedMatches];    
+        $data['matchdata'][] = ['viewType'=>3,'liveMatches'=>$liveMatches];
+
+        return ['status'=>true,'code'=>200,'message'=>'success','system_time'=>time(),'response'=>$data];
+    }
 
     // get Match by status and all
     public function getMatch(Request $request){
@@ -1679,7 +1808,7 @@ class ApiController extends BaseController
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 
-        return ['total_result'=>count($match),'status'=>true,'code'=>'200','message'=>'success','system_time'=>time(),'response'=>$data];
+        return ['total_result'=>count($match),'status'=>true,'code'=>200,'message'=>'success','system_time'=>time(),'response'=>$data];
     }
 
     public function getAllCompetition(){
@@ -1718,7 +1847,7 @@ class ApiController extends BaseController
                     ->get(); 
                
         if(!$players->count()){  
-            return ['status'=>'true','code'=>404,'message'=>'record not found',
+            return ['status'=>true,'code'=>404,'message'=>'record not found',
                     'response'=>[
                         'players'=>[]
                     ]
@@ -1783,7 +1912,7 @@ class ApiController extends BaseController
 
          return  [
                     'system_time'=>time(),
-                    'status'=>'true',
+                    'status'=>true,
                     'code'=>200,
                     'message'=>'success',
                     'response'=>[

@@ -74,6 +74,10 @@ Route::middleware('auth:api')->group( function () {
 
 		// cron from backedn
 		Route::match(['post','get'],'getMatchDataFromApiAdmin', 'Api\CronController@getMatchDataFromApi');
+		
+		Route::match(['post','get'],'getMatchHistory', 'Api\ApiController@getMatchHistory');
+		
+
 		Route::match(['post','get'],'updateMatchDataByStatusAdmin/{status}', 'Api\CronController@updateMatchDataByStatus');
 		// system API
 		Route::match(['post','get'],'storeMatchInfo/{fileName}', 'Api\ApiController@storeMatchInfo');
