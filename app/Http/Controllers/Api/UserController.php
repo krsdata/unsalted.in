@@ -277,11 +277,7 @@ class UserController extends BaseController
         $input['mobile_number']     = $request->get('mobile_number');
        // $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
-        if($request->input('user_id')){
-            $u = $this->updateProfile($request,$user);
-            return $u;
-        } 
-
+        
         if($input['user_type']=='googleAuth' || $input['user_type']=='facebookAuth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
@@ -320,7 +316,10 @@ class UserController extends BaseController
         foreach ($input as $key => $value) {
             $user->$key = $value;    
         }
-        $user->user_name = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
+        $uname              = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
+        $user->user_name    = $uname;
+        $user->referal_code = $uname;
+        
         $user->save(); 
 
         if($user->id){
@@ -546,15 +545,13 @@ class UserController extends BaseController
     public function customerLogin(Request $request)
     {
        
-       $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
+//       $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
 
 
-       $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
-       $this->sendNotification($key,$data);
+  //     $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
+    //   $this->sendNotification($key,$data);
 
        $data = [];
-
-
        // echo "Email:".$request->email;
         $input = $request->all();
        // print_r ($input);
@@ -664,7 +661,6 @@ class UserController extends BaseController
                     $user = new User;
                    
                     $user->first_name    = $request->get('first_name');
-                    $user->last_name     = $request->get('last_name');
                     $user->name          = $request->name;
                      
                     $user->email         = $request->get('email'); 
