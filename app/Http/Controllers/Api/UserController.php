@@ -383,7 +383,7 @@ class UserController extends BaseController
         //reference_code
         $refer_by = User::where('user_name' ,$request->referral_code)->first();    
 
-        if($request->referral_code)
+        if($refer_by && $request->referral_code)
         {    
             $referralCode = new ReferralCode;
             $referralCode->referral_code    =   $request->referral_code;
