@@ -1642,12 +1642,15 @@ class ApiController extends BaseController
                 ];
          }
 
+
+
         $status = '(
                         CASE
                         WHEN status_str = "Scheduled" THEN "Upcoming"
                         ELSE
                         "Scheduled" end) as status_str';
-      
+
+
         $upcomingMatches = Matches::with('teama','teamb')
                 ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str',\DB::raw($status))
                     ->whereIn('match_id', 
@@ -1760,9 +1763,39 @@ class ApiController extends BaseController
             $liveMatches = null;
         }
 
-        $data['matchdata'][] = ['viewType'=>1,'upcomingMatches'=>$upcomingMatches];    
-        $data['matchdata'][] = ['viewType'=>2,'completedMatches'=>$completedMatches];    
-        $data['matchdata'][] = ['viewType'=>3,'liveMatches'=>$liveMatches];
+
+        $actiontype = $request->action_type;
+
+        $my_match = null;
+        switch ($actiontype) {
+            case 'upcoming':
+                    $type_name = "upcomingMatch";
+                    $my_match = $upcomingMatches;
+                break;
+            case 'completed':
+                    $type_name = "completedMatch";
+                    $my_match = $completedMatches;
+                break;
+            case 'live':
+                    $type_name = "liveMatch";
+                    $my_match = $liveMatches;
+                break;
+            
+            default:
+                 $type_name = null;
+                 $my_match = null;
+                break;
+        }
+
+        if($type_name && $my_match){
+            $data['matchdata'][] = [
+                'action_type'=>$actiontype, $type_name => $my_match
+            ];  
+        }else{
+            $data['matchdata'] = null;
+        }
+
+          
 
         return ['status'=>true,'code'=>200,'message'=>'success','system_time'=>time(),'response'=>$data];
     }
