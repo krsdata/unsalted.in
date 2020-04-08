@@ -64,6 +64,13 @@ Route::middleware('auth:api')->group( function () {
 	    'prefix' => 'v2'
 	], function()
     {
+    	
+    	Route::match(['post','get'],'updateAfterLogin', 'Api\UserController@updateAfterLogin');
+
+    	Route::match(['post','get'],'myReferralDetails', 'Api\UserController@myReferralDetails');
+
+    	Route::match(['post','get'],'updateAfterLogin', 'Api\UserController@updateAfterLogin');
+
     	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
         
     	Route::match(['post','get'],'verifyDocument', 'Api\UserController@verifyDocument');

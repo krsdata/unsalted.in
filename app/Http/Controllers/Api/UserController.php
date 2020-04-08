@@ -28,6 +28,7 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\Rank;
 use App\Models\JoinContest;
+use App\Models\ReferralCode;
 
 class UserController extends BaseController
 {
@@ -198,12 +199,75 @@ class UserController extends BaseController
                 ); 
 
     } 
+    public function myReferralDetails(Request $request)
+    {
+        $referal_user = ReferralCode::where('refer_by',$request->user_id)
+                        ->pluck('user_id')->toArray();
+        $data = User::whereIn('id',$referal_user)->select('id','first_name as name')->get();
+        if($data){
+             return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => "List of referal",
+                    'response' => [
+                            'referal_user' => $data
+                        ] 
+                    )
+                );
+         }else{
+             return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => "No referal user found"
+                    )
+                );
+         }
 
+    }
+    public function updateAfterLogin(Request $request){
+
+        $refer_by = User::where('referal_code',$request->referral_code)->first();
+
+        $user_id = $request->user_id;
+        $user = User::find($user_id);
+
+        if($refer_by && $user)
+        {    
+            $referralCode = new ReferralCode;
+            $referralCode->referral_code    =   $request->referral_code;
+            $referralCode->user_id          =   $user_id;
+            $referralCode->refer_by         =   $refer_by->id;
+            $referralCode->save();
+        }
+        
+
+        if($user){
+            $user->name = $request->name;
+            $user->mobile_number = $request->mobile_number;
+            $user->phone = $request->phone;
+            $user->save();
+
+            return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => "Details successfully saved",
+                    'login_user' =>$user->id 
+                    )
+                );
+        }else{
+            return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => "user is not registered"
+                    )
+                );
+        }
+        
+    }
     public function registration(Request $request)
     {   
         $input['first_name']    = $request->get('first_name')??$request->get('name');
-        $input['last_name']     = $request->get('last_name');
-        
+              
         $input['name']          = $request->name; 
         $input['email']         = $request->get('email'); 
         $input['password']      = Hash::make($request->input('password'));
@@ -229,8 +293,7 @@ class UserController extends BaseController
             //Server side valiation
             $validator = Validator::make($request->all(), [
                'email' => 'required|email|unique:users',
-               'password' => 'required',
-               'name' => 'required'
+               'password' => 'required'
             ]);
         }
          
@@ -271,7 +334,10 @@ class UserController extends BaseController
         \DB::commit();
         
         $user  = User::find($user->id);
-        $user->validate_user = Hash::make($user->id);      
+        $user->validate_user    = Hash::make($user->id);
+        $user->reference_code   = $request->referral_code;
+        $user->mobile_number    = $request->mobile_number;
+        $user->phone            = $request->phone;  
         $user->save();
 
         $token = $user->createToken('SportsFight')->accessToken;
@@ -281,13 +347,13 @@ class UserController extends BaseController
         $user_data['email']            =  $user->email; 
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
         $user_data['usable_amount']    =  (float)$wallet->usable_amount;
-        $user_data['mobile_number']    =  $user->mobile_number; 
+        $user_data['mobile_number']    =  ($user->phone==null)?$user->mobile_number:$user->phone; 
         
         $subject = "Welcome to SportsFight! Verify your email address to get started";
         $email_content = [
                 'receipent_email'=> $request->input('email'),
-                'subject'=>$subject,
-                'greeting'=> 'PLUG11',
+                'subject'=>     $subject,
+                'greeting'=>    'SportsFight',
                 'first_name'=> $request->input('name')??$request->input('first_name')
                 ];
 
@@ -313,7 +379,19 @@ class UserController extends BaseController
             ]); 
         }
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
-        $data['apk_url'] =  $apk_updates->url??null;    
+        $data['apk_url'] =  $apk_updates->url??null;  
+        //reference_code
+        $refer_by = User::where('user_name' ,$request->referral_code)->first();    
+
+        if($request->referral_code)
+        {    
+            $referralCode = new ReferralCode;
+            $referralCode->referral_code    =   $request->referral_code;
+            $referralCode->user_id          =   $user->id;
+            $referralCode->refer_by         =   $refer_by->id;
+            $referralCode->save();
+        }
+
         return response()->json(
                             [ 
                                 "status"=>true,

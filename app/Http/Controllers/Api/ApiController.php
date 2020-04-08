@@ -31,6 +31,7 @@ use App\Models\JoinContest;
 use App\Models\WalletTransaction;
 use App\Models\MatchPoint;
 use App\Models\MatchStat;
+use App\Models\ReferralCode;
 
 
 class ApiController extends BaseController
