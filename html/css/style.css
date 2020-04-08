@@ -8237,18 +8237,22 @@ h1, h2, h3, h4, h5,
       margin-top: 0px;
       -webkit-transition: .3s all ease-out;
       -o-transition: .3s all ease-out;
-      transition: .3s all ease-out; }
+      transition: .3s all ease-out; 
+
+      }
     .ftco-navbar-light.scrolled.sleep {
       -webkit-transition: .3s all ease-out;
       -o-transition: .3s all ease-out;
       transition: .3s all ease-out; }
     .ftco-navbar-light.scrolled .navbar-brand {
-      color: #000000;
+      color: #1DA1F2;
       padding-top: 1rem;
       padding-bottom: 1rem;
       font-size: 24px; }
       .ftco-navbar-light.scrolled .navbar-brand span {
-        color: #e10000; }
+        color: #e10000; 
+        background: #1DA1F2 !important;
+      }
 
 .navbar-brand {
   font-weight: 900;
