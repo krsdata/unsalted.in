@@ -32,7 +32,7 @@
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
   --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+   }
 
 *,
 *::before,
@@ -2456,7 +2456,7 @@ fieldset:disabled a.btn {
 
 .btn-link {
   font-weight: 400;
-  color: #00b137; }
+  color: #ffffff; }
   .btn-link:hover {
     color: #fff;
     text-decoration: none; }
@@ -3795,7 +3795,7 @@ input[type="button"].btn-block {
   word-wrap: break-word;
   background-color: #fff;
   background-clip: border-box;
-  border: 1px solid #00b137;
+  border: 1px solid #ffffff;
   border-radius: 0.25rem; }
   .card > hr {
     margin-right: 0;
@@ -7997,7 +7997,7 @@ a.text-dark:hover, a.text-dark:focus {
     border-color: #dee2e6; } }
 
 body {
-  font-family: "Poppins", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   background: #fff;
   font-size: 16px;
   line-height: 1.8;
@@ -8052,9 +8052,9 @@ h1, h2, h3, h4, h5,
       display: none; } }
 
 .ftco-navbar-light {
-  background: transparent !important;
+  background: #FFFFFF !important;
   position: absolute;
-  top: 30px;
+  top: 0px;
   left: 0;
   right: 0;
   z-index: 3; }
@@ -8072,7 +8072,7 @@ h1, h2, h3, h4, h5,
     margin: 0 auto;
     padding: 0; }
   .ftco-navbar-light .navbar-brand {
-    color: #fff;
+    color: #1DA1F2;
     padding-top: .7rem;
     padding-bottom: .7rem; }
     .ftco-navbar-light .navbar-brand:hover, .ftco-navbar-light .navbar-brand:focus {
@@ -8090,7 +8090,7 @@ h1, h2, h3, h4, h5,
     padding-bottom: .7rem;
     padding-left: 20px;
     padding-right: 20px;
-    color: #fff;
+    color: #000;
     font-weight: 400;
     opacity: 1 !important; }
     .ftco-navbar-light .navbar-nav > .nav-item > .nav-link span {
@@ -8158,7 +8158,7 @@ h1, h2, h3, h4, h5,
   .ftco-navbar-light .navbar-nav > .nav-item .nav-link.active {
     background: transparent;
     background: none;
-    color: #e10000; }
+    color: #000000; }
     .ftco-navbar-light .navbar-nav > .nav-item .nav-link.active span:before {
       visibility: visible;
       -webkit-transform: scaleX(1);
@@ -8292,7 +8292,7 @@ h1, h2, h3, h4, h5,
 
 .hero-wrap {
   width: 100%;
-  height: 513px !important;
+  height: auto !important;
   position: inherit;
   background-size: cover;
   background-repeat: no-repeat;
@@ -8332,7 +8332,7 @@ h1, h2, h3, h4, h5,
   .slider-text .icon-video span {
     color: #fff; }
   .slider-text .icon-video span.watch {
-    font-family: "Poppins", Arial, sans-serif;
+    
     font-size: 16px;
     text-transform: uppercase; }
 
@@ -8954,7 +8954,7 @@ h1, h2, h3, h4, h5,
   width: 100%;
   margin-bottom: 50px; }
   .day-wrap h3 {
-    font-family: "Poppins", Arial, sans-serif;
+    
     font-size: 16px;
     font-weight: 700;
     text-transform: uppercase;
@@ -9052,7 +9052,7 @@ h1, h2, h3, h4, h5,
   .ftco-services-2 .services .media-body h3 {
     font-size: 20px;
     font-weight: 500;
-    font-family: "Poppins", Arial, sans-serif; }
+    }
 
 .aside-stretch {
   background: #7088cb; }
@@ -9155,7 +9155,7 @@ textarea.form-control {
 .ftco-footer {
   margin-top: 30px;
   font-size: 16px;
-  background: #e10000;
+  background: #1DA1F2;
   padding: 2em 0;
   z-index: 0;
   position: relative; }
@@ -9190,7 +9190,7 @@ textarea.form-control {
    
     color: #fff; }
     .ftco-footer a:hover {
-      color: #00b137; }
+      color: #ffffff; }
   .ftco-footer .ftco-heading-2 {
     font-size: 17px;
     font-weight: 400;
@@ -9927,7 +9927,7 @@ textarea.form-control {
 
    .color-bar{height: 3px;}
     .navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .nav-link:hover {
-    color: #00b137;}
+    color: #ffffff;}
 
 .service-area .services-caption:hover{box-shadow:0px 10px 30px 0px rgba(133,66,189,0.1)}
 .service-area .services-caption:hover::before{right:-20px;bottom:-21px;}
@@ -9938,11 +9938,11 @@ textarea.form-control {
 .ftco-services-2 .services:hover .icon{transition: all 0.4s;
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
-  -moz-transition: all 0.4s; background-color: transparent; border: 2px solid #00b137;}
+  -moz-transition: all 0.4s; background-color: transparent; border: 2px solid #ffffff;}
   .ftco-services-2 .services:hover h3{transition: all 0.4s;
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
-  -moz-transition: all 0.4s; color: #00b137; font-weight: bold;}
+  -moz-transition: all 0.4s; color: #ffffff; font-weight: bold;}
 
   .ftco-services-2 .services:hover .icon span.flaticon-pin::before{color: #e10000;}
    .ftco-services-2 .services:hover .icon span.flaticon-detective::before{color: #e10000;}
@@ -9951,4 +9951,7 @@ textarea.form-control {
 
    .ftco-services-2 .services:hover .icon span{color: #e10000;}
 
-   h2 {color: lightslategray !important;}
+   h2 {color: #1DA1F2 !important;}
+
+   footer h3{color: #fff;}
+   footer .footpara p{margin-top: 20px;}
