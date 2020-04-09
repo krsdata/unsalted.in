@@ -187,7 +187,7 @@
                     <div class="col-lg-6">
                         <div class="section-tittle text-center heading-section">
                             <span class="subheading">Help with Sports Fight</span>
-                            <h2>How Can We Help with Sports Fight!</h2>
+                            <h2>How Can We Help with</h2>
                         </div>
                     </div>
                 </div>
@@ -200,7 +200,7 @@
                             </div> 
                             <div class="service-cap">
                                 <h4><a href="#">Easily Manage</a></h4>
-                                <p>Sorem spsum dolor sit amsectetur adipisclit, seddo eiusmod tempor incididunt ut laborea.</p>
+                                <p></p>
                             </div>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
                             </div> 
                             <div class="service-cap">
                                 <h4><a href="#">Get Payments Easily</a></h4>
-                                <p>Sorem spsum dolor sit amsectetur adipisclit, seddo eiusmod tempor incididunt ut laborea.</p>
+                                <p></p>
                             </div>
                         </div>
                     </div> 
@@ -222,7 +222,7 @@
                             </div> 
                             <div class="service-cap">
                                 <h4><a href="#">Quick Messaging</a></h4>
-                                <p>Sorem spsum dolor sit amsectetur adipisclit, seddo eiusmod tempor incididunt ut laborea.</p>
+                                <p></p>
                             </div>
                         </div>
                     </div>
