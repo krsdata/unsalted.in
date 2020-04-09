@@ -7,15 +7,15 @@
       <div class="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
           <div class="col-md-5 ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-            <h1 class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Get your way home worldwide</h1>
-            <p class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+            <h1 class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Sportsfight Fantasy League</h1>
+            <p class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Fantasy League</p>
             <form action="#" class="search-location">
                     <div class="row">
                         <div class="col-lg align-items-end">
                              <a href="http://sportsfight.in/public/upload/apk/sportsfight.apk" target="_blank">
                             <img  src="{{ url('webmedia/images/download-android-new.png')}}" alt="android-new" style="width: 200px;">
 
-                            <img  src="{{url('webmedia/images/app_store.png')}}" alt="android-new" style="width: 200px; height: 56px;border: 1px solid #a7a6a6;border-radius: 11px;">
+                            
                         </a>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
 
        <!-- about works -->
 
-    <section class="ftco-section ftco-services-2 "  style="background-color: #f8f9fa;">
+    <section class="ftco-section ftco-services-2" style="background:linear-gradient(to right,#ffffff,#00bade)">
             <div class="container">
                 <div class="row">
           <div class="col-md-4 heading-section ftco-animate">
@@ -146,8 +146,8 @@
             <div class="media block-6 services text-center d-block pt-md-5 mt-md-5">
               <div class="icon justify-content-center align-items-center d-flex"><span>1</span></div>
               <div class="media-body p-md-3">
-                <h3 class="heading mb-3">Checkout Contest Of League</h3>
-                <p class="mb-5">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                <h3 class="heading mb-3">Checkout Contest of the League</h3>
+                <p class="mb-5">Come and checkout the League</p>
                 <hr>
               </div>
             </div>
@@ -157,7 +157,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span>2</span></div>
               <div class="media-body p-md-3">
                 <h3 class="heading mb-3">Create Maximum Team</h3>
-                <p class="mb-5">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                <p class="mb-5"  style="color: #000">Create maximum number of team and join multiple contest.</p>
                 <hr>
               </div>
             </div>      
@@ -167,7 +167,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span>3</span></div>
               <div class="media-body p-md-3">
                 <h3 class="heading mb-3">Pay Small And Win Big</h3>
-                <p class="mb-5">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                <p class="mb-5" style="color: #000">Almost we have 90% above Prize Breakup for all contest. Here maximum users are winner.</p>
                 <hr>
               </div>
             </div>      
@@ -288,7 +288,7 @@
     </section>
     <div class="jumbotron jumbotron-fluid" style="margin: 0px">
           <div class="container center">
-            <h1>Reach us anytime at info@sportsfight.com </h1>
+            <h1>Reach us at info@sportsfight.in </h1>
             
           </div>
       </div>

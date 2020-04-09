@@ -9957,3 +9957,101 @@ textarea.form-control {
 
    footer h3{color: #fff;}
    footer .footpara p{margin-top: 20px;}
+
+                                                            /* add css today 8/4/2020 */
+  /*Form Used on many pages*/
+form.findus{}
+form.findus > .row{
+  margin-left:-5px;
+  margin-right:-5px;
+}
+form.findus  .col-md-4, form.findus .col-sn-4, form.findus  .col-md-12, 
+form.findus  .col-md-6, form.findus .col-sm-6,
+form.findus  .col-md-3, form.findus  .col-sm-3{
+  padding-left:5px;
+  padding-right:5px;
+}
+form.findus .form-control{
+  height: 48px;
+  width: 100%;
+}
+form.findus .form-group{
+  width:100%;
+  
+}
+form.findus .form-control, form.findus textarea{
+  padding: 12px 15px;
+  margin-bottom:10px;
+  font-size:14px;
+  border:1px solid #d1d1d1;
+}
+form.findus textarea{
+  width:100%;
+  min-height:210px;
+}
+
+
+     /* --------------- CONTACT US --------------- */
+#contact{}  
+#contact .contact_img{}
+#contact .contact_img > img{
+  display:block;
+  width:100%;
+}
+#contact .contact_img .caption-number{
+  background:rgba(255,182,0,0.9);
+   padding:15px;
+}
+#contact .contact_img .caption_link, #contact .contact_img .caption-number {
+  display: block;
+  font-size: 1.125rem;
+  text-align: center;
+  color:#fff;
+}
+.contact_address .address .icon{
+  line-height: 60px;
+  color:#fff;
+}
+
+#contact .contact_address{}
+.contact_address .address p > a:hover, .contact_address .address p > a:focus{
+  color:#dd2342;
+
+}
+
+
+.contact_address .address .icon{
+  line-height: 60px;
+  color:#fff;
+}
+.contact_address .address .icon, .contact_address .address{
+  display:inline-block;
+}
+.contact_address .address .icon{
+  background:#3e9fbe; 
+  float: left;
+  height: 60px;
+  width: 64px;
+  text-align: center;
+  font-size:35px;
+  line-height:50px;
+}
+.contact_address .address.second .icon{
+  background:#dd2342;
+}
+.contact_address .address{
+  margin-top:15px;
+  overflow: hidden;
+}
+.contact_address .address p, .contact_address .address h4{
+  display: block;
+  margin: 0 0 0 80px;
+}
+ .contact_address .address {
+  
+  font-weight:500;
+}
+
+.content-wrap{width: 100%;position: inherit;
+    background-size: cover;
+    background-repeat: no-repeat; height: auto;height: 400px;}

@@ -15,6 +15,15 @@ Route::get('/', function () {
     return view('home');
 });
 
+Route::get('contactus', function () {
+    return view('contactus');
+});
+
+Route::get('terms', function () {
+    return view('terms');
+});
+
+ 
 
 Route::get('about-us', function () {
       echo "about-us";

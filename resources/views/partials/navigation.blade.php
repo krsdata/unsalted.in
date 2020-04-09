@@ -7,13 +7,15 @@
 
           <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav nav ml-auto">
-              <li class="nav-item"><a href="#home-section" class="nav-link"><span>Home</span></a></li>
-              <li class="nav-item"><a href="#services-section" class="nav-link"><span>Services</span></a></li>
-              <li class="nav-item"><a href="#workflow-section" class="nav-link"><span>About</span></a></li>
-              <li class="nav-item"><a href="#properties-section" class="nav-link"><span>Screenshots</span></a></li>           
-              <li class="nav-item"><a href="#howork-section" class="nav-link"><span>How it works</span></a></li>
-              
-              <li class="nav-item"><a href="#contact-section" class="nav-link"><span>Contact</span></a></li>
+              <li class="nav-item"><a href="{{url('/')}}#home-section" class="nav-link"><span>Home</span></a></li>
+
+              <li class="nav-item"><a href="{{url('/')}}#services-section" class="nav-link"><span>Our Features</span></a></li>
+
+              <li class="nav-item"><a href="{{url('/')}}#properties-section" class="nav-link"><span>Screenshots</span></a></li> 
+
+              <li class="nav-item"><a href="{{url('terms')}}" class="nav-link"><span>Terms</span></a></li>
+
+              <li class="nav-item"><a href="{{url('contactus')}}" class="nav-link"><span>Contact us</span></a></li>
             </ul>
           </div>
         </div>
