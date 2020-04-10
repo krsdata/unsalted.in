@@ -70,8 +70,6 @@ Route::middleware('auth:api')->group( function () {
 	], function()
     {
     	
-    	Route::match(['post','get'],'updateAfterLogin', 'Api\UserController@updateAfterLogin');
-
     	Route::match(['post','get'],'myReferralDetails', 'Api\UserController@myReferralDetails');
 
     	Route::match(['post','get'],'updateAfterLogin', 'Api\UserController@updateAfterLogin');
