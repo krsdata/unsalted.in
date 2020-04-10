@@ -383,15 +383,28 @@ class UserController extends BaseController
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
         $data['apk_url'] =  $apk_updates->url??null;  
         //reference_code
-        $refer_by = User::where('user_name' ,$request->referral_code)->first();    
 
-        if($refer_by && $request->referral_code)
+        $refer_by = User::where('referal_code',$request->referral_code)
+                    ->orWhere('user_name',$request->referral_code)
+                    ->first();
+
+        
+        if($refer_by && $user)
         {    
             $referralCode = new ReferralCode;
             $referralCode->referral_code    =   $request->referral_code;
             $referralCode->user_id          =   $user->id;
             $referralCode->refer_by         =   $refer_by->id;
             $referralCode->save();
+        }
+        
+        if($user){
+            $user->name             = $request->name;
+            $user->mobile_number    = $request->mobile_number;
+            $user->phone            = $request->phone;
+            $user->profile_image    = $request->image_url;
+            $user->reference_code   = $request->referral_code;
+            $user->save(); 
         }
 
         return response()->json(
