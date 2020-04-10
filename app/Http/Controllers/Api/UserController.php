@@ -240,11 +240,12 @@ class UserController extends BaseController
             $referralCode->save();
         }
         
-
         if($user){
-            $user->name = $request->name;
-            $user->mobile_number = $request->mobile_number;
-            $user->phone = $request->phone;
+            $user->name             = $request->name;
+            $user->mobile_number    = $request->mobile_number;
+            $user->phone            = $request->phone;
+            $user->profile_image    = $request->image_url;
+            $user->reference_code   = $request->referral_code;
             $user->save();
 
             return Response::json(array( 
