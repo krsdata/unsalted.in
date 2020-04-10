@@ -84,7 +84,7 @@ class UserController extends BaseController
         $user =   User::where('email',$email)->first();
         if($user==null){
             return Response::json(array(
-                'status' => 0,
+                'status' => false,
                 'code' => 201,
                 'message' => "Oh no! The address you provided isn't in our system",
                 'data'  =>  $request->all()
@@ -115,7 +115,7 @@ class UserController extends BaseController
        
        return   response()->json(
                     [ 
-                        "status"=>1,
+                        "status"=>true,
                         "code"=> 200,
                         "message"=>"Reset password link has sent. Please check your email.",
                         'data' => $request->all()
