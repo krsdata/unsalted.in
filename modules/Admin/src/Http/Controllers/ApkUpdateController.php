@@ -160,8 +160,8 @@ class ApkUpdateController extends Controller {
                 ->transform(function($item, $key) use($apkUpdate){
                     
                     $token = $item->device_id;
-                    $data = ['action' => 'update' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => url('public/upload/apk/'.$apkUpdate->apkUrl)];
-                 //   $this->sendNotification($token,$data);
+                    $data = ['action' => 'update' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => url('public/upload/apk/'.$apkUrl)];
+                    $this->sendNotification($token,$data);
                 });
        
 
