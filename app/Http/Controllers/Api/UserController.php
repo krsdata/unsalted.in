@@ -815,11 +815,84 @@ class UserController extends BaseController
 
      /* @method : Email Verification
     * @param : token_id
-    * Response : json
+    * Response : jsonṭ
     * Return :token and email 
    */
 
 
+    public function forgotPassword(Request $request)
+    {  
+        $email = $request->input('email');
+        //Server side valiation
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
+
+        $helper = new Helper;
+       
+        if ($validator->fails()) {
+            $error_msg  =   [];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }
+                            
+            return Response::json(array(
+                'status' => 0,
+                'message' => $error_msg[0],
+                'data'  =>  ''
+                )
+            );
+        }
+
+        $user =   User::where('email',$email)->first();
+        if($user==null){
+            return Response::json(array(
+                'status' => 0,
+                'code' => 201,
+                'message' => "Oh no! The address you provided isn't in our system",
+                'data'  =>  $request->all()
+                )
+            );
+        }
+        $user_data = $user;
+        $enc = Crypt::encryptString($user->id);
+     
+        $links = url('api/v2/changePassword?token='.$enc);
+
+        $email_content = array(
+                        'receipent_email'   => $request->input('email'),
+                        'subject'           => 'Your Sportsfight Account Password',
+                        'name'              => $user->first_name, 
+                        'greeting'          => 'Sportsfight',
+                        'links'             => $links
+
+                    );
+        $helper = new Helper;
+        $email_response = $helper->sendNotificationMail(
+                                $email_content,
+                                'forgot_password_link'
+                            ); 
+       
+       return   response()->json(
+                    [ 
+                        "status"=>1,
+                        "code"=> 200,
+                        "message"=>"Reset password link has sent. Please check your email.",
+                        'data' => $request->all()
+                    ]
+                );
+    }
+
+    public function changePassword(Request $request)
+    {   
+        $token = $request->token;
+        if($request->method()=='POST'){
+           dd($request->all());
+        }
+
+        return view('changePassword',compact('token'));
+        
+    }
 
    
     public function emailVerification(Request $request)

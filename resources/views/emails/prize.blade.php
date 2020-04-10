@@ -462,30 +462,6 @@ td[class="buttonContent"] a {
                             -->
             
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color:#FFFFFF;">
-              <!-- // MODULE ROW --> 
-              <!-- MODULE ROW // --> 
-              <!-- The "mc:hideable" is a feature for MailChimp which allows
-                                      you disable certain row. It works perfectly for structure.
-                                      http://kb.mailchimp.com/article/template-language-creating-editable-content-areas/
-                                -->
-
-			  
-              
-              
-             
-
-              
-      
-             
-            
-              
-            
-              
- 
-    
-              
-              
-              
                 <!-- MODULE ROW // -->
               <tr mc:hideable="mc:hideable">
                 <td align="center" valign="top"><!-- CENTERING TABLE // -->

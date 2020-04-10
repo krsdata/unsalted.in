@@ -13,11 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
- 
+
+
 Route::group(['prefix' => 'v2'], function () {
     Route::post('/login', 'Api\UserController@member/memberLogin');
     Route::post('/register', 'Api\UserController@member/registration');
     Route::get('/logout', 'Api\UserController@logout')->middleware('auth:api');
+    Route::match(['post','get'], 'email_verification', 'UserController@emailVerification');
+    Route::match(['post','get'], 'forgotPassword', 'Api\UserController@forgotPassword');
+    Route::match(['post','get'], 'password/reset', 'Api\UserController@resetPassword');
+    Route::match(['post','get'], 'changePassword', 'Api\UserController@changePassword');
 });
 
 Route::middleware('auth:api')->group( function () {
