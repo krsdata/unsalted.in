@@ -126,10 +126,6 @@ class UserController extends BaseController
     public function changePassword(Request $request)
     {   
         $token = $request->token;
-        if($request->method()=='POST'){
-           dd($request->all());
-        }
-
         return view('changePassword',compact('token'));
         
     }
