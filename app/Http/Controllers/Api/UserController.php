@@ -226,7 +226,9 @@ class UserController extends BaseController
     }
     public function updateAfterLogin(Request $request){
 
-        $refer_by = User::where('referal_code',$request->referral_code)->first();
+        $refer_by = User::where('referal_code',$request->referral_code)
+                    ->orWhere('user_name',$request->referral_code)
+                    ->first();
 
         $user_id = $request->user_id;
         $user = User::find($user_id);
