@@ -157,10 +157,17 @@ class ApkUpdateController extends Controller {
         
         User::whereNotNull('device_id')
                 ->get()
-                ->transform(function($item, $key) use($apkUpdate){
+                ->transform(function($item, $key) use($apkUpdate,$apkUrl){
                     
                     $token = $item->device_id;
-                    $data = ['action' => 'update' , 'title' => 'New update available' , 'message' => 'Stable release' ,'apk_update_url' => $apkUrl];
+
+                    $data = [
+                            'action' => 'update' ,
+                            'title' => 'New update available' ,
+                            'message' => 'Stable release' ,
+                            'apk_update_url' => $apkUrl
+                        ];
+
                     $this->sendNotification($token,$data);
                 });
        
