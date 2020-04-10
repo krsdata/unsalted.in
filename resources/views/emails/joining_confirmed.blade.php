@@ -1014,15 +1014,6 @@ td[class="buttonContent"] a {
 </td>
 </tr>
 </table>
-
-<map name="Map">
-  <area shape="rect" coords="41,36,221,55" href="mailto:orders@ashidiamonds.com">
-  <area shape="rect" coords="106,65,108,67" href="#">
-  <area shape="rect" coords="47,58,211,79" href="http://www.ashidiamonds.com" target="_blank">
-</map>
-     
-     
-  
     
 </body>
 </html>

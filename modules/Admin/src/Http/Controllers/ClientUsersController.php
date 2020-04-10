@@ -43,9 +43,9 @@ class ClientUsersController extends Controller {
      */
     public function __construct() {
         $this->middleware('admin');
-        View::share('viewPage', 'View Client User');
+        View::share('viewPage', 'Customer');
         View::share('helper',new Helper);
-        View::share('heading','Client Users');
+        View::share('heading','Customer');
         View::share('route_url',route('clientuser'));
 
         $this->record_per_page = Config::get('app.record_per_page');
@@ -60,8 +60,8 @@ class ClientUsersController extends Controller {
     public function index(User $user, Request $request) 
     { 
         
-        $page_title = 'Client User';
-        $page_action = 'Client View User'; 
+        $page_title = 'Customer';
+        $page_action = 'Customer'; 
         if ($request->ajax()) { 
             $status = $request->get('status');
             $user = User::where('role_type','>=',$request->user()->role_type)->find($id);
@@ -74,16 +74,14 @@ class ClientUsersController extends Controller {
         // Search by name ,email and group
         $search = Input::get('search');
         $status = Input::get('status');
-        $role_type = Input::get('role_type');
-
+        $role_type = Input::get('role_type'); 
         if ((isset($search) && !empty($search)) OR  (isset($status) && !empty($status)) or !empty($role_type)) {
 
             $search = isset($search) ? Input::get('search') : '';
                
             $users = User::where(function($query) use($search,$status,$role_type) {
                         if (!empty($search)) {
-                            $query->Where('first_name', 'LIKE', "%$search%")
-                                    ->OrWhere('last_name', 'LIKE', "%$search%")
+                            $query->Where('first_name', 'LIKE', "%$search%") 
                                     ->OrWhere('email', 'LIKE', "%$search%");
                         }
                         if (!empty($status)) {
@@ -93,10 +91,11 @@ class ClientUsersController extends Controller {
                         if (!empty($role_type)) { 
                             $query->Where('role_type',$role_type);
                         }
-                    })->Paginate($this->record_per_page);
+                    })->where('role_type',3)
+                            ->Paginate($this->record_per_page);
         } else {
             $users = User::orderBy('id','desc')
-                            ->Paginate(15);
+                            ->where('role_type',3)->Paginate(15);
             
         }
         
@@ -112,8 +111,8 @@ class ClientUsersController extends Controller {
 
     public function create(User $user) 
     {
-        $page_title = 'Client User';
-        $page_action = 'Create Client User';
+        $page_title = 'Customer';
+        $page_action = 'Create Customer';
         $roles = Roles::all();
         $role_id = null;
         $js_file = ['common.js','bootbox.js','formValidate.js'];
@@ -142,8 +141,8 @@ class ClientUsersController extends Controller {
 
     public function edit(User $user) {
 
-        $page_title = 'User';
-        $page_action = 'Show Users';
+        $page_title = 'Customer';
+        $page_action = 'Show Customer';
         $role_id = $user->role_type;
         $roles = Roles::all();
         $js_file = ['common.js','bootbox.js','formValidate.js'];

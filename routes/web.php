@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
+
+Route::match(['post','get'], 'changePasswordToken', 'UserController@changePasswordToken');
 
 Route::get('/', function () {
     return view('home');

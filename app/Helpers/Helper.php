@@ -112,12 +112,11 @@ class Helper {
   
   
      
-     public  function sendMailFrontEnd($email_content, $template)
+    public  function sendMailFrontEnd($email_content, $template)
     {        
         $email_content['verification_token'] =  Hash::make($email_content['receipent_email']);
         $email_content['email'] = isset($email_content['receipent_email'])?$email_content['receipent_email']:''; 
-       //dd($email_content);
-        $mail = new PHPMailer;
+       $mail = new PHPMailer;
         $html = view::make('emails.'.$template,['content' => $email_content]);
         $html = $html->render(); 
 
@@ -162,7 +161,6 @@ class Helper {
     */
     public  function sendMail($email_content, $template)
     {        
-        
         $mail       = new PHPMailer;
         $html       = view::make('emails.'.$template,['content' => $email_content]);
         $html       = $html->render(); 
@@ -172,7 +170,6 @@ class Helper {
             $mail->isSMTP(); // tell to use smtp
             $mail->CharSet = "utf-8"; // set charset to utf8
              
-
             $mail->SMTPAuth   = true;                  // enable SMTP authentication
             $mail->Host       = getenv('MAIL_HOST'); // sets the SMTP server
             $mail->Port       = getenv('MAIL_PORT');
@@ -185,7 +182,7 @@ class Helper {
             $mail->MsgHTML($html);
             $mail->addAddress($email_content['receipent_email'], "admin");
             
-           // $mail->addReplyTo("kroy.iips@mailinator.com","admin");
+            //$mail->addReplyTo("kroy.iips@mailinator.com","admin");
             //$mail->addBCC(‘examle@examle.net’);
             //$mail->addAttachment(‘/home/kundan/Desktop/abc.doc’, ‘abc.doc’); // Optional name
             $mail->SMTPOptions= array(
@@ -211,7 +208,6 @@ class Helper {
     */
     public  function sendNotificationMail($email_content, $template)
     {        
-        
         return  Mail::send('emails.'.$template, array('content' => $email_content), function($message) use($email_content)
           {
             $name = $_SERVER['SERVER_NAME'];
