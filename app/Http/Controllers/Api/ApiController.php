@@ -2788,4 +2788,53 @@ class ApiController extends BaseController
                         ]
                     );        
     }
+    
+     public function uploadImages(Request $request)
+    {
+    	if ($request->file('imagefile')) {        
+
+            $photo = $request->file('imagefile');
+            $destinationPath = storage_path('uploads');
+            $photo->move($destinationPath, time().$photo->getClientOriginalName());
+            $photo_name = time().$photo->getClientOriginalName();
+            
+            $data = [
+                    "success"=>"1", 
+                    "msg"=>"Image uplaoded successfully",
+                    "imageurl"=>url('storage/uploads/'. $photo_name)
+                ];
+                
+        }  
+        else
+        {
+            $data=array("success"=>"0", "msg"=>"Image Type Not Right");
+        }
+        return $data;
+	}
+	
+	 public function uploadbase64Image(Request $request)
+    {
+           // echo $request->get('image_bytes');
+            $bin = base64_decode($request->get('image_bytes'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= time().'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+            return response()->json(
+                            [ 
+                            "status" =>true,
+                            'image_url'   => $urls,
+                            "message"=> "image uploaded successfully"
+                            ]
+                        );
+        
+                   
+    }
+
 }

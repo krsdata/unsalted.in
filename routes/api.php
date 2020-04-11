@@ -137,6 +137,11 @@ Route::middleware('auth:api')->group( function () {
 		Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@prizeBreakup');
 		Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat'); 
 		Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
+		
+		
+		//added by manoj
+		   Route::match(['post','get'],'uploadbase64Image', 'Api\ApiController@uploadbase64Image');
+		   Route::match(['post','get'],'member/uploadImages', 'Api\ApiController@uploadImages');
 	
 	}
 );
