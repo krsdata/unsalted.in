@@ -3,6 +3,7 @@
     <h1>Dashboard</h1>
     @stop
     @section('content') 
+     @if($remove_header==false)
       @include('partials.navigation')
       <!-- Left side column. contains the logo and sidebar -->
     
@@ -12,19 +13,11 @@
         <div class="row no-gutters slider-text align-items-center justify-content-start" data-scrollax-parent="true" style="height: 499px;">
           <div class="col-md-12 ftco-animate text-center" data-scrollax=" properties: { translateY: '70%' }">
             
-            <form action="#" class="search-location">
-	        		<div class="row">
-	        			<div class="col-lg align-items-end">
-	        				
-		                    <img  src="{{url('webmedia/images/download-android-new.png')}}" alt="android-new" style="width: 200px;">
-		                    
-	        			</div>
-	        		</div>
-	        	</form>
           </div>
         </div>
       </div>
     </section>
+    @endif
 <style type="text/css">
   .page_title{
     margin-top: -110px;right: 10px;position: absolute;background: #fff;padding: 10px;border-radius: 10px;
@@ -53,11 +46,13 @@
   <section  id="termscondition" data-aos="fade-up">
       <div class="container my-5">
            <div class="row justify-content-end">
-				<div class="col-md-12 ">
+				@if($remove_header==false)
+        <div class="col-md-12 ">
   				<div class="heading-section text-center ftco-animate">
   				  <h2 class="mb-4 page_title" >{{$content->title??'Page not found'}}</h2>
           </div>       	
 				</div>
+        @endif
           <div class="col-md-12">     
             <div class="faq_content wow fadeIn animated" data-wow-delay="400ms">
               
