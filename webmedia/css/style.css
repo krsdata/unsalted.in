@@ -8060,7 +8060,7 @@ h1, h2, h3, h4, h5,
   z-index: 3; }
   @media (max-width: 991.98px) {
     .ftco-navbar-light {
-      background: #000000 !important;
+      background: #ffffff !important;
       position: relative;
       top: 0;
       padding-top: 0;
@@ -9929,7 +9929,7 @@ textarea.form-control {
 
    .color-bar{height: 3px;}
     .navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .nav-link:hover {
-    color: #ffffff;}
+    color: #000000;}
 
 .service-area .services-caption:hover{box-shadow:0px 10px 30px 0px rgba(133,66,189,0.1)}
 .service-area .services-caption:hover::before{right:-20px;bottom:-21px;}
