@@ -731,7 +731,7 @@ class UserController extends BaseController
             if($wallet!=null){
                 $data['referal_code']  = $usermodel->user_name;
                 $data['name'] = $usermodel->name;
-                $data['user_email'] = $usermodel->email;
+                $data['email'] = $usermodel->email;
                 $data['user_id'] = $usermodel->id;
                 $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
