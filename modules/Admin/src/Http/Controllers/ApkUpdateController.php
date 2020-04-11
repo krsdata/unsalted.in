@@ -165,7 +165,8 @@ class ApkUpdateController extends Controller {
                             'action' => 'update' ,
                             'title' => 'New update available' ,
                             'message' => 'Stable release' ,
-                            'apk_update_url' => $apkUrl
+                            'apk_update_url' => $apkUrl,
+                            'release_note' => $request->get('release_notes')
                         ];
 
                     $this->sendNotification($token,$data);

@@ -26,7 +26,11 @@
         </div>
       </div>
     </section>
-
+<style type="text/css">
+  .page_title{
+    margin-top: -135px;right: 10px;position: absolute;background: #fff;padding: 10px;border-radius: 10px;
+  }
+</style>
 
   <!--Section: Content-->
   <section  id="termscondition" data-aos="fade-up">
@@ -35,7 +39,7 @@
 					<div class="col-md-12 ">
 						<div class="heading-section text-center ftco-animate">
 							<span class="subheading">Terms & Conditions</span>
-                        <h2 class="mb-4" style="text-decoration: underline">Terms and Conditions</h2></div>       	
+                        <h2 class="mb-4 page_title" >Terms and Conditions</h2></div>       	
 				</div>
 				<div class="col-md-12">
           
