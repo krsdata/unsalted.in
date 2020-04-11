@@ -34,7 +34,6 @@ Route::middleware('auth:api')->group( function () {
     	Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
     	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
         
-    	
     	// getMatch
     	Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
     	// Contest

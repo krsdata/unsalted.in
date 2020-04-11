@@ -202,6 +202,26 @@ class UserController extends BaseController
             $data['upload_status'] = 'uploaded';
         } 
 
+        if ($request->get('address_proof')) {
+            $bin = base64_decode($request->get('address_proof'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['address_proof_url'=>$urls]); 
+            $data['address_proof_url']  = $urls;
+            $data['address_proof'] = $image_name;
+            $data['upload_status'] = 'uploaded';
+        } 
+
+
         $doc = \DB::table('verify_documents')
                 ->updateOrInsert(['user_id'=>$user->id],$data);
 
@@ -444,51 +464,35 @@ class UserController extends BaseController
             );
         } 
 
-        if($request->user_name){
-
-            $user_id = User::where('id','!=',$request->user_id)->where('user_name',$request->user_name)->first();
-            
-            if($user_id){
-               return Response::json(array(
-                    'status' => false,
-                    'code' => 201,
-                    'message' => 'User Id already taken!',
-                    'data'  =>  $request->all()
-                    )
-                ); 
-            }
-
-        }
-
         $table_cname = \Schema::getColumnListing('users');
-        $except = ['id','created_at','updated_at','profile_image','modeOfreach'];
-        
+        $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
+        $user_data = [];
         foreach ($table_cname as $key => $value) {
            
            if(in_array($value, $except )){
                 continue;
            } 
-            if($request->get($value)){
+
+           $udata = $request->get($value);
+            if($request->get($value) && $udata!=""){
                 $user->$value = $request->get($value);
+                $user_data[$value] = $request->get($value);
            }
         }
-       
-        
+               
         if($request->get('profile_image')){ 
-            $profile_image = $this->createImage($request->get('profile_image')); 
+            $profile_image = $this->createImage($request); 
             if($profile_image==false){
                 return Response::json(array(
                     'status' => false,
                      'code' => 201,
-                    'message' => 'Invalid Image format!',
-                    'data'  =>  $request->all()
+                    'message' => 'Invalid Image format!'
                     )
                 );
             }
             $user->profile_image  = $profile_image;       
         }        
            
-
         try{
             $user->save();
             $status = true;
@@ -505,7 +509,7 @@ class UserController extends BaseController
                             "status" =>$status,
                             'code'   => $code,
                             "message"=> $message,
-                            'data'=>isset($user)?$user:[]
+                            'data'=>isset($user_data)?$user_data:null
                             ]
                         );
          
@@ -513,25 +517,22 @@ class UserController extends BaseController
 
     // Image upload
 
-    public function createImage($base64)
+    public function createImage($request)
     {
         try{
-            $img  = explode(',',$base64);
-            if(is_array($img) && isset($img[1])){
-                $image = base64_decode($img[1]);
-                $image_name= time().'.jpg';
-                $path = storage_path() . "/image/" . $image_name;
-              
-                file_put_contents($path, $image); 
-                return url::to(asset('storage/image/'.$image_name));
-            }else{
-                if(starts_with($base64,'http')){
-                    return $base64;
-                }
-                return false; 
+            //  $request->get('image_bytes');
+            $bin = base64_decode($request->get('profile_image'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
             }
-
             
+            $image_name= time().'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+            return $urls;
         }catch(Exception $e){
             return false;
         }
