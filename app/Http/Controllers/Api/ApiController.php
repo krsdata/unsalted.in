@@ -36,7 +36,6 @@ use App\Models\ReferralCode;
 
 class ApiController extends BaseController
 {
-   
     public $token;
     public $date;
 

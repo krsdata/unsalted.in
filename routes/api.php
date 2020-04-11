@@ -77,6 +77,7 @@ Route::middleware('auth:api')->group( function () {
     	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
         
     	Route::match(['post','get'],'verifyDocument', 'Api\UserController@verifyDocument');
+    	
     	Route::match(['post','get'],'apkUpdate', 'Api\ApiController@apkUpdate');
 		
 		Route::match(['post','get'],'deviceNotification', 'Api\UserController@deviceNotification');
