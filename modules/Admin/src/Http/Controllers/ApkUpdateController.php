@@ -157,7 +157,7 @@ class ApkUpdateController extends Controller {
         
         User::whereNotNull('device_id')
                 ->get()
-                ->transform(function($item, $key) use($apkUpdate,$apkUrl){
+                ->transform(function($item, $key) use($apkUpdate,$apkUrl,$request){
                     
                     $token = $item->device_id;
 
