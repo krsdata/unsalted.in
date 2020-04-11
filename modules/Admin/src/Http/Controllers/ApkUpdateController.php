@@ -154,7 +154,7 @@ class ApkUpdateController extends Controller {
         $apkUpdate->release_notes   =  $request->get('release_notes');
          
         $apkUpdate->save();   
-        
+        $apkUrl = url('public/upload/apk/'.$apkUrl);    
         User::whereNotNull('device_id')
                 ->get()
                 ->transform(function($item, $key) use($apkUpdate,$apkUrl,$request){

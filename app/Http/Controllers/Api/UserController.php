@@ -162,25 +162,43 @@ class UserController extends BaseController
 
         $data['user_id'] = $user->id;
 
-        if ($request->file('pan')) {
-            $pan = $request->file('pan');
-            $destinationPath = public_path('upload/document/pan');
-            $pan->move($destinationPath, $user->id.'_'.$pan->getClientOriginalName());
-            $pan_name = $user->id.'_'.$pan->getClientOriginalName();
-            $request->merge(['pan_url'=>$pan_name]);  
-            $data['pan_url']  = url::to(asset('public/upload/document/pan/'.$pan_name));
-            $data['pan'] = $pan_name;
+        if ($request->get('pan')) {
+           
+            $bin = base64_decode($request->get('pan'));
+
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['pan_url'=>$urls]); 
+            $data['pan_url']  = $urls;
+            $data['pan'] = $image_name;
             $data['upload_status'] = 'uploaded';
         } 
 
-        if ($request->file('adhar')) {
-            $adhar = $request->file('adhar');
-            $destinationPath = public_path('upload/document');
-            $adhar->move($destinationPath, $user->id.'_'.$adhar->getClientOriginalName());
-            $adhar_name = $user->id.'_'.$adhar->getClientOriginalName();
-            $request->merge(['adhar_url'=>$adhar_name]);  
-            $data['adhar_url']  = url::to(asset('public/upload/document/adhar/'.$adhar_name));
-            $data['adhar'] = $adhar_name;
+        if ($request->get('adhar')) {
+            $bin = base64_decode($request->get('adhar'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['adhar_url'=>$urls]); 
+            $data['adhar_url']  = $urls;
+            $data['adhar'] = $image_name;
             $data['upload_status'] = 'uploaded';
         } 
 
