@@ -73,13 +73,22 @@ class HomeController extends BaseController
 
         return view('contactus');
     }
-    public function getPage($name=null){
+    public function getPage(Request $request, $name=null){
+        
         $content = \DB::table('pages')
                 ->where('slug',$name)
                 ->first();
         if( $content==null){
             return view('404',compact('content'));
         }
-        return view('page',compact('content'));
+        $remove_header = false;
+        if($request->get('request')=='mobile'){
+
+            $remove_header = true;
+
+        }
+
+
+        return view('page',compact('content','remove_header'));
     }
 }
