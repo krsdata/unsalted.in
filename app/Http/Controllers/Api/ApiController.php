@@ -697,12 +697,17 @@ class ApiController extends BaseController
        
         foreach ($leader_board1 as $key => $value) {
 
+            if(!isset($value->user)){
+                continue;
+            }
+
             $data['match_id'] = $value->match_id;
             $data['team_id'] = $value->team_id;
             $data['user_id'] = $value->user_id;
             $data['team'] = $value->team;
             $data['point'] = $value->point; 
             $data['rank'] = $value->rank;
+
 
             $data['user'] = [
                     'first_name'    => $value->user->first_name,
@@ -716,20 +721,28 @@ class ApiController extends BaseController
 
         foreach ($leader_board2 as $key => $value) {
 
+            if(!isset($value->user)){
+                continue;
+            }
+
             $data['match_id'] = $value->match_id;
             $data['team_id'] = $value->team_id;
             $data['user_id'] = $value->user_id;
             $data['team'] = $value->team;
             $data['point'] = $value->point; 
             $data['rank'] = $value->rank;
-            $fn = explode(" ",$value->user->first_name); 
+
+            $user_data =  $value->user->first_name;
+            $fn = explode(" ",$user_data); 
+            
+
 
             $data['user'] = [
                     'first_name'    => reset($fn),
                     'last_name'     => end($fn),
                     'name'          => reset($fn).' '.end($fn),
-                    'user_name'     => $value->user->user_name,
-                    'profile_image' => $value->user->profile_image
+                    'user_name'     => isset($user_data)?$value->user->user_name:null,
+                    'profile_image' => isset($user_data)?$value->user->profile_image:null
             ];
             $lb[] = $data;
         }
