@@ -14,42 +14,26 @@ Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
 
 Route::match(['post','get'], 'changePasswordToken', 'UserController@changePasswordToken');
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::match(['post','get'], '/', 'HomeController@home');
+Route::match(['post','get'], '404', 'HomeController@page404');
 
-Route::get('contactus', function () {
-    return view('contactus');
-});
 
-Route::get('terms', function () {
-    return view('terms');
-});
-
+Route::match(
+    ['post','get'],
+    '/contactus',
+    [
+        'as'   => 'contactus',
+        'uses' => 'HomeController@contactus',
+    ]
+);
  
 
-Route::get('about-us', function () {
-      echo "about-us";
-});
-
-
-Route::get('privacy-policy', function () {
-      echo "privacy-policy";
-});
-
-
-Route::get('terms-and-conditions', function () {
-      echo "terms-and-conditions";
-});
-
-
-Route::get('legality', function () {
-      echo "legality";
-});
-
-
-Route::get('how-to-play', function () {
-      echo "how-to-play";
-});
-
+Route::match(
+    ['post','get'],
+    '/{name}',
+    [
+        'as'   => 'contentspage',
+        'uses' => 'HomeController@getPage',
+    ]
+);
  

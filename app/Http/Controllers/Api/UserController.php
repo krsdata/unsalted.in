@@ -41,7 +41,6 @@ class UserController extends BaseController
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
-
     } 
 
     public function inviteUser(Request $request,User $inviteUser)
@@ -107,7 +106,6 @@ class UserController extends BaseController
                     'data' => ['receipentEmail'=>$user_email]
                    ]
                 );
-
     }
 
     public function generateUserName(){
@@ -125,19 +123,17 @@ class UserController extends BaseController
     public function verifyDocument(Request $request){
         
         $user = User::find($request->user_id); 
-
         $messages = [
             'user_id.required' => 'Invalid User id', 
             'adhar.required' => 'Please upload Adhar card'
 
         ];
         $validator = Validator::make($request->all(), [
-                'user_id' => 'required',  
-              //   'adhar' => 'required|mimes:jpeg,bmp,jpg,png,gif,pdf',
-                 'pan' => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
+                'user_id'   => 'required',  
+                'pan'       => 'mimes:jpeg,bmp,jpg,png,gif,pdf',
+                'adhar'     => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
             ],$messages);  
          
-
         // Return Error Message
         if ($validator->fails() || $user ==null) {
             $error_msg =[];        
@@ -278,9 +274,7 @@ class UserController extends BaseController
         $input['user_type']     = $request->get('user_type');
         $input['provider_id']   = $request->get('provider_id'); 
         $input['mobile_number']     = $request->get('mobile_number');
-       // $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
-        
         if($input['user_type']=='googleAuth' || $input['user_type']=='facebookAuth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
@@ -418,12 +412,9 @@ class UserController extends BaseController
                         );
     }
 
-
     public function updateProfile(Request $request)
     {     
-
         $user = User::find($request->user_id); 
-
         if(!$request->user_id && (User::find($request->user_id))==null)
         {
             return Response::json(array(
@@ -559,14 +550,7 @@ class UserController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function customerLogin(Request $request)
-    {
-       
-//       $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
-
-
-  //     $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
-    //   $this->sendNotification($key,$data);
-
+    {       
        $data = [];
        // echo "Email:".$request->email;
         $input = $request->all();
@@ -691,14 +675,13 @@ class UserController extends BaseController
                     if (User::where(['email'=>$request->email])->first()) {
                        
                         return Response::json(array(
-                            'status' => false,
+                                'status' => false,
                             'code'=>201,
                             'message' =>'Invalid credentials'
                             )
                         );
                     } 
                         
-
                     $user->save() ;
                     if($user->id){
                         $wallet = new Wallet;
@@ -902,14 +885,8 @@ class UserController extends BaseController
     public function changePassword(Request $request)
     {   
         $token = $request->token;
-        if($request->method()=='POST'){
-           dd($request->all());
-        }
-
-        return view('changePassword',compact('token'));
-        
+        return view('changePassword',compact('token'));        
     }
-
    
     public function emailVerification(Request $request)
     {
@@ -938,18 +915,18 @@ class UserController extends BaseController
 
         $user_id =  $request->user_id;
         $old_password =  $request->old_password;
-        $current_password =  $request->current_password;
+        $current_password =  $request->new_password;
 
         $messages = [
-            'user_id.required' => 'Invalid User id', 
+            'user_id.required' => 'User id is required', 
             'old_password.required' => 'Old password is required',
-            'current_password.required' => 'Current password is required'
+            'new_password.required' => 'New password is required'
 
         ];
         $validator = Validator::make($request->all(), [
                 'user_id' => 'required',   
                  'old_password' => 'required',
-                 'current_password' => 'required|min:6'
+                 'new_password' => 'required|min:6'
             ],$messages);  
          
         $user = User::where('id',$user_id)->first(); 
@@ -995,7 +972,7 @@ class UserController extends BaseController
         $user_id =  $request->user_id;
         $user = User::where('id',$user_id)->first();
         if($user){
-            return response()->json([ "status"=>true,'code'=>200,"message"=>"Temporary Password sent"]);
+            return Response()->json([ "status"=>true,'code'=>200,"message"=>"Temporary Password sent"]);
 
         }else{
             return response()->json([ "status"=>false,'code'=>201,"message"=>"Email does not exist!"]);

@@ -29,19 +29,23 @@
                         </div>
                         <div class="row">
                           <div class="col-md-6">
-                            <p><a class="scroll-link" href="#top-content">Home</a></p>
-                            <p><a href="">Services</a></p>
-                            
-                            <p><a href="#">About</a></p>
-                            <p><a href="#">Screenshot</a></p>
-                            
+
+                            @foreach($static_page as $key =>  $result)
+                            @if($key > 3)
+                            <?php continue; ?>
+                            @endif
+                            <p><a class="scroll-link" href="{{url($result->slug)}}">{{$result->title}}</a></p>
+                            @endforeach
                             
                           </div>
                           <div class="col-md-6">
-                            <p><a href="#">How it works</a></p>
-                           
-                            <p><a href="#">Our Policy</a></p>
-                            <p><a href="#">Terms & Conditions</a></p>
+                            @foreach($static_page as $key =>  $result)
+                            @if($key < 4)
+                            <?php continue; ?>
+                            @endif
+                            <p><a class="scroll-link" href="{{url($result->slug)}}">{{$result->title}}</a></p>
+                            @endforeach
+                            
                           </div>
                         </div>
                       </div>

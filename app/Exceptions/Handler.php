@@ -20,7 +20,7 @@ use URL;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-
+use Str;
 
 
 class Handler extends ExceptionHandler
@@ -70,22 +70,22 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {   
         $headers = getallheaders(); 
-       //echo json_encode($headers);
-   
-        // $data2['message']    = json_encode($headers);
-        // $data2['file']       = $request->header('Accept');
-        // $data2['log']        = $request->header('app_version');
-
-        // \DB::table('error_logs')->insert($data2);
-
 
         $path_info_url = $request->getpathInfo();
         $api_url = null;
         if (strpos($path_info_url, 'api/v2') !== false) {
             $api_url = $path_info_url;
+        }else{
+            if(!$request->is('admin/*')){
+                return redirect('404?error='.Str::slug($exception->getMessage())); 
+            }
         }
-         
-         if ($exception instanceof AuthenticationException) {
+
+        if($request->is('admin/*')){
+           echo Str::slug($exception->getMessage());  
+        }
+
+        if ($exception instanceof AuthenticationException) {
 
             $data['url']        = url($path_info_url);
             $data['message']    = $exception->getMessage();

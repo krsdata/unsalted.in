@@ -13,8 +13,6 @@
 
               <li class="nav-item"><a href="{{url('/')}}#properties-section" class="nav-link"><span>Screenshots</span></a></li> 
 
-              <li class="nav-item"><a href="{{url('terms')}}" class="nav-link"><span>Terms</span></a></li>
-
               <li class="nav-item"><a href="{{url('contactus')}}" class="nav-link"><span>Contact us</span></a></li>
             </ul>
           </div>
