@@ -7,7 +7,8 @@
       @include('partials.navigation')
       <!-- Left side column. contains the logo and sidebar -->
     
-    <section class="content-wrap" style="background-image: url('{{URL::asset('webmedia/images/cricg.jpg')}}');" data-section="home" data-stellar-background-ratio="0.5" id="home-section">
+    <section class="content-wrap" style="" data-section="home" data-stellar-background-ratio="0.5" id="home-section">
+      <img src="{{URL::asset('webmedia/images/cricg.jpg')}}">
       <div class="overlay"></div>
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-start" data-scrollax-parent="true" style="height: 499px;">
