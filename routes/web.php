@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+    \URL::forceScheme('https');
+
 Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
 
 Route::match(['post','get'], 'changePasswordToken', 'UserController@changePasswordToken');
