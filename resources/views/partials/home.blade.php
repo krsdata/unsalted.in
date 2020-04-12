@@ -30,7 +30,7 @@
           <div class="col-md-12 heading-section text-center ftco-animate">
             <span class="subheading">Features</span>
             <h2 class="mb-4 wow animated bounceInLeft ">Our features</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+            <p>Sportsfight fantasy league</p>
           </div>
         </div>
         <div class="row">
@@ -243,7 +243,7 @@
                         <div class="single-cases-info heading-section mb-30">
                             <span class="subheading">Screenshots</span>
                             <h3 style="color: #00bade;">Apps<br> Screenshot</h3>
-                            <p>Lorem ipsum dolor sit amet, consecadipiscing elit, sed do eiusmod tempor incididunt ut ore et dolore magna aliqua. Quis ipsum suspendisse gravida. Risus commodo viverra maecenasan lacus vel facilisis. </p>
+                            
                         </div>
                     </div>
                     <style type="text/css">

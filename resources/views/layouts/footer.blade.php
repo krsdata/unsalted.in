@@ -6,17 +6,17 @@
                   <h3 style="border-bottom: 2px solid #fff;">About us</h3>
                   <span style="width: 200px;display: block;border-bottom: 2px solid #fff;margin-top: -4px;"></span>
                   <p class="mt-20">
-                    We are a young company always looking for new and creative ideas to help you with our products in your everyday work.
+                    We are a young company always looking for new and creative ideas to help you with our products to increase your income.
                   </p>
-                  <p>© Company Inc.</p>
+                  <p>© Sportsfight.</p>
                       </div>
                 <div class="col-md-4 offset-md-1 footer-contact wow fadeInDown animated footpara " style="visibility: visible; animation-name: fadeInDown;">
                   <h3 style="border-bottom: 2px solid #fff;">Contact</h3>
                   <span style="width: 98px;display: block;border-bottom: 2px solid #fff;margin-top: -4px;"></span>
-                      <p><i class="fa fa-map-marker-alt"></i> Via Rossini 10, 10136 Turin Italy</p>
-                      <p><i class="fa fa-phone"></i> Phone: (0039) 123 45 67 347</p>
-                      <p><i class="fa fa-envelope"></i> Email: <a href="mailto:sportsfight@domain.com">sportsfight@domain.com</a></p>
-                      <p><i class="fa fa-skype"></i> Skype: Sportsfight_online</p>
+                      <p><i class="fa fa-map-marker-alt"></i> Mumbai, Maharastra </p>
+                      <p><i class="fa fa-phone"></i> Phone: (+91) xxx xxx xxxx </p>
+                      <p><i class="fa fa-envelope"></i> Email: <a href="mailto:sportsfight@domain.com">info@sportsfight.in</a></p>
+                      <p><i class="fa fa-skype"></i> Skype: sportsfight_online</p>
                       </div>
                       <div class="col-md-4 footer-links wow fadeInUp animated footpara" style="visibility: visible; animation-name: fadeInUp;">
                         <div class="row">
@@ -88,11 +88,9 @@
   <script src="{{ URL::asset('webmedia/js/aos.js')}}"></script>
   <script src="{{ URL::asset('webmedia/js/jquery.animateNumber.min.js')}}"></script>
   <script src="{{ URL::asset('webmedia/js/scrollax.min.js')}}"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-<!--   <script src="{{ URL::asset('webmedia/js/google-map.js')}}"></script>
- -->  <script src="{{ URL::asset('webmedia/js/plugins.js')}}"></script>
-  <script src="{{ URL::asset('webmedia/js/main.js')}}"></script>
-  <script src="{{ URL::asset('webmedia/js/main1.js')}}"></script>
+  <script src="{{ URL::asset('webmedia/js/plugins.js')}}"></script>
+  <script src="{{ URL::asset('webmedia/js/main.js')}}"></script><!-- 
+  <script src="{{ URL::asset('webmedia/js/main1.js')}}"></script> -->
 
   <script>
     $(document).ready(function(){
