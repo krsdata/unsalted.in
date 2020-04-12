@@ -10,7 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (App::environment('prod')) {
     \URL::forceScheme('https');
+}
 
 Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
 
