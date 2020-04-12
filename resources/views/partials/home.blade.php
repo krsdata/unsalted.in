@@ -2,7 +2,7 @@
 
      
 
-      <section class="hero-wrap js-fullheight" style="background-image: url('{{ url("webmedia/images/bg_2.jpg") }}'); " data-section="home" data-stellar-background-ratio="0.5" id="home-section">
+      <section class="hero-wrap js-fullheight" style="background-image: url('{{ URL::asset("webmedia/images/bg_2.jpg") }}'); " data-section="home" data-stellar-background-ratio="0.5" id="home-section">
       <div class="overlay"></div>
       <div class="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
@@ -12,8 +12,8 @@
             <form action="#" class="search-location">
                     <div class="row">
                         <div class="col-lg align-items-end">
-                             <a href="http://sportsfight.in/public/upload/apk/sportsfight.apk" target="_blank">
-                            <img  src="{{ url('webmedia/images/download-android-new.png')}}" alt="android-new" style="width: 200px;">
+                             <a href="https://sportsfight.in/public/upload/apk/sportsfight.apk" target="_blank">
+                            <img  src="{{ URL::asset('webmedia/images/download-android-new.png')}}" alt="android-new" style="width: 200px;">
 
                             
                         </a>
