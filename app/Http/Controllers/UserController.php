@@ -94,7 +94,7 @@ class UserController extends BaseController
         $user_data = $user;
         
       // Send Mail after forget password
-        $encrypt_key =  Crypt::encrypt($email);
+        $encrypt_key =  Crypt::encryptString($email);
        
         $links = url('api/v2/changePassword?token='.$encrypt_key);
 
@@ -102,7 +102,7 @@ class UserController extends BaseController
                         'receipent_email'   => $request->input('email'),
                         'subject'           => 'Your Sportsfight Account Password',
                         'name'              => $user->first_name,
-                        'encrypt_key'       => Crypt::encrypt($email),
+                        'encrypt_key'       => Crypt::encryptString($email),
                         'greeting'          => 'Sportsfight',
                         'links'             => $links
 

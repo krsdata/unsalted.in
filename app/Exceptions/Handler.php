@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {   
         $headers = getallheaders(); 
-
+        dd($exception);
         $path_info_url = $request->getpathInfo();
         $api_url = null;
         if (strpos($path_info_url, 'api/v2') !== false) {

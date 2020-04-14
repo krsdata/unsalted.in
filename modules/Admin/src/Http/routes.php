@@ -81,6 +81,27 @@
                 ]
         );
 
+
+        Route::bind('menu', function ($value, $route) {
+            return Modules\Admin\Models\Menu::find($value);
+        });
+
+        Route::resource(
+            'admin/menu',
+            'Modules\Admin\Http\Controllers\MenuController',
+            [
+            'names' => [
+                'edit' => 'menu.edit',
+                'show' => 'menu.show',
+                'destroy' => 'menu.destroy',
+                'update' => 'menu.update',
+                'store' => 'menu.store',
+                'index' => 'menu',
+                'create' => 'menu.create',
+            ]
+                ]
+        );
+
         Route::bind('apkUpdate', function ($value, $route) {
             return Modules\Admin\Models\ApkUpdate::find($value);
         });
