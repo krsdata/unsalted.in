@@ -36,6 +36,7 @@ use App\Models\ReferralCode;
 
 class ApiController extends BaseController
 {
+   
     public $token;
     public $date;
 
@@ -2812,7 +2813,7 @@ class ApiController extends BaseController
         return $data;
 	}
 	
-	public function uploadbase64Image(Request $request)
+	 public function uploadbase64Image(Request $request)
     {
            // echo $request->get('image_bytes');
             $bin = base64_decode($request->get('image_bytes'));
