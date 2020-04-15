@@ -70,20 +70,36 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {   
         $headers = getallheaders(); 
-        dd($exception);
         $path_info_url = $request->getpathInfo();
         $api_url = null;
         if (strpos($path_info_url, 'api/v2') !== false) {
+
             $api_url = $path_info_url;
+
+            $data['url']        = url($path_info_url);
+            $data['message']    = $exception->getMessage();
+            $data['error_type'] = 'Invalid Url Access';
+            
+             $this->errorLog($data, $exception);
+
+            if ($api_url && $exception->getMessage()=="") {
+                echo  json_encode(
+                    [
+                        'status'        => false,
+                        'code'          => 500,
+                        'message'       => $exception->getMessage(),
+                        'response'      => $data,
+                    ]
+                );
+                 exit();
+            } 
         }else{
             if(!$request->is('admin/*')){
-                return redirect('404?error='.Str::slug($exception->getMessage())); 
+                $err = Str::slug($exception->getMessage());
+                $err = ($err=="")?'Page-Not-Found':$err;
+                return redirect('404?error='.$err); 
             }
-        }
-
-        if($request->is('admin/*')){
-           echo Str::slug($exception->getMessage());  
-        }
+        }  
 
         if ($exception instanceof AuthenticationException) {
 
@@ -211,17 +227,21 @@ class Handler extends ExceptionHandler
             } 
             exit();
          }
+        if($request->is('admin/*')){
 
+           $exception = $exception->getMessage();
+           $exception = ($exception=="")?"Page not found!":$exception;
+            return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
+        }
         return parent::render($request, $exception);
     }
 
     public function errorLog($data, $e)
     {
-   
-        $data['log']        =  json_encode($e);
-        $data['message']    = $e->getMessage();
-        $data['file']       = $e->getFile().'- line number : '.$e->getline()??null;
-        $data['statusCode'] = 500;
+        $data['log']        =   json_encode($e);
+        $data['message']    =   $e->getMessage();
+        $data['file']       =   $e->getFile().'- line number : '.$e->getline()??null;
+        $data['statusCode'] =   500;
        
         \DB::table('error_logs')->insert($data);
     }

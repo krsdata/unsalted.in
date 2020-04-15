@@ -71,7 +71,7 @@
                                                 Error Date :   {!!
                                                         \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->updated_at, 'UTC')
                                                         ->setTimezone('Asia/Kolkata')
-                                                        ->format('H:i:s A')
+                                                        ->format('d-M-Y,H:i:s A')
                                                     !!}<br>
                                                     {{$result->message}}  </td> 
                                                    

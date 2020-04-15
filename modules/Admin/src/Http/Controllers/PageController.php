@@ -42,8 +42,14 @@ class PageController extends Controller
         $this->record_per_page = Config::get('app.record_per_page');
     }
 
-    protected $categories;
+    public function error(Pages $page, Request $request){
 
+        $page_title  = 'Error';
+        $page_action = 'View Error';
+      
+        return view('packages::errors.404', compact('page_title', 'page_action'));
+
+    }
     /*
      * Dashboard
      * */
