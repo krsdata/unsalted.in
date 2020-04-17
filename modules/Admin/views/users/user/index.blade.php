@@ -31,7 +31,7 @@
                                     </div>
                                      
                                 </div>
-                                <div class="portlet-body">
+                                <div class="portlet-body table-responsive">
                                     <div class="table-toolbar">
                                         <div class="row">
                                             <form action="{{route('user')}}" method="get" id="filter_data">
