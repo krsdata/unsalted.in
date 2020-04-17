@@ -33,7 +33,6 @@ use App\Models\MatchPoint;
 use App\Models\MatchStat;
 use App\Models\ReferralCode;
 
-
 class ApiController extends BaseController
 {
    
@@ -41,9 +40,13 @@ class ApiController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
-
+        /*        
+        $user_id = 284;
+        $path = storage_path().'/images/bank_docs/'.date('Y-m-d').'/'.$user_id;
+        \File::makeDirectory($path, $mode = 0777, true, true);
+        */
         $this->date = date('Y-m-d');
-        $this->token = "8740931958a5c24fed8b66c7609c1c49";
+        $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
 
         $request->headers->set('Accept', 'application/json');
 

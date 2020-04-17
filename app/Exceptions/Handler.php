@@ -69,6 +69,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
+        
+        if($request->is('admin/*')){
+
+           $exception = $exception->getMessage();
+           $exception = ($exception=="")?"Page not found!":$exception;
+            return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
+        }
+        
         $headers = getallheaders(); 
         $path_info_url = $request->getpathInfo();
         $api_url = null;
@@ -188,7 +196,7 @@ class Handler extends ExceptionHandler
                  exit();
           }
 
-          if ($exception instanceof FileException) { 
+          if ($exception instanceof FileException) {  
                  $data['url']        = url($path_info_url);
                 $data['message']    = $exception->getMessage();
                 $data['error_type'] = 'FileException';
@@ -208,7 +216,7 @@ class Handler extends ExceptionHandler
                  exit();
           }
            if ($exception instanceof QueryException) {
-
+ 
             $data['url']        = url($path_info_url);
             $data['message']    = $exception->getMessage();
             $data['error_type'] = 'QueryException';
@@ -227,12 +235,7 @@ class Handler extends ExceptionHandler
             } 
             exit();
          }
-        if($request->is('admin/*')){
-
-           $exception = $exception->getMessage();
-           $exception = ($exception=="")?"Page not found!":$exception;
-            return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
-        }
+        
         return parent::render($request, $exception);
     }
 

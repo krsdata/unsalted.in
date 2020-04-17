@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
                     $step2 = str_replace("@index", '', $step1);
                     $step3 = str_replace("Controller", '', $step2);
                     
-                    $notArr = ['Auth','Admin','Role','Compaint','ContactGroup','ArticleType','Article','Press','MonthlyReport',
+                    $notArr = ['Auth','Admin','Role','ArticleType','Article',
                         'Program','Reason','Settings'];
                     if(in_array(ltrim($step3,'"\"'), $notArr))
                     {
@@ -42,8 +42,23 @@ class AppServiceProvider extends ServiceProvider
                 }
                 
             }
+        }  
+
+        try{
+            $main_menu = \DB::table('menus')->where('parent_id',0)
+                    ->get()
+                    ->transform(function($item,$key){
+                        $item->sub_menu = \DB::table('menus')
+                                ->where('parent_id',$item->id)
+                                ->get();
+                        return $item;
+
+                    });
+        }catch(\Illuminate\Database\QueryException $e){
+            $main_menu = (object)[];
         } 
-        
+
+        View::share('main_menu',$main_menu??null); 
         View::share('controllers',$controllers);
     }
 

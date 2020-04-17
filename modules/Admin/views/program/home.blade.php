@@ -62,7 +62,7 @@
                                         <thead>
                                             <tr>
                                                  <th>Sno.</th>
-                                                <th> Promotion Name </th>
+                                                <th> Campaign Name </th>
                                                 <th> Start Date </th> 
                                                 <th> End Date </th> 
                                                  <th> View Details  </th> 
@@ -74,7 +74,7 @@
                                         @foreach($programs as $key => $result)
                                             <tr>
                                              <th>  {{++$key}} </th>
-                                                <td> {{$result->program_name}} </td>
+                                                <td> {{$result->campaign_name}} </td>
                                                  <td> {{$result->start_date}} </td>
                                                  <td> {{$result->end_date}} </td>
                                                     <td>  <a href="{{ route('program.show',$result->id)}}">

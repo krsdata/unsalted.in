@@ -98,7 +98,7 @@ class MenuController extends Controller {
         $page_action = 'Create Menu';
         $allMenu  = Menu::pluck('title','id');
 
-        return view('packages::menu.create', compact('menu', 'url','menu', 'page_title', 'page_action','allMenu'));
+        return view('packages::menu.create', compact('menu','menu', 'page_title', 'page_action','allMenu'));
     }
 
     /*

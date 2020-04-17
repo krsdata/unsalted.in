@@ -7,21 +7,9 @@ use App\Http\Requests;
 use Illuminate\Http\Request;
 use Modules\Admin\Http\Requests\UserRequest;
 use Modules\Admin\Models\User; 
-use Input;
-use Validator;
-use Auth;
-use Paginate;
-use Grids;
-use HTML;
-use Form;
-use Hash;
-use View;
-use URL;
-use Lang;
-use Session;
-use DB;
-use Route;
-use Crypt;
+use Input,Validator,Auth,Paginate;
+use Grids,HTML,Form,Hash,View,URL;
+use Lang,Session,DB,Route,Crypt;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Dispatcher; 
 use App\Helpers\Helper;
@@ -97,6 +85,16 @@ class ClientUsersController extends Controller {
             $users = User::orderBy('id','desc')
                             ->where('role_type',3)->Paginate(15);
             
+            $users->transform(function($item,$key){
+
+                $wallets = \DB::table('wallets')
+                            ->where('user_id',$item->id)
+                            ->get();
+                $item->wallets = $wallets;
+
+                return $item;
+
+            });
         }
         
         $roles = Roles::all();

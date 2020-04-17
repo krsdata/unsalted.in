@@ -43,9 +43,9 @@ class UsersController extends Controller {
      */
     public function __construct() {
         $this->middleware('admin');
-        View::share('viewPage', 'Editor');
+        View::share('viewPage', 'Users');
         View::share('helper',new Helper);
-        View::share('heading','Editor');
+        View::share('heading','Users');
         View::share('route_url',route('user'));
 
         $this->record_per_page = Config::get('app.record_per_page');
@@ -59,8 +59,8 @@ class UsersController extends Controller {
 
     public function index(User $user, Request $request) 
     { 
-        $page_title = 'Editor';
-        $page_action = 'View Editor'; 
+        $page_title = 'Users';
+        $page_action = 'View Users'; 
         if ($request->ajax()) {
             $id = $request->get('id');
             $status = $request->get('status');
@@ -92,9 +92,9 @@ class UsersController extends Controller {
                         if ($role_type) {
                             $query->Where('role_type',$role_type);
                         }
-                    })->orderBy('id','desc')->where('role_type','!=',3)->Paginate($this->record_per_page);
+                    })->orderBy('id','desc')->Paginate($this->record_per_page);
         } else {
-            $users = User::orderBy('id','desc')->where('role_type','!=',3)->Paginate($this->record_per_page);
+            $users = User::orderBy('id','desc')->Paginate($this->record_per_page);
             
         } 
         $roles = Roles::all();
