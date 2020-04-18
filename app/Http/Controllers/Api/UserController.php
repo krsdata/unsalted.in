@@ -386,9 +386,12 @@ class UserController extends BaseController
                 ]);
         }else{
             //Server side valiation
+          //  $request->merge(['mobile' => $request->mobile_number]);
+
             $validator = Validator::make($request->all(), [
-               'email' => 'required|email|unique:users',
-               'password' => 'required'
+               'email'          => 'required|email|unique:users',
+               'mobile_number'  => 'required|unique:users',
+               'password'       => 'required'
             ]);
         }
 
@@ -415,7 +418,7 @@ class UserController extends BaseController
         foreach ($input as $key => $value) {
             $user->$key = $value;
         }
-        $uname              = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
+        $uname = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
         $user->user_name    = $uname;
         $user->referal_code = $uname;
 
