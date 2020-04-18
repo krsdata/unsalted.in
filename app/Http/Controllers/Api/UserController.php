@@ -29,10 +29,13 @@ use App\Models\WalletTransaction;
 use App\Models\Rank;
 use App\Models\JoinContest;
 use App\Models\ReferralCode;
+use Modules\Admin\Models\Program;
 
 class UserController extends BaseController
 {
     public $download_link;
+    public $referral_bonus;
+    public $signup_bonus;
     public function __construct(Request $request) {
 
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first(); 
@@ -40,7 +43,36 @@ class UserController extends BaseController
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }  
+        }
+
+        $program  = Program::whereDate('end_date','>=',date('Y-m-d'))
+                    ->get()
+                    ->transform(function($item, $key){
+
+                        if($item->promotion_type==1)
+                        {
+                            $item->referral = true;
+                            $item->bonus = false;                         
+                        }
+                        if($item->promotion_type==2)
+                        {
+                            $item->referral = false;
+                            $item->bonus = true;                         
+                        }
+                        if($item->trigger_condition==1)
+                        {
+                            $item->signup = true;                        
+                        }else{
+                            $item->signup = false; 
+                        }
+
+                        return $item;
+                    });
+        $signup_bonus = $program->where('signup',true)->first();
+        $referral_bonus = $program->where('referral',true)->first();
+
+        $this->referral_bonus = $referral_bonus->amount??100;
+        $this->signup_bonus = $signup_bonus->amount??5;
     } 
 
     public function inviteUser(Request $request,User $inviteUser)
@@ -238,6 +270,7 @@ class UserController extends BaseController
         $referal_user = ReferralCode::where('refer_by',$request->user_id)
                         ->pluck('user_id')->toArray();
         $data = User::whereIn('id',$referal_user)->select('id','first_name as name')->get();
+        
         if($data){
              return Response::json(array( 
                     'status' => true,

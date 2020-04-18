@@ -68,6 +68,15 @@ Route::middleware('auth:api')->group( function () {
 	    'prefix' => 'v2'
 	], function()
     {
+    	Route::match(['get','post'], 'generateOtp', [
+                'as' => 'generateOtp',
+                'uses' => 'Api\UserController@generateOtp'
+            ]);
+
+        Route::match(['get','post'], 'verifyOtp', [
+                'as' => 'verifyOtp',
+                'uses' => 'Api\UserController@verifyOtp'
+            ]);
     	
     	Route::match(['post','get'],'myReferralDetails', 'Api\UserController@myReferralDetails');
 
