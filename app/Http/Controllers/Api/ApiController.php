@@ -34,6 +34,7 @@ use App\Models\MatchStat;
 use App\Models\ReferralCode;
 use File;
 
+
 class ApiController extends BaseController
 {
 
@@ -41,13 +42,9 @@ class ApiController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
-        /*        
-        $user_id = 284;
-        $path = storage_path().'/images/bank_docs/'.date('Y-m-d').'/'.$user_id;
-        \File::makeDirectory($path, $mode = 0777, true, true);
-        */
+
         $this->date = date('Y-m-d');
-        $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
+        $this->token = "8740931958a5c24fed8b66c7609c1c49";
 
         $request->headers->set('Accept', 'application/json');
 
@@ -2624,6 +2621,7 @@ class ApiController extends BaseController
         if($wallet){
             $myArr['wallet_amount']   = (float) $wallet->usable_amount;
             $myArr['bonus_amount']    = (float)$wallet->bonus_amount;
+            $myArr['is_account_verified']    = $this->isAccountVerified($request);
             $myArr['user_id']         = (float)$wallet->user_id;
         }
 
@@ -2634,6 +2632,62 @@ class ApiController extends BaseController
                 "walletInfo"=>$myArr
             ]
         );
+    }
+
+    private function isAccountVerified(Request $request){
+        /*
+         Documents submitted status code
+           1. EMAIL VERIFIED
+           2. PAN OR ADHAR
+           3. BANK ADDRESS
+           4. PAYTM NO
+
+
+         */
+        $emailStatus = 0;
+        $documentsStatus = 0;
+        $addressProofStatus = 0;
+        $paytmStatus = 0;
+
+        $documentsTable = \DB::table('verify_documents')
+            ->where('user_id',$request->user_id)
+            ->get();
+        if($documentsTable){
+            foreach ($documentsTable as $key => $value) {
+                // print_r($value);
+                // die;
+                $docType = $value->doc_type;
+                if($docType == 'adharcard' OR $docType == 'pancard'){
+                    if($value->status ==1){
+                        $documentsStatus = 2;
+                    }else {
+                        $documentsStatus = 1;
+                    }
+                }
+                if($docType == 'paytm'){
+                    $paytmStatus = 2;
+                }
+            }
+        }
+
+        $bankAccounts  = \DB::table('bank_accounts')
+            ->where('user_id',$request->user_id)
+            ->first();
+        if($bankAccounts){
+            if($bankAccounts->status ==1){
+                $addressProofStatus = 2;
+            }else {
+                $addressProofStatus = 1;
+            }
+        }
+
+        $data = array();
+        $data['email_verified'] = $emailStatus;
+        $data['documents_verified'] = $documentsStatus;
+        $data['address_verified'] = $addressProofStatus;
+        $data['paytm_verified'] = $paytmStatus;
+
+        return $data;
     }
     // Add Money
     public function addMoney(Request $request){
@@ -2929,19 +2983,19 @@ class ApiController extends BaseController
                 $data['updated_at'] = date('Y-m-d H:i:s');
                 \DB::table('verify_documents')->insert($data);
             }else
-            if($documentType=='passbook'){
-                $data = array();
-                $data['user_id'] = $request->user_id;
-                $data['bank_name'] = $request->bankName;
-                $data['account_name'] = $request->accountHolderName;
-                $data['account_number'] = $request->accountNumber;
-                $data['ifsc_code'] = $request->ifscCode;
-                $data['account_type'] = $request->accountType;
-                $data['bank_passbook_url'] = $request->bankPassbookUrl;
-                $data['created_at'] = date('Y-m-d H:i:s');
-                $data['updated_at'] = date('Y-m-d H:i:s');
-                \DB::table('bank_accounts')->insert($data);
-            }
+                if($documentType=='passbook'){
+                    $data = array();
+                    $data['user_id'] = $request->user_id;
+                    $data['bank_name'] = $request->bankName;
+                    $data['account_name'] = $request->accountHolderName;
+                    $data['account_number'] = $request->accountNumber;
+                    $data['ifsc_code'] = $request->ifscCode;
+                    $data['account_type'] = $request->accountType;
+                    $data['bank_passbook_url'] = $request->bankPassbookUrl;
+                    $data['created_at'] = date('Y-m-d H:i:s');
+                    $data['updated_at'] = date('Y-m-d H:i:s');
+                    \DB::table('bank_accounts')->insert($data);
+                }
 
             return response()->json(
                 [
