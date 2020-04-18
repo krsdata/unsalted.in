@@ -27,40 +27,40 @@ Route::group(['prefix' => 'v2'], function () {
 
 Route::middleware('auth:api')->group( function () {
 
-	Route::group([
-	    'prefix' => 'v2'
-	], function()
-    {	
-    	Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
-    	Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
-        
-    	// getMatch
-    	Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
-    	// Contest
-    	Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
-    	Route::match(['post','get'],'getMyContest', 'Api\ApiController@getMyContest');
-    	Route::match(['post','get'],'joinContest', 'Api\ApiController@joinContest');
-    	//Create Team
-    	Route::match(['post','get'],'createTeam', 'Api\ApiController@createTeam');
-    	Route::match(['post','get'],'cloneMyTeam', 'Api\ApiController@cloneMyTeam');
-		Route::match(['post','get'],'getMyTeam', 'Api\ApiController@getMyTeam');
-		// Get Players
-		Route::match(['post','get'],'getPlayer', 'Api\ApiController@getPlayer');
-		//Transaction
-		Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');	
-		Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');
-		Route::match(['post','get'],'transactionHistory', 'Api\PaymentController@transactionHistory');
-		// Leaderboard , getpoints and prizedistribution
-		Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');	
-		Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
-		Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
-		Route::match(['post','get'],'prizeDistribution', 'Api\PaymentController@prizeDistribution');
+    Route::group([
+        'prefix' => 'v2'
+    ], function()
+    {
+        Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
+        Route::match(['post','get'],'inviteUser', 'Api\UserController@inviteUser');
 
-		Route::match(['post','get'],'joinNewContestStatus', 'Api\ApiController@joinNewContestStatus'); 
-	
-		Route::match(['post','get'],'getScore', 'Api\ApiController@getScore'); 
+        // getMatch
+        Route::match(['post','get'],'getMatch', 'Api\ApiController@getMatch');
+        // Contest
+        Route::match(['post','get'],'getContestByMatch', 'Api\ApiController@getContestByMatch');
+        Route::match(['post','get'],'getMyContest', 'Api\ApiController@getMyContest');
+        Route::match(['post','get'],'joinContest', 'Api\ApiController@joinContest');
+        //Create Team
+        Route::match(['post','get'],'createTeam', 'Api\ApiController@createTeam');
+        Route::match(['post','get'],'cloneMyTeam', 'Api\ApiController@cloneMyTeam');
+        Route::match(['post','get'],'getMyTeam', 'Api\ApiController@getMyTeam');
+        // Get Players
+        Route::match(['post','get'],'getPlayer', 'Api\ApiController@getPlayer');
+        //Transaction
+        Route::match(['post','get'],'getWallet', 'Api\ApiController@getWallet');
+        Route::match(['post','get'],'addMoney', 'Api\ApiController@addMoney');
+        Route::match(['post','get'],'transactionHistory', 'Api\PaymentController@transactionHistory');
+        // Leaderboard , getpoints and prizedistribution
+        Route::match(['post','get'],'leaderBoard', 'Api\ApiController@leaderBoard');
+        Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
+        Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@getPrizeBreakup');
+        Route::match(['post','get'],'prizeDistribution', 'Api\PaymentController@prizeDistribution');
 
-	}); 
+        Route::match(['post','get'],'joinNewContestStatus', 'Api\ApiController@joinNewContestStatus');
+
+        Route::match(['post','get'],'getScore', 'Api\ApiController@getScore');
+
+    });
 });
 
  // Without Auth
@@ -156,21 +156,20 @@ Route::middleware('auth:api')->group( function () {
 );
 
 
- 
+
 // if URL not found
 Route::group([
-	    'prefix' => 'v2'
-	], function()
-    {	 
-	 // if route not found
-    Route::any('{any}', function(){ 
-			$data = [
-						'status'=>0,
-						'code'=>400,
-						'message' => 'Bad request'
-					];
-			return \Response::json($data);
-	});    
+    'prefix' => 'v2'
+], function()
+{
+    // if route not found
+    Route::any('{any}', function(){
+        $data = [
+            'status'=>0,
+            'code'=>400,
+            'message' => 'Bad request'
+        ];
+        return \Response::json($data);
+    });
 });
-     
-     
+
