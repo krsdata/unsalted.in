@@ -1265,7 +1265,7 @@ class UserController extends BaseController
             );
         }
 
-        $otp = mt_rand(100000, 999999);
+        $otp = mt_rand(1000, 9999);
 
         $data['otp'] = $otp;
         $data['user_id'] = $request->get('user_id');

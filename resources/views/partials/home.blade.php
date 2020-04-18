@@ -39,7 +39,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span class="flaticon-pin"></span></div>
               <div class="media-body">
                 <h3 class="heading mb-3">Easy to Join Contest</h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <p>Sportsfight Fantasy League allows you to participate in the fantasy sports where you can quickly level up your performance choosing your dream players. As you are just a step away from the contest, So, buy the entry ticket and get yourself enrolled for the upcoming contest.</p>
               </div>
             </div>      
           </div>
@@ -48,7 +48,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span class="flaticon-detective"></span></div>
               <div class="media-body">
                 <h3 class="heading mb-3">High speedy app</h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <p>Download the Sportsfight app to access the exciting features which you are not allowed to use on its website. Also, the app is easy to use as it fastens the speed so download it to keep your match handy. Besides this, get instant notifications in regards to your fantasy sport, upcoming contests, dream player, and so forth.</p>
               </div>
             </div>      
           </div>
@@ -57,7 +57,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span class="flaticon-house"></span></div>
               <div class="media-body">
                 <h3 class="heading mb-3">Full protection</h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <p>We understand safety measures, and that is why we make each participant register with their email id or mobile number. Or you can log with your current Facebook or Google account as well. It will help verify the user’s details for undertaking further procedures. Do not worry, as your details are safe with us and we do not share it with any third party. </p>
               </div>
             </div>      
           </div>
@@ -66,7 +66,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span class="flaticon-purse"></span></div>
               <div class="media-body">
                 <h3 class="heading mb-3">Easy to Withdrowy</h3>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                <p>Sportsfight Fantasy League is a dream come true for the users, as they get an excellent chance to choose their ideal players alongside you can even earn points by winning the contest or a bonus by inviting a friend. After winning users switch to withdraw the earnings, with an easy withdrawal request procedure. As soon as the withdrawal request gets approved, your registered bank account will be verified to transfer the earnings into your account.</p>
               </div>
             </div>      
           </div>
@@ -136,12 +136,12 @@
           <div class="col-md-4 heading-section ftco-animate">
             <span class="subheading">Steps</span>
             <h2 class="mb-4">Our Steps</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+           
             <div class="media block-6 services text-center d-block pt-md-5 mt-md-5">
               <div class="icon justify-content-center align-items-center d-flex"><span>1</span></div>
               <div class="media-body p-md-3">
                 <h3 class="heading mb-3">Checkout Contest of the League</h3>
-                <p class="mb-5">Come and checkout the League</p>
+                <p class="mb-5">You are allowed to check over the participating teams based on the previous match listings, and you can also check the entry contest amount.</p>
                 <hr>
               </div>
             </div>
@@ -151,7 +151,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span>2</span></div>
               <div class="media-body p-md-3">
                 <h3 class="heading mb-3">Create Maximum Team</h3>
-                <p class="mb-5"  style="color: #000">Create maximum number of team and join multiple contest.</p>
+                <p class="mb-5"  style="color: #000">Sportsfight allows you to create the best possible team out of real-life players as per your choice and prediction of who performs well</p>
                 <hr>
               </div>
             </div>      
@@ -161,7 +161,7 @@
               <div class="icon justify-content-center align-items-center d-flex"><span>3</span></div>
               <div class="media-body p-md-3">
                 <h3 class="heading mb-3">Pay Small And Win Big</h3>
-                <p class="mb-5" style="color: #000">Almost we have 90% above Prize Breakup for all contest. Here maximum users are winner.</p>
+                <p class="mb-5" style="color: #000">Pay small and win big is the concept of winning a considerable amount by taking part in the contest with a token of entry amount. Not just this, but also all the participants are getting rewarded for participation.</p>
                 <hr>
               </div>
             </div>      
