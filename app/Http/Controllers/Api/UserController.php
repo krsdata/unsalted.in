@@ -1271,13 +1271,20 @@ class UserController extends BaseController
         $otp = mt_rand(1000, 9999);
 
         $data['otp'] = $otp;
+        $user = User::find($request->get('user_id'));
+        
+        if($user){
+            $data['mobile'] = $user->mobile_number;
+            $request->merge(['mobile_number' => $user->mobile_number]);    
+        }else{
+            $data['mobile'] = $request->get('mobile_number');
+        }
+        
         $data['user_id'] = $request->get('user_id');
         $data['timezone'] = config('app.timezone');
-        $data['mobile'] = $request->get('mobile_number');
-
+        
         \DB::table('mobile_otp')->insert($data);
         
-        $user = User::find($request->get('user_id'));
         $data['email'] = $user->email??$request->get('email');
 
         $urlencode = urldecode("Your verification \n OTP is : ".$otp."\n Notes: Sportsfight never calls you asking for OTP.");
