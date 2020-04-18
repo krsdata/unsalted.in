@@ -887,7 +887,8 @@ class UserController extends BaseController
             default:
                 $credentials = [
                         'email'=>$request->get('email'),
-                        'password'=>$request->get('password')
+                        'password'=>$request->get('password'),
+                        'status' => 1
                     ];
 
                  $auth = Auth::attempt($credentials);
@@ -979,6 +980,7 @@ class UserController extends BaseController
 
             return response()->json([
                     "status"=>$status,
+                    "is_account_verified" => $usermodel->is_account_verified,
                     "code"=>$code,
                     "message"=> $message ,
                     'data'=> $data??$request->all(),
@@ -987,6 +989,7 @@ class UserController extends BaseController
         }else{
             return response()->json([
                     "status"=>$status,
+                    "is_account_verified" => 0,
                     "code"=>$code,
                     "message" => 'Invalid email or password',
                     'token' =>$token
@@ -1347,7 +1350,7 @@ class UserController extends BaseController
             if($data->mobile){
                 \DB::table('users')
                         ->where('id',$request->get('user_id'))
-                        ->update(['phone'=>$data->mobile]);
+                        ->update(['phone'=>$data->mobile,'is_account_verified'=>1]);
             }           
             
         }
