@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Welcome! Verify your email address to get started</title>
+<title>Welcome</title>
 <style type="text/css">
 table {
     border-collapse: collapse;
@@ -21,12 +21,12 @@ table {
                   <div>
                         <p>Dear User,</p>
                         <p></p>
-                        <p>Thank you for contacting us, Support Team will get back to you shortly. Your support ticket Id is : # {{ $content['ticket_id']  }}
+                        <p>Thank you for contacting us, Support Team will get back to you shortly. 
                         </p>
                        
                       
                           <p>Best Regards,</p>
-                          <p>Plug11 Support</p>
+                          <p>Support</p>
 
                   </div>
                 </td>

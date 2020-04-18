@@ -88,14 +88,10 @@
         <!--Grid column-->
         <div class="col-md-6 mb-4 mb-md-0 heading-section">
 
-          <span class="subheading">Works</span>
-            <h2 class="mb-4">Our works</h2>
+          <span class="subheading">About Us</span>
+            <h2 class="mb-4">Who We Are?</h2>
 
-          <p class="text-muted">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Id quam sapiente
-            molestiae
-            numquam quas, voluptates omnis nulla ea odio quia similique corrupti magnam, doloremque laborum.</p>
-
-          <a class="btn btn-purple btn-md ml-0" href="#workflow-section" role="button" style="margin-top: 20px;">Start now<i class="fa fa-gem ml-2"></i></a>
+          <p class="text-muted">We drive one of the biggest virtual yet fancy sports platforms. Also, we help you set-up your fan base by keeping a watch over shared posts in the feed. Not just this, but here you can enhance your performance by playing more to reach the next best level along with exciting rewards. Here you can create a team choosing your favourite players along with Vice Captain and Captain. Sportfight Fantasy League is a stage that permits you to play virtually amongst real-life players and earn points predicting their performance based on their previous matches.</p>
 
           <hr class="my-5">
 
@@ -109,7 +105,7 @@
           <a href="#" class="mx-1" role="button"><i class="fa fa-pinterest"></i></a>
           <a href="#" class="mx-1" role="button"><i class="fa fa-youtube"></i></a>
           <a href="#" class="mx-1" role="button"><i class="fa fa-github"></i></a>
-          <a href="#" class="mx-1" role="button"><i class="fa fa-stack-overflow"></i></a>
+          
 
         </div>
         <!--Grid column-->
