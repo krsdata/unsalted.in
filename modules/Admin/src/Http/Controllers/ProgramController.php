@@ -44,14 +44,13 @@ class ProgramController extends Controller {
      */
     public function __construct(Contact $contact) { 
         $this->middleware('admin');
-        View::share('viewPage', 'Promotion');
-        View::share('sub_page_title', 'Promotion');
+        View::share('viewPage', 'Campaign');
+        View::share('sub_page_title', 'Campaign');
         View::share('helper',new Helper);
-        View::share('heading','Promotion');
+        View::share('heading','Campaign');
         View::share('route_url',route('program')); 
         $this->record_per_page = Config::get('app.record_per_page'); 
     }
-
    
     /*
      * Dashboard
@@ -59,9 +58,9 @@ class ProgramController extends Controller {
 
     public function index(Contact $contact, Request $request) 
     { 
-        $page_title = 'Promotion';
-        $sub_page_title = 'View Promotion';
-        $page_action = 'View Promotion'; 
+        $page_title = 'Campaign';
+        $sub_page_title = 'View Campaign';
+        $page_action = 'View Campaign'; 
 
 
         if ($request->ajax()) {
@@ -82,7 +81,7 @@ class ProgramController extends Controller {
                
             $programs = Program::where(function($query) use($search,$status) {
                         if (!empty($search)) {
-                            $query->Where('program_name', 'LIKE', "%$search%");
+                            $query->Where('campaign_name', 'LIKE', "%$search%");
                         }
                         
                     })->Paginate($this->record_per_page);
@@ -100,15 +99,13 @@ class ProgramController extends Controller {
 
     public function create(Program $program) 
     {
-        $page_title     = 'Promotion';
-        $page_action    = 'Create Promotion';
-        $program       = Program::all(); 
-        $status         = [
-                            'last_15_days'=>'inactive from last 15 days',
-                            'last_30_days'=>'inactive from last 30 days',
-                            'last_45_days'=>'inactive from last 45 days'
+        $page_title     = 'Campaign';
+        $page_action    = 'Create Campaign';
+        $status         = [ 0=>'Select Reward Type',
+                            1=>'Fixed',
+                            2=>'Percentage'
                         ];
-
+                      
         return view('packages::program.create', compact( 'program','status','page_title', 'page_action'));
     }
 
@@ -118,13 +115,26 @@ class ProgramController extends Controller {
      * Save Group method
      * */
 
-    public function store(ProgramRequest $request, Program $program) 
+    public function store(Request $request, Program $program) 
     {   
+        $time = date('h:i:s A');
+
+        $start_date = $request->start_date;
+        $end_date   = $request->end_date;
+        
+        $timestamp_sd  = strtotime($start_date);
+        $timestamp_ed  = strtotime($end_date);
+
+        $request->merge(['start_date'   =>  date('Y-m-d', $timestamp_sd)]); 
+        $request->merge(['end_date'     =>  date('Y-m-d', $timestamp_ed)]);
+        $request->merge(['start_time'   =>  $time]);
+        $request->merge(['end_time'     =>  $time]);  
         $program->fill(Input::all()); 
+
         $program->save();   
          
         return Redirect::to(route('program'))
-                            ->with('flash_alert_notice', 'New program  successfully created!');
+                            ->with('flash_alert_notice', 'New Campaign  successfully created!');
     }
 
     /*
@@ -135,22 +145,37 @@ class ProgramController extends Controller {
 
     public function edit($id) {
         $program = Program::find($id);
-        $page_title     = 'Promotion';
-        $page_action    = 'Edit Promotion'; 
-        $status         = [
-                            'last_15_days'=>'inactive from last 15 days',
-                            'last_30_days'=>'inactive from last 30 days',
-                            'last_45_days'=>'inactive from last 45 days'
+        $page_title     = 'Campaign';
+        $page_action    = 'Edit Campaign'; 
+
+         $status         = [ 0=>'Select Reward Type',
+                            1=>'Fixed',
+                            2=>'Percentage'
                         ];
         return view('packages::program.edit', compact('program','status', 'page_title', 'page_action'));
     }
 
     public function update(Request $request, $id) {
         $program = Program::find($id);
+        
+        $time = date('h:i:s A');
+        $start_date = $request->start_date;
+        $end_date   = $request->end_date;
+        
+        $timestamp_sd  = strtotime($start_date);
+        $timestamp_ed  = strtotime($end_date);
+
+        $request->merge(['start_date'   =>  date('Y-m-d', $timestamp_sd)]); 
+        $request->merge(['end_date'     =>  date('Y-m-d', $timestamp_ed)]);
+        $request->merge(['start_time'   =>  $time]);
+        $request->merge(['end_time'     =>  $time]);  
+        $program->fill(Input::all()); 
+       
         $program->fill(Input::all()); 
         $program->save();  
+       
         return Redirect::to(route('program'))
-                        ->with('flash_alert_notice', 'program  successfully updated.');
+                        ->with('flash_alert_notice', 'Campaign  successfully updated.');
     }
     /*
      *Delete User
@@ -161,16 +186,59 @@ class ProgramController extends Controller {
         
         Program::where('id',$program)->delete();
         return Redirect::to(route('program'))
-                        ->with('flash_alert_notice', 'program  successfully deleted.');
+                        ->with('flash_alert_notice', 'Campaign  successfully deleted.');
     }
 
     public function show($id) {
         $program = Program::find($id);
-        $page_title     = 'Promotion';
-        $page_action    = 'Show Promotion'; 
+        $page_title     = 'Campaign';
+        $page_action    = 'Show Campaign'; 
         $result = $program;
-        $program = Program::where('id',$program->id)->select(['program_name','description','start_date','end_date','target_users','complete_task','reward_point','created_at'])->first()->toArray();
-        
+
+        $trigger_condition = '(
+                        CASE 
+                        WHEN trigger_condition = 1 THEN "Sign up" 
+                        WHEN trigger_condition = 2 THEN "First Transaction"
+                        ELSE
+                        "Sign up" end) as trigger_condition';
+
+         $reward_type = '(
+                        CASE
+                        WHEN reward_type = 1 THEN "Fixed" 
+                        WHEN reward_type = 2 THEN "Percentage" 
+                        ELSE
+                        "Fixed" end) as reward_type';
+        $promotion_type = '(
+                        CASE
+                        WHEN promotion_type = 1 THEN "Referral" 
+                        WHEN promotion_type = 2 THEN "Bonus" 
+                        ELSE
+                        "Bonus" end) as promotion_type';
+
+        $status = '(
+                        CASE
+                        WHEN status = 1 THEN "Active" 
+                        WHEN status = 2 THEN "Planned"
+                        WHEN status = 3 THEN "Draft" 
+                        ELSE
+                        "Active" end) as status';
+        $customer_type = '(
+                        CASE
+                        WHEN customer_type = 1 THEN "Public" 
+                        WHEN customer_type = 2 THEN "Custom"
+                        ELSE
+                        "Public" end) as customer_type';
+
+        $program = Program::where('id',$program->id)
+                    ->select('*',
+                        \DB::raw($customer_type),
+                        \DB::raw($trigger_condition),
+                        \DB::raw($reward_type),
+                        \DB::raw($promotion_type),
+                        \DB::raw($status))
+                    ->first()
+                    ->toArray();  
+
         return view('packages::program.show', compact( 'result','program','page_title', 'page_action'));
 
     }

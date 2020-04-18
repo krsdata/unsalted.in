@@ -8,16 +8,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use Response;
 
 class Page extends Eloquent {
-
-
-
-   
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = ' pages';
+    protected $table = 'pages';
     /**
      * The attributes that are mass assignable.
      *

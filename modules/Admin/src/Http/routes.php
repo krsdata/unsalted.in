@@ -7,7 +7,7 @@
     Route::get('admin/login', 'Modules\Admin\Http\Controllers\AuthController@index');
 
     Route::post('admin/blog/ajax', 'Modules\Admin\Http\Controllers\BlogController@ajax');
-
+    Route::get('admin/error', 'Modules\Admin\Http\Controllers\PageController@error');
     Route::post('admin/login', function (App\Admin $user) {
 
         $credentials = ['email' => Input::get('email'), 'password' => Input::get('password')];
@@ -77,6 +77,27 @@
                 'store' => 'errorLog.store',
                 'index' => 'errorLog',
                 'create' => 'errorLog.create',
+            ]
+                ]
+        );
+
+
+        Route::bind('menu', function ($value, $route) {
+            return Modules\Admin\Models\Menu::find($value);
+        });
+
+        Route::resource(
+            'admin/menu',
+            'Modules\Admin\Http\Controllers\MenuController',
+            [
+            'names' => [
+                'edit' => 'menu.edit',
+                'show' => 'menu.show',
+                'destroy' => 'menu.destroy',
+                'update' => 'menu.update',
+                'store' => 'menu.store',
+                'index' => 'menu',
+                'create' => 'menu.create',
             ]
                 ]
         );

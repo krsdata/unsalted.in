@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\RatingFeedback;
 use PHPMailerAutoload;
 use PHPMailer; 
+use App\Models\ReferralCode;
 
 class Helper {
 

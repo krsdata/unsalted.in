@@ -31,7 +31,7 @@
                                     </div>
                                      
                                 </div>
-                                <div class="portlet-body">
+                                <div class="portlet-body table-responsive">
                                     <div class="table-toolbar">
                                         <div class="row">
                                             <form action="{{route('user')}}" method="get" id="filter_data">
@@ -109,7 +109,7 @@
                                                 <td class="center"> 
                                                
                                                     @if($result->role_type==3)
-                                                    <a href="{{url('admin/mytask/'.$result->id)}}">
+                                                    <a href="#">
                                                         View Details
                                                         <i class="glyphicon glyphicon-eye-open" title="edit"></i> 
 
@@ -119,7 +119,7 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    {!! Carbon\Carbon::parse($result->created_at)->format('Y-m-d'); !!}
+                                                    {!! Carbon\Carbon::parse($result->created_at)->format('d-m-Y'); !!}
                                                 </td>
                                                 <td>
                                                     <span class="label label-{{ ($result->status==1)?'success':'warning'}} status" id="{{$result->id}}"  data="{{$result->status}}"  onclick="changeStatus({{$result->id}},'user')" >

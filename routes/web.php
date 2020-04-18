@@ -10,34 +10,34 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+if (App::environment('prod')) {
+    \URL::forceScheme('https');
+}
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
 
+Route::match(['post','get'], 'changePasswordToken', 'UserController@changePasswordToken');
 
-Route::get('about-us', function () {
-      echo "about-us";
-});
-
-
-Route::get('privacy-policy', function () {
-      echo "privacy-policy";
-});
+Route::match(['post','get'], '/', 'HomeController@home');
+Route::match(['post','get'], '404', 'HomeController@page404');
 
 
-Route::get('terms-and-conditions', function () {
-      echo "terms-and-conditions";
-});
+Route::match(
+    ['post','get'],
+    '/contactus',
+    [
+        'as'   => 'contactus',
+        'uses' => 'HomeController@contactus',
+    ]
+);
+ 
 
-
-Route::get('legality', function () {
-      echo "legality";
-});
-
-
-Route::get('how-to-play', function () {
-      echo "how-to-play";
-});
-
+Route::match(
+    ['post','get'],
+    '/{name}',
+    [
+        'as'   => 'contentspage',
+        'uses' => 'HomeController@getPage',
+    ]
+);
  

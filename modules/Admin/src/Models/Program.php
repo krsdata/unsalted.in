@@ -40,7 +40,21 @@ class Program extends Model {
      *
      * @var array
      */
-    protected $fillable = ['program_name','start_date','end_date','description','target_users','complete_task','reward_point','description'];  // All field of user table here    
+    protected $fillable = [
+            'campaign_name',
+            'start_date',
+            'end_date',
+            'description',
+            'reward_type',
+            'amount',
+            'promotion_type',
+            'status',
+            'trigger_condition',
+            'customer_type',
+            'created_by',
+            'start_time',
+            'end_time'
+        ];  // All field of user table here    
 
     
     

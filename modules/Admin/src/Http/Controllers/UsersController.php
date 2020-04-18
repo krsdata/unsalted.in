@@ -43,9 +43,9 @@ class UsersController extends Controller {
      */
     public function __construct() {
         $this->middleware('admin');
-        View::share('viewPage', 'Admin User');
+        View::share('viewPage', 'Users');
         View::share('helper',new Helper);
-        View::share('heading','Admin Users');
+        View::share('heading','Users');
         View::share('route_url',route('user'));
 
         $this->record_per_page = Config::get('app.record_per_page');
@@ -59,8 +59,8 @@ class UsersController extends Controller {
 
     public function index(User $user, Request $request) 
     { 
-        $page_title = 'Admin User';
-        $page_action = 'Admin View User'; 
+        $page_title = 'Users';
+        $page_action = 'View Users'; 
         if ($request->ajax()) {
             $id = $request->get('id');
             $status = $request->get('status');
@@ -92,9 +92,9 @@ class UsersController extends Controller {
                         if ($role_type) {
                             $query->Where('role_type',$role_type);
                         }
-                    })->where('role_type','!=',3)->Paginate($this->record_per_page);
+                    })->orderBy('id','desc')->Paginate($this->record_per_page);
         } else {
-            $users = User::orderBy('id','desc')->where('role_type','!=',3)->Paginate($this->record_per_page);
+            $users = User::orderBy('id','desc')->Paginate($this->record_per_page);
             
         } 
         $roles = Roles::all();
@@ -110,8 +110,8 @@ class UsersController extends Controller {
     public function create(User $user) 
     {
 
-        $page_title = 'Admin User';
-        $page_action = 'Create User';
+        $page_title = 'Editor';
+        $page_action = 'Create Editor';
         $roles = Roles::all();
         $role_id = null;
         $js_file = ['common.js','bootbox.js','formValidate.js'];
@@ -152,8 +152,8 @@ class UsersController extends Controller {
 
     public function edit($id) {
         $user = User::find($id);
-        $page_title = 'Admin User';
-        $page_action = 'Show Users';
+        $page_title = 'Editor';
+        $page_action = 'Show Editor';
         $role_id = $user->role_type;
         $roles = Roles::all();
         $js_file = ['common.js','bootbox.js','formValidate.js'];
@@ -162,16 +162,15 @@ class UsersController extends Controller {
 
     public function update(Request $request, $id) {
         $user = User::find($id);
-        $user->fill(Input::all());
-        if(!empty($request->get('password')))
+        //$user->fill(Input::all());
+        if($request->get('password'))
         {
             $user->password = Hash::make($request->get('password'));
         }
-       
-        $user->fill(Input::all());
         $action = $request->get('submit');
         $user->role_type= $request->get('role_type');
-
+        $user->save(); 
+        
         if($action=='avtar'){ 
             if ($request->file('profile_image')) {
                 $profile_image = User::createImage($request,'profile_image');
@@ -179,15 +178,7 @@ class UsersController extends Controller {
                $user->profile_image = $request->get('profilePic'); 
             }
            
-        }
-        elseif($action=='businessInfo'){
-        }
-        elseif($action=='paymentInfo'){
-
-        }else{
-
-        }
-
+        } 
 
         $validator_email = User::where('email',$request->get('email'))
                             ->where('id','!=',$user->id)->first();
@@ -203,12 +194,7 @@ class UsersController extends Controller {
             }
         } 
 
-        $user->save(); 
-         
-
-        $contains = \Str::contains(URL::previous(), 'clientuser');
-          
-        if($contains){
+        if($request->get('role')==3){
             $Redirect = 'clientuser';
         }else{
             $Redirect = 'user';
@@ -222,19 +208,11 @@ class UsersController extends Controller {
      * @param ID
      * 
      */
-    public function destroy(Request $request,$id) {
+    public function destroy($id) {
         
         User::where('id',$id)->delete();
 
-        $contains = \Str::contains(URL::previous(), 'clientuser');
-            
-        if($contains){
-            $route = "clientuser";
-        }  else{
-            $route = "user";
-        }
-
-        return Redirect::to(route($route))
+        return Redirect::to(route('user'))
                         ->with('flash_alert_notice', 'User  successfully deleted.');
     }
 

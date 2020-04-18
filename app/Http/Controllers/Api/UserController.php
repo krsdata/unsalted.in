@@ -28,6 +28,7 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\Rank;
 use App\Models\JoinContest;
+use App\Models\ReferralCode;
 
 class UserController extends BaseController
 {
@@ -40,7 +41,6 @@ class UserController extends BaseController
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
-
     } 
 
     public function inviteUser(Request $request,User $inviteUser)
@@ -106,7 +106,6 @@ class UserController extends BaseController
                     'data' => ['receipentEmail'=>$user_email]
                    ]
                 );
-
     }
 
     public function generateUserName(){
@@ -124,19 +123,17 @@ class UserController extends BaseController
     public function verifyDocument(Request $request){
         
         $user = User::find($request->user_id); 
-
         $messages = [
             'user_id.required' => 'Invalid User id', 
             'adhar.required' => 'Please upload Adhar card'
 
         ];
         $validator = Validator::make($request->all(), [
-                'user_id' => 'required',  
-              //   'adhar' => 'required|mimes:jpeg,bmp,jpg,png,gif,pdf',
-                 'pan' => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
+                'user_id'   => 'required',  
+                'pan'       => 'mimes:jpeg,bmp,jpg,png,gif,pdf',
+                'adhar'     => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
             ],$messages);  
          
-
         // Return Error Message
         if ($validator->fails() || $user ==null) {
             $error_msg =[];        
@@ -165,27 +162,65 @@ class UserController extends BaseController
 
         $data['user_id'] = $user->id;
 
-        if ($request->file('pan')) {
-            $pan = $request->file('pan');
-            $destinationPath = public_path('upload/document/pan');
-            $pan->move($destinationPath, $user->id.'_'.$pan->getClientOriginalName());
-            $pan_name = $user->id.'_'.$pan->getClientOriginalName();
-            $request->merge(['pan_url'=>$pan_name]);  
-            $data['pan_url']  = url::to(asset('public/upload/document/pan/'.$pan_name));
-            $data['pan'] = $pan_name;
+        if ($request->get('pan')) {
+           
+            $bin = base64_decode($request->get('pan'));
+
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['pan_url'=>$urls]); 
+            $data['pan_url']  = $urls;
+            $data['pan'] = $image_name;
             $data['upload_status'] = 'uploaded';
         } 
 
-        if ($request->file('adhar')) {
-            $adhar = $request->file('adhar');
-            $destinationPath = public_path('upload/document');
-            $adhar->move($destinationPath, $user->id.'_'.$adhar->getClientOriginalName());
-            $adhar_name = $user->id.'_'.$adhar->getClientOriginalName();
-            $request->merge(['adhar_url'=>$adhar_name]);  
-            $data['adhar_url']  = url::to(asset('public/upload/document/adhar/'.$adhar_name));
-            $data['adhar'] = $adhar_name;
+        if ($request->get('adhar')) {
+            $bin = base64_decode($request->get('adhar'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['adhar_url'=>$urls]); 
+            $data['adhar_url']  = $urls;
+            $data['adhar'] = $image_name;
             $data['upload_status'] = 'uploaded';
         } 
+
+        if ($request->get('address_proof')) {
+            $bin = base64_decode($request->get('address_proof'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
+            }
+            
+            $image_name= $user->id.'_pan'.'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+
+            $request->merge(['address_proof_url'=>$urls]); 
+            $data['address_proof_url']  = $urls;
+            $data['address_proof'] = $image_name;
+            $data['upload_status'] = 'uploaded';
+        } 
+
 
         $doc = \DB::table('verify_documents')
                 ->updateOrInsert(['user_id'=>$user->id],$data);
@@ -198,12 +233,108 @@ class UserController extends BaseController
                 ); 
 
     } 
+    public function myReferralDetails(Request $request)
+    {
+        $referal_user = ReferralCode::where('refer_by',$request->user_id)
+                        ->pluck('user_id')->toArray();
+        $data = User::whereIn('id',$referal_user)->select('id','first_name as name')->get();
+        if($data){
+             return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => "List of referal",
+                    'response' => [
+                            'referal_user' => $data
+                        ] 
+                    )
+                );
+         }else{
+             return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => "No referal user found"
+                    )
+                );
+         }
 
+    }
+    public function updateAfterLogin(Request $request){
+
+        $refer_by = User::where('referal_code',$request->referral_code)
+                    ->orWhere('user_name',$request->referral_code)
+                    ->first();
+
+        $user_id = $request->user_id;
+        $user = User::find($user_id);
+
+        if($refer_by && $user)
+        {    
+            $referralCode = new ReferralCode;
+            $referralCode->referral_code    =   $request->referral_code;
+            $referralCode->user_id          =   $user_id;
+            $referralCode->refer_by         =   $refer_by->id;
+            $referralCode->save();
+
+
+            $wallet_trns['user_id']         =  $refer_by->id??null;
+            $wallet_trns['amount']          =  5;
+            $wallet_trns['payment_type']    =  2;
+            $wallet_trns['payment_type_string'] = "Referral";
+            $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
+            $wallet_trns['payment_mode']    = "sportsfight";
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_status']  = "success";
+
+            $wallet_transactions = WalletTransaction::create( 
+                 $wallet_trns
+            );
+
+            $wallet = Wallet::firstOrNew(
+                [
+                    'payment_type' => 2,
+                    'user_id' => $refer_by->id
+                ]
+            );
+
+            $wallet->user_id        = $refer_by->id;
+            $wallet->validate_user  = Hash::make($refer_by->id);
+            $wallet->payment_type   = 2 ;
+            $wallet->payment_type_string = "Referral";
+            $wallet->referal_amount = ($wallet->referal_amount)+5;
+            $wallet->amount = ($wallet->referal_amount)+5;
+
+            $wallet->save();
+        }
+        
+        if($user){
+            $user->name             = $request->name;
+            $user->mobile_number    = $request->mobile_number;
+            $user->phone            = $request->phone;
+            $user->profile_image    = $request->image_url;
+            $user->reference_code   = $request->referral_code;
+            $user->save();
+
+            return Response::json(array( 
+                    'status' => true,
+                    "code"=> 200,
+                    'message' => "Details successfully saved",
+                    'login_user' =>$user->id 
+                    )
+                );
+        }else{
+            return Response::json(array( 
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => "user is not registered"
+                    )
+                );
+        }
+        
+    }
     public function registration(Request $request)
     {   
         $input['first_name']    = $request->get('first_name')??$request->get('name');
-        $input['last_name']     = $request->get('last_name');
-        
+              
         $input['name']          = $request->name; 
         $input['email']         = $request->get('email'); 
         $input['password']      = Hash::make($request->input('password'));
@@ -211,13 +342,7 @@ class UserController extends BaseController
         $input['user_type']     = $request->get('user_type');
         $input['provider_id']   = $request->get('provider_id'); 
         $input['mobile_number']     = $request->get('mobile_number');
-       // $user = User::firstOrNew(['provider_id'=>$request->get('provider_id')]);
        
-        if($request->input('user_id')){
-            $u = $this->updateProfile($request,$user);
-            return $u;
-        } 
-
         if($input['user_type']=='googleAuth' || $input['user_type']=='facebookAuth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
@@ -229,8 +354,7 @@ class UserController extends BaseController
             //Server side valiation
             $validator = Validator::make($request->all(), [
                'email' => 'required|email|unique:users',
-               'password' => 'required',
-               'name' => 'required'
+               'password' => 'required'
             ]);
         }
          
@@ -257,21 +381,48 @@ class UserController extends BaseController
         foreach ($input as $key => $value) {
             $user->$key = $value;    
         }
-        $user->user_name = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
+        $uname              = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
+        $user->user_name    = $uname;
+        $user->referal_code = $uname;
+        
         $user->save(); 
 
         if($user->id){
             $wallet = new Wallet;
             $wallet->user_id = $user->id;
             $wallet->validate_user = Hash::make($user->id);
+            $wallet->payment_type  =  1;
+            $wallet->payment_type_string = "Bonus";
+            $wallet->amount         = 100;
+            $wallet->bonus_amount   = 100;
             $wallet->save();
             $wallet  =  Wallet::find($wallet->id);
+
+            $wallet_trns['user_id']         =  $user->id??null;
+            $wallet_trns['amount']          =  100;
+            $wallet_trns['payment_type']    =  1;
+            $wallet_trns['payment_type_string'] = "Bonus";
+            $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
+            $wallet_trns['payment_mode']    = "sportsfight";
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_status']  = "success";
+
+            $wallet_transactions = WalletTransaction::updateOrCreate(
+                [
+                    'payment_type' => 1,
+                    'user_id' => $user->id
+                ],
+                 $wallet_trns
+            );
         }
             
         \DB::commit();
         
         $user  = User::find($user->id);
-        $user->validate_user = Hash::make($user->id);      
+        $user->validate_user    = Hash::make($user->id);
+        $user->reference_code   = $request->referral_code;
+        $user->mobile_number    = $request->mobile_number;
+        $user->phone            = $request->phone;  
         $user->save();
 
         $token = $user->createToken('SportsFight')->accessToken;
@@ -281,13 +432,13 @@ class UserController extends BaseController
         $user_data['email']            =  $user->email; 
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
         $user_data['usable_amount']    =  (float)$wallet->usable_amount;
-        $user_data['mobile_number']    =  $user->mobile_number; 
+        $user_data['mobile_number']    =  ($user->phone==null)?$user->mobile_number:$user->phone; 
         
         $subject = "Welcome to SportsFight! Verify your email address to get started";
         $email_content = [
                 'receipent_email'=> $request->input('email'),
-                'subject'=>$subject,
-                'greeting'=> 'PLUG11',
+                'subject'=>     $subject,
+                'greeting'=>    'SportsFight',
                 'first_name'=> $request->input('name')??$request->input('first_name')
                 ];
 
@@ -313,7 +464,63 @@ class UserController extends BaseController
             ]); 
         }
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
-        $data['apk_url'] =  $apk_updates->url??null;    
+        $data['apk_url'] =  $apk_updates->url??null;  
+        //reference_code
+
+        $refer_by = User::where('referal_code',$request->referral_code)
+                    ->orWhere('user_name',$request->referral_code)
+                    ->first();
+
+        
+        if($refer_by && $user)
+        {    
+            $referralCode = new ReferralCode;
+            $referralCode->referral_code    =   $request->referral_code;
+            $referralCode->user_id          =   $user->id;
+            $referralCode->refer_by         =   $refer_by->id;
+            $referralCode->save();
+ 
+            $wallet_trns['user_id']         =  $refer_by->id??null;
+            $wallet_trns['amount']          =  5;
+            $wallet_trns['payment_type']    =  2;
+            $wallet_trns['payment_type_string'] = "Referral";
+            $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
+            $wallet_trns['payment_mode']    = "sportsfight";
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_status']  = "success";
+
+            $wallet_transactions = WalletTransaction::create( 
+                 $wallet_trns
+            );
+
+
+            $wallet = Wallet::firstOrNew(
+                [
+                    'payment_type' => 2,
+                    'user_id' => $refer_by->id
+                ]
+            );
+
+            $wallet->user_id        = $refer_by->id;
+            $wallet->validate_user  = Hash::make($refer_by->id);
+            $wallet->payment_type   = 2 ;
+            $wallet->payment_type_string = "Referral";
+            $wallet->referal_amount = ($wallet->referal_amount)+5;
+            $wallet->amount = ($wallet->referal_amount)+5;
+
+            $wallet->save();
+
+        }
+        
+        if($user){
+            $user->name             = $request->name;
+            $user->mobile_number    = $request->mobile_number;
+            $user->phone            = $request->phone;
+            $user->profile_image    = $request->image_url;
+            $user->reference_code   = $request->referral_code;
+            $user->save(); 
+        }
+
         return response()->json(
                             [ 
                                 "status"=>true,
@@ -325,12 +532,9 @@ class UserController extends BaseController
                         );
     }
 
-
     public function updateProfile(Request $request)
     {     
-
         $user = User::find($request->user_id); 
-
         if(!$request->user_id && (User::find($request->user_id))==null)
         {
             return Response::json(array(
@@ -342,51 +546,35 @@ class UserController extends BaseController
             );
         } 
 
-        if($request->user_name){
-
-            $user_id = User::where('id','!=',$request->user_id)->where('user_name',$request->user_name)->first();
-            
-            if($user_id){
-               return Response::json(array(
-                    'status' => false,
-                    'code' => 201,
-                    'message' => 'User Id already taken!',
-                    'data'  =>  $request->all()
-                    )
-                ); 
-            }
-
-        }
-
         $table_cname = \Schema::getColumnListing('users');
-        $except = ['id','created_at','updated_at','profile_image','modeOfreach'];
-        
+        $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
+        $user_data = [];
         foreach ($table_cname as $key => $value) {
            
            if(in_array($value, $except )){
                 continue;
            } 
-            if($request->get($value)){
+
+           $udata = $request->get($value);
+            if($request->get($value) && $udata!=""){
                 $user->$value = $request->get($value);
+                $user_data[$value] = $request->get($value);
            }
         }
-       
-        
+               
         if($request->get('profile_image')){ 
-            $profile_image = $this->createImage($request->get('profile_image')); 
+            $profile_image = $this->createImage($request); 
             if($profile_image==false){
                 return Response::json(array(
                     'status' => false,
                      'code' => 201,
-                    'message' => 'Invalid Image format!',
-                    'data'  =>  $request->all()
+                    'message' => 'Invalid Image format!'
                     )
                 );
             }
             $user->profile_image  = $profile_image;       
         }        
            
-
         try{
             $user->save();
             $status = true;
@@ -403,7 +591,7 @@ class UserController extends BaseController
                             "status" =>$status,
                             'code'   => $code,
                             "message"=> $message,
-                            'data'=>isset($user)?$user:[]
+                            'data'=>isset($user_data)?$user_data:null
                             ]
                         );
          
@@ -411,25 +599,22 @@ class UserController extends BaseController
 
     // Image upload
 
-    public function createImage($base64)
+    public function createImage($request)
     {
         try{
-            $img  = explode(',',$base64);
-            if(is_array($img) && isset($img[1])){
-                $image = base64_decode($img[1]);
-                $image_name= time().'.jpg';
-                $path = storage_path() . "/image/" . $image_name;
-              
-                file_put_contents($path, $image); 
-                return url::to(asset('storage/image/'.$image_name));
-            }else{
-                if(starts_with($base64,'http')){
-                    return $base64;
-                }
-                return false; 
+            //  $request->get('image_bytes');
+            $bin = base64_decode($request->get('profile_image'));
+            $im = imageCreateFromString($bin);
+            if (!$im) {
+                  die('Base64 value is not a valid image');
             }
-
             
+            $image_name= time().'.jpg';
+            $path = storage_path() . "/image/" . $image_name;
+            //file_put_contents($path, $im);
+            imagepng($im, $path, 0);
+            $urls = url::to(asset('storage/image/'.$image_name));
+            return $urls;
         }catch(Exception $e){
             return false;
         }
@@ -466,17 +651,8 @@ class UserController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function customerLogin(Request $request)
-    {
-       
-       $key = "eldg95OMNo8:APA91bGK2quQTDOG4hg5WFy9jwVE2G1AgqxfaByAevgrs2CICsYLJj35D4mm1ReCrB3ZpqWAMDVPcutygQFp_JlycdqreaQCjnU2LXIfYl0MLqMt8mA5U7RaAaCt573rrERmQDtctkF-";
-
-
-       $data = ['action' => 'notify' , 'title' => 'login' , 'message' => 'successfully' ,'apk_update_url' => ''];
-       $this->sendNotification($key,$data);
-
+    {       
        $data = [];
-
-
        // echo "Email:".$request->email;
         $input = $request->all();
        // print_r ($input);
@@ -549,8 +725,30 @@ class UserController extends BaseController
                         $wallet = new Wallet;
                         $wallet->user_id = $user->id;
                         $wallet->validate_user = Hash::make($user->id);
+                        $wallet->payment_type  =  1;
+                        $wallet->payment_type_string = "Bonus";
+                        $wallet->amount         = 100;
+                        $wallet->bonus_amount   = 100;
                         $wallet->save();
                         $wallet  =  Wallet::find($wallet->id);
+
+
+                        $wallet_trns['user_id']         =  $user->id??null;
+                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['payment_type']    =  1;
+                        $wallet_trns['payment_type_string'] = "Bonus";
+                        $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
+                        $wallet_trns['payment_mode']    = "sportsfight";
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_status']  = "success";
+
+                        $wallet_transactions = WalletTransaction::updateOrCreate(
+                            [
+                                'payment_type' => 1,
+                                'user_id' => $user->id
+                            ],
+                             $wallet_trns
+                        );
                     }
                     $user->validate_user = Hash::make($user->id);
                     $user->save();
@@ -586,7 +784,6 @@ class UserController extends BaseController
                     $user = new User;
                    
                     $user->first_name    = $request->get('first_name');
-                    $user->last_name     = $request->get('last_name');
                     $user->name          = $request->name;
                      
                     $user->email         = $request->get('email'); 
@@ -601,20 +798,41 @@ class UserController extends BaseController
                     if (User::where(['email'=>$request->email])->first()) {
                        
                         return Response::json(array(
-                            'status' => false,
+                                'status' => false,
                             'code'=>201,
                             'message' =>'Invalid credentials'
                             )
                         );
                     } 
                         
-
                     $user->save() ;
                     if($user->id){
-                        $wallet = new Wallet;
+                        $wallet = new Wallet; 
                         $wallet->user_id = $user->id;
                         $wallet->validate_user = Hash::make($user->id);
+                        $wallet->payment_type  =  1;
+                        $wallet->payment_type_string = "Bonus";
+                        $wallet->amount         = 100;
+                        $wallet->bonus_amount   = 100;
                         $wallet->save(); 
+
+
+                        $wallet_trns['user_id']         =  $user->id??null;
+                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['payment_type']    =  1;
+                        $wallet_trns['payment_type_string'] = "Bonus";
+                        $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
+                        $wallet_trns['payment_mode']    = "sportsfight";
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_status']  = "success";
+
+                        $wallet_transactions = WalletTransaction::updateOrCreate(
+                            [
+                                'payment_type' => 1,
+                                'user_id' => $user->id
+                            ],
+                             $wallet_trns
+                        );
                     }
 
                     $user->validate_user = Hash::make($user->id);
@@ -658,7 +876,7 @@ class UserController extends BaseController
             if($wallet!=null){
                 $data['referal_code']  = $usermodel->user_name;
                 $data['name'] = $usermodel->name;
-                $data['user_email'] = $usermodel->email;
+                $data['email'] = $usermodel->email;
                 $data['user_id'] = $usermodel->id;
                 $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
@@ -691,7 +909,6 @@ class UserController extends BaseController
             ]);       
         }
 
-        $this->sendPushNotification();
         $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
 
         $token = Hash::make(1);
@@ -704,8 +921,8 @@ class UserController extends BaseController
         if($data){
 
             $server = [
-                'USER_DEVICE_IP' => $_SERVER['HTTP_X_FORWARDED_FOR'],
-                'COUNTRY_CODE' => $_SERVER['HTTP_CF_IPCOUNTRY'],
+                'USER_DEVICE_IP' => $_SERVER['HTTP_X_FORWARDED_FOR']??null,
+              //  'COUNTRY_CODE' => $_SERVER['HTTP_CF_IPCOUNTRY']??null,
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
                 'SERVER_NAME' => $_SERVER['SERVER_NAME'],
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
@@ -742,12 +959,79 @@ class UserController extends BaseController
 
      /* @method : Email Verification
     * @param : token_id
-    * Response : json
+    * Response : jsonṭ
     * Return :token and email 
    */
 
 
+    public function forgotPassword(Request $request)
+    {  
+        $email = $request->input('email');
+        //Server side valiation
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email'
+        ]);
 
+        $helper = new Helper;
+       
+        if ($validator->fails()) {
+            $error_msg  =   [];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                        array_push($error_msg, $value);     
+                    }
+                            
+            return Response::json(array(
+                'status' => 0,
+                'message' => $error_msg[0],
+                'data'  =>  ''
+                )
+            );
+        }
+
+        $user =   User::where('email',$email)->first();
+        if($user==null){
+            return Response::json(array(
+                'status' => false,
+                'code' => 201,
+                'message' => "Oh no! The address you provided isn't in our system",
+                'data'  =>  $request->all()
+                )
+            );
+        }
+        $user_data = $user;
+        $enc = Crypt::encryptString($user->id);
+     
+        $links = url('api/v2/changePassword?token='.$enc);
+
+        $email_content = array(
+                        'receipent_email'   => $request->input('email'),
+                        'subject'           => 'Your Sportsfight Account Password',
+                        'name'              => $user->first_name, 
+                        'greeting'          => 'Sportsfight',
+                        'links'             => $links
+
+                    );
+        $helper = new Helper;
+        $email_response = $helper->sendNotificationMail(
+                                $email_content,
+                                'forgot_password_link'
+                            ); 
+       
+       return   response()->json(
+                    [ 
+                        "status"=>true,
+                        "code"=> 200,
+                        "message"=>"Reset password link has sent. Please check your email.",
+                        'data' => $request->all()
+                    ]
+                );
+    }
+
+    public function changePassword(Request $request)
+    {   
+        $token = $request->token;
+        return view('changePassword',compact('token'));        
+    }
    
     public function emailVerification(Request $request)
     {
@@ -776,18 +1060,18 @@ class UserController extends BaseController
 
         $user_id =  $request->user_id;
         $old_password =  $request->old_password;
-        $current_password =  $request->current_password;
+        $current_password =  $request->new_password;
 
         $messages = [
-            'user_id.required' => 'Invalid User id', 
+            'user_id.required' => 'User id is required', 
             'old_password.required' => 'Old password is required',
-            'current_password.required' => 'Current password is required'
+            'new_password.required' => 'New password is required'
 
         ];
         $validator = Validator::make($request->all(), [
                 'user_id' => 'required',   
                  'old_password' => 'required',
-                 'current_password' => 'required|min:6'
+                 'new_password' => 'required|min:6'
             ],$messages);  
          
         $user = User::where('id',$user_id)->first(); 
@@ -833,7 +1117,7 @@ class UserController extends BaseController
         $user_id =  $request->user_id;
         $user = User::where('id',$user_id)->first();
         if($user){
-            return response()->json([ "status"=>true,'code'=>200,"message"=>"Temporary Password sent"]);
+            return Response()->json([ "status"=>true,'code'=>200,"message"=>"Temporary Password sent"]);
 
         }else{
             return response()->json([ "status"=>false,'code'=>201,"message"=>"Email does not exist!"]);

@@ -1,42 +1,39 @@
  
 
-<div class="form-body">
+<div class="form-body col-md-6">
     <div class="alert alert-danger display-hide">
-        <button class="close" data-close="alert"></button> Please fill the required field! </div>
-  <!--   <div class="alert alert-success display-hide">
-        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
--->
+        <button class="close" data-close="alert"></button> Please fill the required field! 
+    </div> 
  
-    <div class="form-group {{ $errors->first('program_name', ' has-error') }}">
-            <label class="control-label col-md-3">Program Name <span class="required"> * </span></label>
-            <div class="col-md-4"> 
-                {!! Form::text('program_name',null, ['class' => 'form-control','data-required'=>1])  !!} 
+    <div class="form-group {{ $errors->first('campaign_name', ' has-error') }}">
+            <label class="control-label col-md-4">Campaign Name <span class="required"> * </span></label>
+            <div class="col-md-7"> 
+                {!! Form::text('campaign_name',null, ['class' => 'form-control','data-required'=>1])  !!} 
                 
-                <span class="help-block">{{ $errors->first('program_name', ':message') }}</span>
+                <span class="help-block">{{ $errors->first('campaign_name', ':message') }}</span>
             </div>
-        </div> 
-
-        
+    </div>  
+       
 
 
         <div class="form-group {{ $errors->first('start_date', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
-            <label class="col-md-3 control-label">Start Date 
+            <label class="col-md-4 control-label">Start Date 
                 <span class="required"> * </span>
             </label>
-            <div class="col-md-4"> 
+            <div class="col-md-7"> 
 
-                  {!! Form::text('start_date',null, ['id'=>'startdate','class' => 'form-control end_date','data-required'=>1,"size"=>"16","data-date-format"=>"dd/mm/yyyy","data-date-start-date"=>"+0d" ])  !!} 
+                  {!! Form::text('start_date',null, ['id'=>'startdate','class' => 'form-control end_date','data-required'=>1,"size"=>"16","data-date-format"=>"dd-mm-yyyy","data-date-start-date"=>"+0d" ])  !!} 
                 
                 <span class="help-block">{{ $errors->first('start_date', ':message') }}</span>
             </div> 
         </div>
 
          <div class="form-group {{ $errors->first('end_date', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
-            <label class="col-md-3 control-label">End Date 
+            <label class="col-md-4 control-label">End Date 
                 <span class="required"> * </span>
             </label>
-            <div class="col-md-4"> 
-                {!! Form::text('end_date',null, ['id'=>'enddate','class' => 'form-control end_date','data-required'=>1,"size"=>"16","data-date-format"=>"dd/mm/yyyy","data-date-start-date"=>"+0d" ])  !!} 
+            <div class="col-md-7"> 
+                {!! Form::text('end_date',null, ['id'=>'enddate','class' => 'form-control end_date','data-required'=>1,"size"=>"16","data-date-format"=>"dd-mm-yyyy","data-date-start-date"=>"+0d" ])  !!} 
 
 
                 
@@ -44,37 +41,74 @@
             </div> 
         </div>
 
-         <div class="form-group {{ $errors->first('target_users', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
-            <label class="col-md-3 control-label">Target Users
+        <div class="form-group {{ $errors->first('reward_type', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
+            <label class="col-md-4 control-label">Reward Type
                 <span class="required"> * </span>
             </label>
-            <div class="col-md-4"> 
+            <div class="col-md-7"> 
 
-                {{ Form::select('target_users',$status, isset($program->target_users)?$program->target_users:'', ['class' => 'form-control']) }}
-                <span class="help-block">{{ $errors->first('target_users', ':message') }}</span>
+                {{ Form::select('reward_type',$status, isset($program->reward_type)?$program->reward_type:'', ['class' => 'form-control']) }}
+                <span class="help-block">{{ $errors->first('reward_type', ':message') }}</span>
             </div> 
         </div>
 
-
-         <div class="form-group {{ $errors->first('complete_task', ' has-error') }}">
-            <label class="control-label col-md-3">Complete Task  </label>
-            <div class="col-md-4"> 
-                {!! Form::text('complete_task',null, ['class' => 'form-control'])  !!} 
-                
-                <span class="help-block">{{ $errors->first('complete_task', ':message') }}</span>
+         <div class="form-group {{ $errors->first('amount', ' has-error') }}">
+            <label class="control-label col-md-4">Fixed/Percentage Amt. <span class="required"> * </span></label>
+            <div class="col-md-7"> 
+                {!! Form::text('amount',null, ['class' => 'form-control','data-required'=>1,'onkeypress'=>'return isNumberKey(event)'])  !!} 
+                 
+                <span class="help-block">{{ $errors->first('amount', ':message') }}</span>
             </div>
-        </div> 
-         <div class="form-group {{ $errors->first('reward_point', ' has-error') }}">
-            <label class="control-label col-md-3">Reward Point </label>
-            <div class="col-md-4"> 
-                {!! Form::text('reward_point',null, ['class' => 'form-control'])  !!} 
-                
-                <span class="help-block">{{ $errors->first('reward_point', ':message') }}</span>
+    </div>
+
+
+</div>
+<div class="form-body col-md-6">
+
+
+    <div class="form-group {{ $errors->first('promotion_type', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
+            <label class="col-md-4 control-label">Promotion Type
+                <span class="required"> * </span>
+            </label>
+            <div class="col-md-7"> 
+
+                {{ Form::select('promotion_type' , ['0'=>'Select Type','1'=>'Referral',2=>'Bonus'], $program->promotion_type,['class' => 'form-control']) }}
+                <span class="help-block">{{ $errors->first('promotion_type', ':message') }}</span>
+            </div> 
+        </div>
+
+     <div class="form-group {{ $errors->first('trigger_condition', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
+            <label class="col-md-4 control-label">Trigger Condition
+                <span class="required"> * </span>
+            </label>
+            <div class="col-md-7"> 
+
+                {{ Form::select('trigger_condition', [0=>'Select Condition','1'=>'Sign Up',2=>'First Transaction'], $program->trigger_condition,['class' => 'form-control']) }}
+                <span class="help-block">{{ $errors->first('trigger_condition', ':message') }}</span>
+            </div> 
+        </div>
+
+     <div class="form-group {{ $errors->first('status', ' has-error') }}  @if(session('field_errors')) {{ 'has-group' }} @endif">
+            <label class="col-md-4 control-label">Promotion Status
+                <span class="required"> * </span>
+            </label>
+            <div class="col-md-7"> 
+
+                {{ Form::select('status', [0=>'Select Status','1'=>'Active',2=>'Planned',3=>'Draft'], $program->status,['class' => 'form-control']) }}
+                <span class="help-block">{{ $errors->first('status', ':message') }}</span>
+            </div> 
+        </div>
+ 
+         <div class="form-group {{ $errors->first('customer_type', ' has-error') }}">
+            <label class="control-label col-md-4">Customer type </label>
+            <div class="col-md-7"> 
+                {{ Form::select('customer_type', [0=>'Select Customer Type','1'=>'Public'], $program->customer_type,['class' => 'form-control']) }}
+                <span class="help-block">{{ $errors->first('customer_type', ':message') }}</span> 
             </div>
         </div> 
           <div class="form-group {{ $errors->first('description', ' has-error') }}">
-            <label class="control-label col-md-3">Description<span class="required"> </span></label>
-            <div class="col-md-4"> 
+            <label class="control-label col-md-4">Description<span class="required"> </span></label>
+            <div class="col-md-7"> 
                 {!! Form::textarea('description',null, ['class' => 'form-control','data-required'=>1,'rows'=>3,'cols'=>5])  !!} 
                 
                 <span class="help-block">{{ $errors->first('description', ':message') }}</span>
@@ -102,7 +136,19 @@
 
 <div class="form-body">
 
+  <script type="text/javascript">
+       <!--
+       function isNumberKey(evt)
+       {
+          var charCode = (evt.which) ? evt.which : evt.keyCode;
+          if (charCode != 46 && charCode > 31 
+            && (charCode < 48 || charCode > 57))
+             return false;
 
+          return true;
+       }
+       //-->
+    </script>
 
 
 
