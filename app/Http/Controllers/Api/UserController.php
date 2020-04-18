@@ -274,6 +274,36 @@ class UserController extends BaseController
             $referralCode->user_id          =   $user_id;
             $referralCode->refer_by         =   $refer_by->id;
             $referralCode->save();
+
+
+            $wallet_trns['user_id']         =  $refer_by->id??null;
+            $wallet_trns['amount']          =  5;
+            $wallet_trns['payment_type']    =  2;
+            $wallet_trns['payment_type_string'] = "Referral";
+            $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
+            $wallet_trns['payment_mode']    = "sportsfight";
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_status']  = "success";
+
+            $wallet_transactions = WalletTransaction::create( 
+                 $wallet_trns
+            );
+
+            $wallet = Wallet::firstOrNew(
+                [
+                    'payment_type' => 2,
+                    'user_id' => $refer_by->id
+                ]
+            );
+
+            $wallet->user_id        = $refer_by->id;
+            $wallet->validate_user  = Hash::make($refer_by->id);
+            $wallet->payment_type   = 2 ;
+            $wallet->payment_type_string = "Referral";
+            $wallet->referal_amount = ($wallet->referal_amount)+5;
+            $wallet->amount = ($wallet->referal_amount)+5;
+
+            $wallet->save();
         }
         
         if($user){
@@ -363,6 +393,8 @@ class UserController extends BaseController
             $wallet->validate_user = Hash::make($user->id);
             $wallet->payment_type  =  1;
             $wallet->payment_type_string = "Bonus";
+            $wallet->amount         = 100;
+            $wallet->bonus_amount   = 100;
             $wallet->save();
             $wallet  =  Wallet::find($wallet->id);
 
@@ -474,6 +506,7 @@ class UserController extends BaseController
             $wallet->payment_type   = 2 ;
             $wallet->payment_type_string = "Referral";
             $wallet->referal_amount = ($wallet->referal_amount)+5;
+            $wallet->amount = ($wallet->referal_amount)+5;
 
             $wallet->save();
 
@@ -692,8 +725,30 @@ class UserController extends BaseController
                         $wallet = new Wallet;
                         $wallet->user_id = $user->id;
                         $wallet->validate_user = Hash::make($user->id);
+                        $wallet->payment_type  =  1;
+                        $wallet->payment_type_string = "Bonus";
+                        $wallet->amount         = 100;
+                        $wallet->bonus_amount   = 100;
                         $wallet->save();
                         $wallet  =  Wallet::find($wallet->id);
+
+
+                        $wallet_trns['user_id']         =  $user->id??null;
+                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['payment_type']    =  1;
+                        $wallet_trns['payment_type_string'] = "Bonus";
+                        $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
+                        $wallet_trns['payment_mode']    = "sportsfight";
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_status']  = "success";
+
+                        $wallet_transactions = WalletTransaction::updateOrCreate(
+                            [
+                                'payment_type' => 1,
+                                'user_id' => $user->id
+                            ],
+                             $wallet_trns
+                        );
                     }
                     $user->validate_user = Hash::make($user->id);
                     $user->save();
@@ -752,10 +807,32 @@ class UserController extends BaseController
                         
                     $user->save() ;
                     if($user->id){
-                        $wallet = new Wallet;
+                        $wallet = new Wallet; 
                         $wallet->user_id = $user->id;
                         $wallet->validate_user = Hash::make($user->id);
+                        $wallet->payment_type  =  1;
+                        $wallet->payment_type_string = "Bonus";
+                        $wallet->amount         = 100;
+                        $wallet->bonus_amount   = 100;
                         $wallet->save(); 
+
+
+                        $wallet_trns['user_id']         =  $user->id??null;
+                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['payment_type']    =  1;
+                        $wallet_trns['payment_type_string'] = "Bonus";
+                        $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
+                        $wallet_trns['payment_mode']    = "sportsfight";
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_status']  = "success";
+
+                        $wallet_transactions = WalletTransaction::updateOrCreate(
+                            [
+                                'payment_type' => 1,
+                                'user_id' => $user->id
+                            ],
+                             $wallet_trns
+                        );
                     }
 
                     $user->validate_user = Hash::make($user->id);
@@ -844,8 +921,8 @@ class UserController extends BaseController
         if($data){
 
             $server = [
-                'USER_DEVICE_IP' => $_SERVER['HTTP_X_FORWARDED_FOR'],
-                'COUNTRY_CODE' => $_SERVER['HTTP_CF_IPCOUNTRY'],
+                'USER_DEVICE_IP' => $_SERVER['HTTP_X_FORWARDED_FOR']??null,
+              //  'COUNTRY_CODE' => $_SERVER['HTTP_CF_IPCOUNTRY']??null,
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
                 'SERVER_NAME' => $_SERVER['SERVER_NAME'],
                 'SERVER_ADDR' => $_SERVER['SERVER_ADDR'],
