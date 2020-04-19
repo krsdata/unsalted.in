@@ -1368,7 +1368,7 @@ class UserController extends BaseController
                 ->where('user_id',$request->get('user_id'))->update(['is_verified'=>1]);
             \DB::table('referral_codes')
                 ->where('user_id',$request->get('user_id'))
-                ->update(['is_verified'=>1,'referral_amount'=>$this->referral_bonus]);
+                ->update(['is_verified'=>1,'referral_amount'=>$this->referral_bonus]); 
 
             if($data->mobile){
                 \DB::table('users')
