@@ -276,7 +276,7 @@ class UserController extends BaseController
             ->transform(function($item,$key){
                 $user = User::find($item->user_id);
                 if($user){
-                    $item->name = isset($user)?($user->name??$user->first_name):null;
+                    $item->name = $user->name;
                     return $item; 
                 }
                
