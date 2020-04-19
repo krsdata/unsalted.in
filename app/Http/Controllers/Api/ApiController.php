@@ -44,7 +44,7 @@ class ApiController extends BaseController
     public function __construct(Request $request) {
 
         $this->date = date('Y-m-d');
-        $this->token = "8740931958a5c24fed8b66c7609c1c49";
+        $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
 
         $request->headers->set('Accept', 'application/json');
 
@@ -185,18 +185,12 @@ class ApiController extends BaseController
                     'range' => $rank_rang,
                     'price' => $prize
                 ];
-
             }
-
             $item->rank = $rank;
             return $item;
-
         });
 
         $data['prizeBreakup'] = $contest[0]->rank??null ;
-
-
-
         return [
             'status'=>true,
             'code' => 200,
@@ -539,6 +533,39 @@ class ApiController extends BaseController
         $matches = Matches::whereIn('status',[2,3])
             ->where('timestamp_start','>=',strtotime("-1 days"))
             ->get();
+        foreach ($matches as $key => $match) {   # code...
+
+            $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
+            $points_json = json_decode($points);
+            $m = [];
+            foreach ($points_json->response->points as $team => $teams) {
+                if($teams==""){
+                    continue;
+                }
+                foreach ($teams as $key => $players) {
+                    foreach ($players as $key => $result) {
+                        $result->match_id = $match->match_id;
+                        if($result->pid==null){
+                            continue;
+                        }
+                        $m[] = MatchPoint::updateOrCreate(
+                            ['match_id'=>$match->match_id,'pid'=>$result->pid],
+                            (array)$result);
+
+                    }
+                }
+            }
+        }
+
+        echo 'points_updated';
+    }
+
+    // update points by LIVE Match
+    public function updatePointsAndPlayerByMatchId(Request $request){
+        $matches = Matches::where('status',3)
+            ->get();
+
+
         foreach ($matches as $key => $match) {   # code...
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
