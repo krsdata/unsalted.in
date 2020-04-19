@@ -280,14 +280,14 @@ class UserController extends BaseController
                     return $item; 
                 }
                
-            }); 
-            dd($referal_user);
+            })->toArray(); 
+          
         if($referal_user){
             return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => "List of referal",
-                    'referal_user' => $referal_user
+                    'referal_user' => array_filter($referal_user)
                 )
             );
         }else{
