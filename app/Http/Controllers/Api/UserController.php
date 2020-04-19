@@ -895,9 +895,9 @@ class UserController extends BaseController
 
                 if ($auth ){
                     $usermodel = Auth::user();
-
+                    $request->merge(['user_id'=>$usermodel->id]);
                     if($usermodel->is_account_verified==0){
-                        $this->generateOtp();
+                        $this->generateOtp($request);
                     }
 
                     $token = $usermodel->createToken('SportsFight')->accessToken;
@@ -951,9 +951,7 @@ class UserController extends BaseController
                 'login_status' => true,
                 'device_id' => $request->device_id
             ]);
-        }
-
-        $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
+        } 
 
         $token = Hash::make(1);
         if($usermodel){
@@ -984,7 +982,7 @@ class UserController extends BaseController
 
             return response()->json([
                 "status"=>$status,
-                "is_account_verified" => $usermodel->is_account_verified,
+                "is_account_verified" => $usermodel->is_account_verified??0,
                 "code"=>$code,
                 "message"=> $message ,
                 'data'=> $data??$request->all(),
