@@ -735,6 +735,7 @@ class UserController extends BaseController
                     $user = new User;
 
                     $user->last_name     = $request->get('last_name');
+                    $usermodel =array();
                     $usermodel->name        = $request->name;
                     $usermodel->first_name  = $request->name;
                     $user->email         = $request->get('email');
