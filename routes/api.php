@@ -137,11 +137,11 @@ Route::group([
     Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat');
     Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
     Route::match(['post','get'],'saveDocuments', 'Api\ApiController@saveDocuments');
+    Route::match(['post','get'],'myRefferalsList', 'Api\ApiController@myRefferalsList');
 
-
-    //added by manoj
     Route::match(['post','get'],'uploadbase64Image', 'Api\ApiController@uploadbase64Image');
     Route::match(['post','get'],'member/uploadImages', 'Api\ApiController@uploadImages');
+    Route::match(['post','get'],'member/updateProfile', 'Api\ApiController@updateProfile');
 
 }
 );

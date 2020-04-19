@@ -3015,4 +3015,72 @@ class ApiController extends BaseController
         }
     }
 
+
+    public function updateProfile(Request $request){
+
+        $myArr = [];
+        $user = User::find($request->user_id);
+
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'city' => 'required',
+            'dateOfBirth' => 'required',
+            'email' => 'required',
+            'gender' => 'required',
+            'mobile_number' => 'required',
+            'name' => 'required',
+            'pinCode' => 'required',
+            'state' => 'required'
+        ]);
+
+
+        // Return Error Message
+        if ($validator->fails()) {
+            $error_msg  =   [];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                array_push($error_msg, $value);
+            }
+
+            return Response::json(array(
+                    'code' => 201,
+                    'status' => false,
+                    'message' => $error_msg
+                )
+            );
+        }
+
+        Log::channel('update_profile')->info($request->all());
+
+        if($user){
+            $data = array();
+            $data['user_id'] = $request->user_id;
+            $data['city'] = $request->city;
+            $data['dateOfBirth'] = $request->dateOfBirth;
+            $data['gender'] = $request->gender;
+            $data['pinCode'] = $request->pinCode;
+            $data['state'] = $request->state;
+
+            \DB::table('users')
+                ->update($data)
+                ->where('user_id',$request->user_id)
+                ->where('email',$request->email);
+            return response()->json(
+                [
+                    "status"=>true,
+                    "code"=>200,
+                    "message" => "Document updated successfully"
+                ]
+            );
+        }else{
+            return response()->json(
+                [
+                    "status"=>false,
+                    "code"=>201,
+                    "message" => "User is invalid"
+                ]
+            );
+        }
+    }
+
 }

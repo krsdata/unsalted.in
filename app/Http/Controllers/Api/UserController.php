@@ -5,14 +5,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController as BaseController;
 use App\User;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
 use Illuminate\Contracts\Encryption\DecryptException;
-use Config,Mail,View,Redirect,Validator,Response; 
-use Crypt,okie,Hash,Lang,JWTAuth,Input,Closure,URL; 
+use Config,Mail,View,Redirect,Validator,Response;
+use Crypt,okie,Hash,Lang,JWTAuth,Input,Closure,URL;
 use App\Helpers\Helper as Helper;
 use PHPMailerAutoload;
-use PHPMailer; 
+use PHPMailer;
 use App\Models\Competition;
 use App\Models\TeamA;
 use App\Models\TeamB;
@@ -35,54 +35,54 @@ class UserController extends BaseController
     public $download_link;
     public function __construct(Request $request) {
 
-        $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first(); 
+        $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
         $this->download_link = $apk_updates->url??null;
 
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
-        }  
-    } 
+        }
+    }
 
     public function inviteUser(Request $request,User $inviteUser)
-    {   
+    {
         $messages = [
-            'user_id.required' => 'Invalid User id', 
+            'user_id.required' => 'Invalid User id',
             'email.required' => 'Provide email id'
 
         ];
         $validator = Validator::make($request->all(), [
-                'user_id' => 'required',   
+                'user_id' => 'required',
                  'email' => 'required|email'
-            ],$messages);  
-         
-        $user_id = $request->get('user_id'); 
-        $invited_user = User::find($user_id); 
+            ],$messages);
+
+        $user_id = $request->get('user_id');
+        $invited_user = User::find($user_id);
         // Return Error Message
         if ($validator->fails() || $invited_user ==null) {
-            $error_msg =[];        
+            $error_msg =[];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }  
-                return Response::json(array( 
+                        array_push($error_msg, $value);
+                    }
+                return Response::json(array(
                     'status' => false,
                     "code"=> 201,
                     'message' => $error_msg??'Opps! This user is not available'
                     )
-                ); 
-        } 
-        
+                );
+        }
+
         $user_first_name = $invited_user->name ;
-        
+
         $user_email = $request->input('email');
 
         /** --Send Mail after Sign Up-- **/
-        
-        $user_data     = User::find($user_id); 
+
+        $user_data     = User::find($user_id);
         $sender_name   = $user_data->name;
         $invited_by    = $user_data->name==null?$invited_user->first_name.' '.$invited_user->last_name:$user_data->name;
         $referal_code  = $user_data->user_name;
         $receipent_name = "Hi,";
-        $subject       = ucfirst($sender_name)." has invited you to join SportsFight";  
+        $subject       = ucfirst($sender_name)." has invited you to join SportsFight";
 
         $email_content = [
                 'receipent_email'=> $user_email,
@@ -92,14 +92,14 @@ class UserController extends BaseController
                 'download_link' => $this->download_link,
                 'referal_code' => $referal_code
             ];
-        
+
         $helper = new Helper;
-        
+
         $invite_notification_mail = $helper->sendNotificationMail($email_content,'invite_notification_mail');
-        
+
         //$user->save();
 
-        return  response()->json([ 
+        return  response()->json([
                     "status"=>1,
                     "code"=> 200,
                     "message"=>"You've invited your colleague, nice work!",
@@ -110,7 +110,7 @@ class UserController extends BaseController
 
     public function generateUserName(){
         $uname =  Helper::generateRandomString();
-        $is_user = 1;   
+        $is_user = 1;
         while ($is_user=null) {
             $is_user = User::where('user_name',$uname)->first();
             if($is_user){
@@ -121,67 +121,67 @@ class UserController extends BaseController
     }
 
     public function verifyDocument(Request $request){
-        
-        $user = User::find($request->user_id); 
+
+        $user = User::find($request->user_id);
         $messages = [
-            'user_id.required' => 'Invalid User id', 
+            'user_id.required' => 'Invalid User id',
             'adhar.required' => 'Please upload Adhar card'
 
         ];
         $validator = Validator::make($request->all(), [
-                'user_id'   => 'required',  
+                'user_id'   => 'required',
                 'pan'       => 'mimes:jpeg,bmp,jpg,png,gif,pdf',
                 'adhar'     => 'mimes:jpeg,bmp,jpg,png,gif,pdf'
-            ],$messages);  
-         
+            ],$messages);
+
         // Return Error Message
         if ($validator->fails() || $user ==null) {
-            $error_msg =[];        
+            $error_msg =[];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }  
-                return Response::json(array( 
+                        array_push($error_msg, $value);
+                    }
+                return Response::json(array(
                     'status' => false,
                     "code"=> 201,
                     'message' => $error_msg??'Opps! This user is not available'
                     )
-                ); 
-        } 
+                );
+        }
          $doc = \DB::table('verify_documents')
                     ->where('user_id',$user->id)
                     ->first();
         if($doc){
-            
-            return Response::json(array( 
+
+            return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => $doc->status==1?'Document already verified':'Waiting for approval'
                     )
-                );    
+                );
         }
 
         $data['user_id'] = $user->id;
 
         if ($request->get('pan')) {
-           
+
             $bin = base64_decode($request->get('pan'));
 
             $im = imageCreateFromString($bin);
             if (!$im) {
                   die('Base64 value is not a valid image');
             }
-            
+
             $image_name= $user->id.'_pan'.'.jpg';
             $path = storage_path() . "/image/" . $image_name;
             //file_put_contents($path, $im);
             imagepng($im, $path, 0);
             $urls = url::to(asset('storage/image/'.$image_name));
 
-            $request->merge(['pan_url'=>$urls]); 
+            $request->merge(['pan_url'=>$urls]);
             $data['pan_url']  = $urls;
             $data['pan'] = $image_name;
             $data['upload_status'] = 'uploaded';
-        } 
+        }
 
         if ($request->get('adhar')) {
             $bin = base64_decode($request->get('adhar'));
@@ -189,18 +189,18 @@ class UserController extends BaseController
             if (!$im) {
                   die('Base64 value is not a valid image');
             }
-            
+
             $image_name= $user->id.'_pan'.'.jpg';
             $path = storage_path() . "/image/" . $image_name;
             //file_put_contents($path, $im);
             imagepng($im, $path, 0);
             $urls = url::to(asset('storage/image/'.$image_name));
 
-            $request->merge(['adhar_url'=>$urls]); 
+            $request->merge(['adhar_url'=>$urls]);
             $data['adhar_url']  = $urls;
             $data['adhar'] = $image_name;
             $data['upload_status'] = 'uploaded';
-        } 
+        }
 
         if ($request->get('address_proof')) {
             $bin = base64_decode($request->get('address_proof'));
@@ -208,48 +208,46 @@ class UserController extends BaseController
             if (!$im) {
                   die('Base64 value is not a valid image');
             }
-            
+
             $image_name= $user->id.'_pan'.'.jpg';
             $path = storage_path() . "/image/" . $image_name;
             //file_put_contents($path, $im);
             imagepng($im, $path, 0);
             $urls = url::to(asset('storage/image/'.$image_name));
 
-            $request->merge(['address_proof_url'=>$urls]); 
+            $request->merge(['address_proof_url'=>$urls]);
             $data['address_proof_url']  = $urls;
             $data['address_proof'] = $image_name;
             $data['upload_status'] = 'uploaded';
-        } 
+        }
 
 
         $doc = \DB::table('verify_documents')
                 ->updateOrInsert(['user_id'=>$user->id],$data);
 
-        return Response::json(array( 
+        return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => "Document uploaded.We'll notify you soon."
                     )
-                ); 
+                );
 
-    } 
+    }
     public function myReferralDetails(Request $request)
     {
         $referal_user = ReferralCode::where('refer_by',$request->user_id)
                         ->pluck('user_id')->toArray();
         $data = User::whereIn('id',$referal_user)->select('id','first_name as name')->get();
         if($data){
-             return Response::json(array( 
+             return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => "List of referal",
-                    'response' => [
-                            'referal_user' => $data
-                        ] 
+                     'referal_user' => $data
                     )
                 );
          }else{
-             return Response::json(array( 
+             return Response::json(array(
                     'status' => false,
                     "code"=> 201,
                     'message' => "No referal user found"
@@ -268,7 +266,7 @@ class UserController extends BaseController
         $user = User::find($user_id);
 
         if($refer_by && $user)
-        {    
+        {
             $referralCode = new ReferralCode;
             $referralCode->referral_code    =   $request->referral_code;
             $referralCode->user_id          =   $user_id;
@@ -282,10 +280,10 @@ class UserController extends BaseController
             $wallet_trns['payment_type_string'] = "Referral";
             $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
             $wallet_trns['payment_mode']    = "sportsfight";
-            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);
             $wallet_trns['payment_status']  = "success";
 
-            $wallet_transactions = WalletTransaction::create( 
+            $wallet_transactions = WalletTransaction::create(
                  $wallet_trns
             );
 
@@ -305,7 +303,7 @@ class UserController extends BaseController
 
             $wallet->save();
         }
-        
+
         if($user){
             $user->name             = $request->name;
             $user->mobile_number    = $request->mobile_number;
@@ -314,35 +312,35 @@ class UserController extends BaseController
             $user->reference_code   = $request->referral_code;
             $user->save();
 
-            return Response::json(array( 
+            return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => "Details successfully saved",
-                    'login_user' =>$user->id 
+                    'login_user' =>$user->id
                     )
                 );
         }else{
-            return Response::json(array( 
+            return Response::json(array(
                     'status' => false,
                     "code"=> 201,
                     'message' => "user is not registered"
                     )
                 );
         }
-        
+
     }
     public function registration(Request $request)
-    {   
+    {
         $input['first_name']    = $request->get('first_name')??$request->get('name');
-              
-        $input['name']          = $request->name; 
-        $input['email']         = $request->get('email'); 
+
+        $input['name']          = $request->name;
+        $input['email']         = $request->get('email');
         $input['password']      = Hash::make($request->input('password'));
         $input['role_type']     = 3; //$request->input('role_type'); ;
         $input['user_type']     = $request->get('user_type');
-        $input['provider_id']   = $request->get('provider_id'); 
+        $input['provider_id']   = $request->get('provider_id');
         $input['mobile_number']     = $request->get('mobile_number');
-       
+
         if($input['user_type']=='googleAuth' || $input['user_type']=='facebookAuth' ){
                 //Server side valiation
                 $validator = Validator::make($request->all(), [
@@ -357,35 +355,35 @@ class UserController extends BaseController
                'password' => 'required'
             ]);
         }
-         
+
         /** Return Error Message **/
         if ($validator->fails()) {
             $error_msg      =   [];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
+                        array_push($error_msg, $value);
                     }
-                    
+
             return Response::json(array(
                 'status' => false,
                 'code'=>201,
                 'message' => $error_msg[0]
                 )
             );
-        } 
-         
+        }
+
         \DB::beginTransaction();
 
         $helper = new Helper;
         /** --Create USER-- **/
         $user = new User;
         foreach ($input as $key => $value) {
-            $user->$key = $value;    
+            $user->$key = $value;
         }
         $uname              = strtoupper(substr($user->name, 0, 3)).$this->generateUserName();
         $user->user_name    = $uname;
         $user->referal_code = $uname;
-        
-        $user->save(); 
+
+        $user->save();
 
         if($user->id){
             $wallet = new Wallet;
@@ -404,7 +402,7 @@ class UserController extends BaseController
             $wallet_trns['payment_type_string'] = "Bonus";
             $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
             $wallet_trns['payment_mode']    = "sportsfight";
-            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);
             $wallet_trns['payment_status']  = "success";
 
             $wallet_transactions = WalletTransaction::updateOrCreate(
@@ -415,25 +413,25 @@ class UserController extends BaseController
                  $wallet_trns
             );
         }
-            
+
         \DB::commit();
-        
+
         $user  = User::find($user->id);
         $user->validate_user    = Hash::make($user->id);
         $user->reference_code   = $request->referral_code;
         $user->mobile_number    = $request->mobile_number;
-        $user->phone            = $request->phone;  
+        $user->phone            = $request->phone;
         $user->save();
 
         $token = $user->createToken('SportsFight')->accessToken;
         $user_data['referal_code']     =  $user->user_name;
         $user_data['user_id']          =  $user->id;
-        $user_data['name']             =  $user->name; 
-        $user_data['email']            =  $user->email; 
+        $user_data['name']             =  $user->name;
+        $user_data['email']            =  $user->email;
         $user_data['bonus_amount']     =  (float)$wallet->bonus_amount;
         $user_data['usable_amount']    =  (float)$wallet->usable_amount;
-        $user_data['mobile_number']    =  ($user->phone==null)?$user->mobile_number:$user->phone; 
-        
+        $user_data['mobile_number']    =  ($user->phone==null)?$user->mobile_number:$user->phone;
+
         $subject = "Welcome to SportsFight! Verify your email address to get started";
         $email_content = [
                 'receipent_email'=> $request->input('email'),
@@ -443,8 +441,8 @@ class UserController extends BaseController
                 ];
 
       //$verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
-        
-        
+
+
         $notification = new Notification;
         $notification->addNotification('user_register',$user->id,$user->id,'User register','');
 
@@ -461,35 +459,35 @@ class UserController extends BaseController
             \DB::table('hardware_infos')->insert([
             'user_id' => $user->id??0,
             'device_details' => $deviceDetails
-            ]); 
+            ]);
         }
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
-        $data['apk_url'] =  $apk_updates->url??null;  
+        $data['apk_url'] =  $apk_updates->url??null;
         //reference_code
 
         $refer_by = User::where('referal_code',$request->referral_code)
                     ->orWhere('user_name',$request->referral_code)
                     ->first();
 
-        
+
         if($refer_by && $user)
-        {    
+        {
             $referralCode = new ReferralCode;
             $referralCode->referral_code    =   $request->referral_code;
             $referralCode->user_id          =   $user->id;
             $referralCode->refer_by         =   $refer_by->id;
             $referralCode->save();
- 
+
             $wallet_trns['user_id']         =  $refer_by->id??null;
             $wallet_trns['amount']          =  5;
             $wallet_trns['payment_type']    =  2;
             $wallet_trns['payment_type_string'] = "Referral";
             $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
             $wallet_trns['payment_mode']    = "sportsfight";
-            $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+            $wallet_trns['payment_details'] = json_encode($wallet_trns);
             $wallet_trns['payment_status']  = "success";
 
-            $wallet_transactions = WalletTransaction::create( 
+            $wallet_transactions = WalletTransaction::create(
                  $wallet_trns
             );
 
@@ -511,18 +509,18 @@ class UserController extends BaseController
             $wallet->save();
 
         }
-        
+
         if($user){
             $user->name             = $request->name;
             $user->mobile_number    = $request->mobile_number;
             $user->phone            = $request->phone;
             $user->profile_image    = $request->image_url;
             $user->reference_code   = $request->referral_code;
-            $user->save(); 
+            $user->save();
         }
 
         return response()->json(
-                            [ 
+                            [
                                 "status"=>true,
                                 "code"=>200,
                                 "message"=>"Thank you for registration. Please verify  your email.",
@@ -533,8 +531,8 @@ class UserController extends BaseController
     }
 
     public function updateProfile(Request $request)
-    {     
-        $user = User::find($request->user_id); 
+    {
+        $user = User::find($request->user_id);
         if(!$request->user_id && (User::find($request->user_id))==null)
         {
             return Response::json(array(
@@ -544,16 +542,16 @@ class UserController extends BaseController
                 'data'  =>  $request->all()
                 )
             );
-        } 
+        }
 
         $table_cname = \Schema::getColumnListing('users');
         $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
         $user_data = [];
         foreach ($table_cname as $key => $value) {
-           
+
            if(in_array($value, $except )){
                 continue;
-           } 
+           }
 
            $udata = $request->get($value);
             if($request->get($value) && $udata!=""){
@@ -561,9 +559,9 @@ class UserController extends BaseController
                 $user_data[$value] = $request->get($value);
            }
         }
-               
-        if($request->get('profile_image')){ 
-            $profile_image = $this->createImage($request); 
+
+        if($request->get('profile_image')){
+            $profile_image = $this->createImage($request);
             if($profile_image==false){
                 return Response::json(array(
                     'status' => false,
@@ -572,9 +570,9 @@ class UserController extends BaseController
                     )
                 );
             }
-            $user->profile_image  = $profile_image;       
-        }        
-           
+            $user->profile_image  = $profile_image;
+        }
+
         try{
             $user->save();
             $status = true;
@@ -585,16 +583,16 @@ class UserController extends BaseController
             $code  = 201;
             $message =$e->getMessage();
         }
-         
+
         return response()->json(
-                            [ 
+                            [
                             "status" =>$status,
                             'code'   => $code,
                             "message"=> $message,
                             'data'=>isset($user_data)?$user_data:null
                             ]
                         );
-         
+
     }
 
     // Image upload
@@ -608,7 +606,7 @@ class UserController extends BaseController
             if (!$im) {
                   die('Base64 value is not a valid image');
             }
-            
+
             $image_name= time().'.jpg';
             $path = storage_path() . "/image/" . $image_name;
             //file_put_contents($path, $im);
@@ -618,20 +616,20 @@ class UserController extends BaseController
         }catch(Exception $e){
             return false;
         }
-        
+
     }
 
      // Validate user
     public function validateInput($request,$input){
-        //Server side valiation 
+        //Server side valiation
 
         $validator = Validator::make($request->all(), $input);
-         
+
         /** Return Error Message **/
         if ($validator->fails()) {
             $error_msg      =   [];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
+                        array_push($error_msg, $value);
                     }
 
             if($error_msg){
@@ -651,7 +649,7 @@ class UserController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function customerLogin(Request $request)
-    {       
+    {
        $data = [];
        // echo "Email:".$request->email;
         $input = $request->all();
@@ -684,21 +682,21 @@ class UserController extends BaseController
                         'provider_id'=>$request->get('provider_id'),
                         'user_type' => 'facebookAuth'
                     ];
-                    
+
                 if (User::where($credentials)->first() ){
                     $usermodel =  User::where('email',$request->email)->first();
-                    $usermodel->provider_id = $request->get('provider_id'); 
-                    $usermodel->save(); 
+                    $usermodel->provider_id = $request->get('provider_id');
+                    $usermodel->save();
                     $status = true;
                     $code = 200;
-                    $message = "login successfully"; 
-                }else{ 
+                    $message = "login successfully";
+                }else{
                    $user = new User;
-                   
+
                     $user->last_name     = $request->get('last_name');
                     $usermodel->name        = $request->name;
                     $usermodel->first_name  = $request->name;
-                    $user->email         = $request->get('email'); 
+                    $user->email         = $request->get('email');
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
                     $user->provider_id   = $request->get('provider_id');
@@ -709,8 +707,8 @@ class UserController extends BaseController
 
                     /** Return Error Message **/
                     if (User::where(['email'=>$request->email])->first()) {
-                       
-                                
+
+
                         return Response::json(array(
                             'status' => false,
                             'code'=>201,
@@ -718,7 +716,7 @@ class UserController extends BaseController
                             'data'  =>  $request->all()
                             )
                         );
-                    } 
+                    }
 
                     $user->save() ;
                     if($user->id){
@@ -739,7 +737,7 @@ class UserController extends BaseController
                         $wallet_trns['payment_type_string'] = "Bonus";
                         $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
                         $wallet_trns['payment_mode']    = "sportsfight";
-                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);
                         $wallet_trns['payment_status']  = "success";
 
                         $wallet_transactions = WalletTransaction::updateOrCreate(
@@ -753,15 +751,15 @@ class UserController extends BaseController
                     $user->validate_user = Hash::make($user->id);
                     $user->save();
                     $usermodel = $user;
- 
+
                     $status = true;
                     $code = 200;
-                    $message = "login successfully"; 
+                    $message = "login successfully";
                 }
 
                 break;
             case 'googleAuth':
-                
+
                $credentials = [
                         'email'=>$request->get('email'),
                         'provider_id'=>$request->get('provider_id'),
@@ -771,50 +769,50 @@ class UserController extends BaseController
 
                 if (User::where('email',$request->email)->first()) {
                         $usermodel = User::where('email',$request->email)->first();
-                        $usermodel->provider_id = $request->get('provider_id'); 
+                        $usermodel->provider_id = $request->get('provider_id');
                         $usermodel->name        = $request->name;
                         $usermodel->first_name  = $request->name;
                         $usermodel->referal_code  = $usermodel->user_name;
-                        $usermodel->save(); 
+                        $usermodel->save();
                         $status = true;
                         $code = 200;
-                        $message = "login successfully"; 
-                    } 
-                else{    
+                        $message = "login successfully";
+                    }
+                else{
                     $user = new User;
-                   
+
                     $user->first_name    = $request->get('first_name');
                     $user->name          = $request->name;
-                     
-                    $user->email         = $request->get('email'); 
+
+                    $user->email         = $request->get('email');
                     $user->role_type     = 3;//$request->input('role_type'); ;
                     $user->user_type     = $request->get('user_type');
                     $user->mobile_number     = $request->get('mobile_number');
-                    $user->provider_id   = $request->get('provider_id'); 
-                    $user->password   = ""; 
-                    
+                    $user->provider_id   = $request->get('provider_id');
+                    $user->password   = "";
+
                     $user->user_name = $this->generateUserName();
 
                     if (User::where(['email'=>$request->email])->first()) {
-                       
+
                         return Response::json(array(
                                 'status' => false,
                             'code'=>201,
                             'message' =>'Invalid credentials'
                             )
                         );
-                    } 
-                        
+                    }
+
                     $user->save() ;
                     if($user->id){
-                        $wallet = new Wallet; 
+                        $wallet = new Wallet;
                         $wallet->user_id = $user->id;
                         $wallet->validate_user = Hash::make($user->id);
                         $wallet->payment_type  =  1;
                         $wallet->payment_type_string = "Bonus";
                         $wallet->amount         = 100;
                         $wallet->bonus_amount   = 100;
-                        $wallet->save(); 
+                        $wallet->save();
 
 
                         $wallet_trns['user_id']         =  $user->id??null;
@@ -823,7 +821,7 @@ class UserController extends BaseController
                         $wallet_trns['payment_type_string'] = "Bonus";
                         $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
                         $wallet_trns['payment_mode']    = "sportsfight";
-                        $wallet_trns['payment_details'] = json_encode($wallet_trns);  
+                        $wallet_trns['payment_details'] = json_encode($wallet_trns);
                         $wallet_trns['payment_status']  = "success";
 
                         $wallet_transactions = WalletTransaction::updateOrCreate(
@@ -840,11 +838,11 @@ class UserController extends BaseController
                     $usermodel =  $user;
                     $status = true;
                     $code = 200;
-                    $message = "login successfully"; 
+                    $message = "login successfully";
                 }
 
                 break;
-            
+
             default:
                 $credentials = [
                         'email'=>$request->get('email'),
@@ -855,22 +853,22 @@ class UserController extends BaseController
 
                 if ($auth ){
                     $usermodel = Auth::user();
-                    
+
                     $token = $usermodel->createToken('SportsFight')->accessToken;
- 
+
                     $status = true;
                     $code = 200;
                     $message = "login successfully";
-                }else{ 
+                }else{
                     $usermodel = null;
                     $status = false;
                     $code = 201;
-                    $message = "login failed"; 
-                }   
+                    $message = "login failed";
+                }
                 break;
         }
 
-        $data = []; 
+        $data = [];
         if($usermodel){
             $wallet  = Wallet::where('user_id',$usermodel->id)->first();
             if($wallet!=null){
@@ -880,8 +878,8 @@ class UserController extends BaseController
                 $data['user_id'] = $usermodel->id;
                 $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
-                $data['usable_amount']    = (float)$wallet->usable_amount;  
-                $status = true;  
+                $data['usable_amount']    = (float)$wallet->usable_amount;
+                $status = true;
             }
             $devD = \DB::table('hardware_infos')->where('user_id',$usermodel->id)->first();
 
@@ -901,12 +899,12 @@ class UserController extends BaseController
             \DB::table('hardware_infos')->insert([
             'user_id' => $usermodel->id??0,
             'device_details' => $deviceDetails
-            ]); 
+            ]);
             }
           \DB::table('users')->where('id',$usermodel->id)->update([
                 'login_status' => true,
                 'device_id' => $request->device_id
-            ]);       
+            ]);
         }
 
         $this->sendNotification($request->device_id, 'Login', "successfully logged in at ".date('d-m-Y h:i:s'));
@@ -917,7 +915,7 @@ class UserController extends BaseController
         }
 
         $apk_updates = \DB::table('apk_updates')->orderBy('id','desc')->first();
-        $data['apk_url'] =  $apk_updates->url??null;    
+        $data['apk_url'] =  $apk_updates->url??null;
         if($data){
 
             $server = [
@@ -933,39 +931,39 @@ class UserController extends BaseController
                 'user_id' => $data['user_id']??null
 
             ];
-         
+
             $user_id = $data['user_id']??null;
             $user_agents = \DB::table('user_agents')
                 ->updateOrInsert(['user_id'=>$user_id],$server);
 
-            return response()->json([ 
+            return response()->json([
                     "status"=>$status,
                     "code"=>$code,
                     "message"=> $message ,
                     'data'=> $data??$request->all(),
-                    'token' => $token 
-                 ]);   
+                    'token' => $token
+                 ]);
         }else{
-            return response()->json([ 
+            return response()->json([
                     "status"=>$status,
                     "code"=>$code,
                     "message" => 'Invalid email or password',
-                    'token' =>$token 
+                    'token' =>$token
 
-                 ]); 
+                 ]);
         }
-          
+
     }
 
      /* @method : Email Verification
     * @param : token_id
     * Response : jsonṭ
-    * Return :token and email 
+    * Return :token and email
    */
 
 
     public function forgotPassword(Request $request)
-    {  
+    {
         $email = $request->input('email');
         //Server side valiation
         $validator = Validator::make($request->all(), [
@@ -973,13 +971,13 @@ class UserController extends BaseController
         ]);
 
         $helper = new Helper;
-       
+
         if ($validator->fails()) {
             $error_msg  =   [];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
+                        array_push($error_msg, $value);
                     }
-                            
+
             return Response::json(array(
                 'status' => 0,
                 'message' => $error_msg[0],
@@ -1000,13 +998,13 @@ class UserController extends BaseController
         }
         $user_data = $user;
         $enc = Crypt::encryptString($user->id);
-     
+
         $links = url('api/v2/changePassword?token='.$enc);
 
         $email_content = array(
                         'receipent_email'   => $request->input('email'),
                         'subject'           => 'Your Sportsfight Account Password',
-                        'name'              => $user->first_name, 
+                        'name'              => $user->first_name,
                         'greeting'          => 'Sportsfight',
                         'links'             => $links
 
@@ -1015,10 +1013,10 @@ class UserController extends BaseController
         $email_response = $helper->sendNotificationMail(
                                 $email_content,
                                 'forgot_password_link'
-                            ); 
-       
+                            );
+
        return   response()->json(
-                    [ 
+                    [
                         "status"=>true,
                         "code"=> 200,
                         "message"=>"Reset password link has sent. Please check your email.",
@@ -1028,11 +1026,11 @@ class UserController extends BaseController
     }
 
     public function changePassword(Request $request)
-    {   
+    {
         $token = $request->token;
-        return view('changePassword',compact('token'));        
+        return view('changePassword',compact('token'));
     }
-   
+
     public function emailVerification(Request $request)
     {
         $verification_code = $request->input('verification_code');
@@ -1042,12 +1040,12 @@ class UserController extends BaseController
            $user = User::where('email',$email)->get()->count();
            if($user>0)
            {
-              User::where('email',$email)->update(['status'=>1]);  
+              User::where('email',$email)->update(['status'=>1]);
            }else{
             echo "Verification link is Invalid or expire!"; exit();
                 return response()->json([ "status"=>0,"message"=>"Verification link is Invalid!" ,'data' => '']);
            }
-           echo "Email verified successfully."; exit();  
+           echo "Email verified successfully."; exit();
            return response()->json([ "status"=>1,"message"=>"Email verified successfully." ,'data' => '']);
         }else{
             echo "Verification link is Invalid!"; exit();
@@ -1063,44 +1061,44 @@ class UserController extends BaseController
         $current_password =  $request->new_password;
 
         $messages = [
-            'user_id.required' => 'User id is required', 
+            'user_id.required' => 'User id is required',
             'old_password.required' => 'Old password is required',
             'new_password.required' => 'New password is required'
 
         ];
         $validator = Validator::make($request->all(), [
-                'user_id' => 'required',   
+                'user_id' => 'required',
                  'old_password' => 'required',
                  'new_password' => 'required|min:6'
-            ],$messages);  
-         
-        $user = User::where('id',$user_id)->first(); 
-        
+            ],$messages);
+
+        $user = User::where('id',$user_id)->first();
+
         // Return Error Message
         if ($validator->fails() || $user ==null) {
-            $error_msg =[];        
+            $error_msg =[];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
-                    }  
-                return Response::json(array( 
+                        array_push($error_msg, $value);
+                    }
+                return Response::json(array(
                     'status' => false,
                     "code"=> 201,
                     'message' => $error_msg[0]??'Opps! This user is not available'
                     )
-                ); 
-        } 
+                );
+        }
 
         $credentials = [
                         'email'=>$user->email,
                         'password'=>$old_password
                     ];
 
-         $auth = Auth::attempt($credentials); 
+         $auth = Auth::attempt($credentials);
         if($auth){
             $user->password = Hash::make($current_password);
             $user->save();
             return response()->json(
-                [ 
+                [
                     "status"=>true,
                     'code'=>200,
                     "message"=>"Password reset successfully"
@@ -1123,7 +1121,7 @@ class UserController extends BaseController
             return response()->json([ "status"=>false,'code'=>201,"message"=>"Email does not exist!"]);
         }
     }
-   
+
     public function logout(Request $request){
         $user_id =  User::find($request->user_id);
         if($user_id){
@@ -1131,7 +1129,7 @@ class UserController extends BaseController
             $user_id->save();
             return response()->json([ "status"=>true,'code'=>200,"message"=>"Logout successfully"]);
         }else{
-            return response()->json([ "status"=>false,'code'=>201,"message"=>"User does not"]); 
+            return response()->json([ "status"=>false,'code'=>201,"message"=>"User does not"]);
         }
     }
 
@@ -1148,30 +1146,30 @@ class UserController extends BaseController
         if ($validator->fails()) {
             $error_msg      =   [];
             foreach ( $validator->messages()->all() as $key => $value) {
-                        array_push($error_msg, $value);     
+                        array_push($error_msg, $value);
                     }
-                    
+
             return Response::json(array(
                 'status' => false,
                 'code'=>201,
                 'message' => $error_msg[0]
                 )
             );
-        } 
+        }
 
         if($user_id){
             $user_id->device_id = $device_id;
             $user_id->save();
             return response()->json([ "status"=>true,'code'=>200,"message"=>"notification updated"]);
         }else{
-            return response()->json([ "status"=>false,'code'=>201,"message"=>"something went wrong"]); 
+            return response()->json([ "status"=>false,'code'=>201,"message"=>"something went wrong"]);
         }
     }
 
-  
+
 
     public function sendNotification($token, $data){
-       
+
         $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
@@ -1202,5 +1200,5 @@ class UserController extends BaseController
        //die;
        curl_close($ch);
        return true;
-    }    
+    }
 }
