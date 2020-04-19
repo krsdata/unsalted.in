@@ -271,15 +271,19 @@ class UserController extends BaseController
     public function myReferralDetails(Request $request)
     {
         $referal_user = ReferralCode::where('refer_by',$request->user_id)
-            ->pluck('user_id')->toArray();
-        $data = User::whereIn('id',$referal_user)->select('id','first_name as name')->get();
-
-        if($data){
+            ->select('referral_amount','user_id','is_verified','created_at')
+            ->get()
+            ->transform(function($item,$key){
+                $user = User::find($item->user_id);
+                $item->name = $user->name;
+                return $item;
+            }); 
+        if($referal_user){
             return Response::json(array(
                     'status' => true,
                     "code"=> 200,
                     'message' => "List of referal",
-                    'referal_user' => $data
+                    'referal_user' => $referal_user
                 )
             );
         }else{
