@@ -4,3 +4,5 @@ payment_type
 promotion_type: '1=Bonus,2=Referral';
 trigger_condition : 1=Sign up,2=First Transaction';
 reward_type : 1=Fixed,2=Percentage';
+
+43867

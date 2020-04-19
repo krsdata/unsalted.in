@@ -95,11 +95,12 @@ class ApiController extends BaseController
                 'release_note'  =>  null
             ];
         }
-
-
-
     }
-
+    /*
+    @var match_id
+    @var content_id
+    @desc join contest status
+    */
     public function joinNewContestStatus(Request $request){
 
         $match_id   = $request->match_id;
@@ -118,9 +119,7 @@ class ApiController extends BaseController
             ->where('match_id',$match_id)
             ->where('user_id',$request->user_id)
             ->where('contest_id',$request->contest_id)
-            ->selectRaw('distinct contest_id')
-            ->get()->count();
-
+            ->count();
 
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
             return [
