@@ -2622,6 +2622,7 @@ class ApiController extends BaseController
             $myArr['wallet_amount']   = (float) $wallet->usable_amount;
             $myArr['bonus_amount']    = (float)$wallet->bonus_amount;
             $myArr['is_account_verified']    = $this->isAccountVerified($request);
+            $myArr['refferal_friends_count']    = $this->getRefferalsCounts($request);
             $myArr['user_id']         = (float)$wallet->user_id;
         }
 
@@ -2632,6 +2633,14 @@ class ApiController extends BaseController
                 "walletInfo"=>$myArr
             ]
         );
+    }
+
+    private function getRefferalsCounts(Request $request){
+
+        return \DB::table('referral_codes')
+            ->where('refer_by',$request->user_id)
+            ->count();
+
     }
 
     private function isAccountVerified(Request $request){
