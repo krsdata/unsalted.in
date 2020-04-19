@@ -319,7 +319,7 @@ class UserController extends BaseController
 
 
             $wallet_trns['user_id']         =  $refer_by->id??null;
-            $wallet_trns['amount']          =  5;
+            $wallet_trns['amount']          =  $this->referral_bonus;
             $wallet_trns['payment_type']    =  2;
             $wallet_trns['payment_type_string'] = "Referral";
             $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
@@ -342,8 +342,8 @@ class UserController extends BaseController
             $wallet->validate_user  = Hash::make($refer_by->id);
             $wallet->payment_type   = 2 ;
             $wallet->payment_type_string = "Referral";
-            $wallet->referal_amount = ($wallet->referal_amount)+5;
-            $wallet->amount = ($wallet->referal_amount)+5;
+            $wallet->referal_amount = ($wallet->referal_amount)+$this->referral_bonus;
+            $wallet->amount = ($wallet->referal_amount)+$this->referral_bonus;
 
             $wallet->save();
         }
@@ -438,13 +438,13 @@ class UserController extends BaseController
             $wallet->validate_user = Hash::make($user->id);
             $wallet->payment_type  =  1;
             $wallet->payment_type_string = "Bonus";
-            $wallet->amount         = 100;
-            $wallet->bonus_amount   = 100;
+            $wallet->amount         = $this->signup_bonus;
+            $wallet->bonus_amount   = $this->signup_bonus;
             $wallet->save();
             $wallet  =  Wallet::find($wallet->id);
 
             $wallet_trns['user_id']         =  $user->id??null;
-            $wallet_trns['amount']          =  100;
+            $wallet_trns['amount']          =  $this->signup_bonus;
             $wallet_trns['payment_type']    =  1;
             $wallet_trns['payment_type_string'] = "Bonus";
             $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
@@ -526,7 +526,7 @@ class UserController extends BaseController
             $referralCode->save();
 
             $wallet_trns['user_id']         =  $refer_by->id??null;
-            $wallet_trns['amount']          =  5;
+            $wallet_trns['amount']          =  $this->referral_bonus;
             $wallet_trns['payment_type']    =  2;
             $wallet_trns['payment_type_string'] = "Referral";
             $wallet_trns['transaction_id']  = time().'-'.$refer_by->id??null;
@@ -550,8 +550,8 @@ class UserController extends BaseController
             $wallet->validate_user  = Hash::make($refer_by->id);
             $wallet->payment_type   = 2 ;
             $wallet->payment_type_string = "Referral";
-            $wallet->referal_amount = ($wallet->referal_amount)+5;
-            $wallet->amount = ($wallet->referal_amount)+5;
+            $wallet->referal_amount = ($wallet->referal_amount)+$this->referral_bonus;
+            $wallet->amount = ($wallet->referal_amount)+$this->referral_bonus;
 
             $wallet->save();
 
@@ -775,14 +775,14 @@ class UserController extends BaseController
                         $wallet->validate_user = Hash::make($user->id);
                         $wallet->payment_type  =  1;
                         $wallet->payment_type_string = "Bonus";
-                        $wallet->amount         = 100;
-                        $wallet->bonus_amount   = 100;
+                        $wallet->amount         = $this->signup_bonus;
+                        $wallet->bonus_amount   = $this->signup_bonus;
                         $wallet->save();
                         $wallet  =  Wallet::find($wallet->id);
 
 
                         $wallet_trns['user_id']         =  $user->id??null;
-                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['amount']          =  $this->signup_bonus;
                         $wallet_trns['payment_type']    =  1;
                         $wallet_trns['payment_type_string'] = "Bonus";
                         $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
@@ -860,13 +860,13 @@ class UserController extends BaseController
                         $wallet->validate_user = Hash::make($user->id);
                         $wallet->payment_type  =  1;
                         $wallet->payment_type_string = "Bonus";
-                        $wallet->amount         = 100;
-                        $wallet->bonus_amount   = 100;
+                        $wallet->amount         = $this->signup_bonus;
+                        $wallet->bonus_amount   = $this->signup_bonus;
                         $wallet->save();
 
 
                         $wallet_trns['user_id']         =  $user->id??null;
-                        $wallet_trns['amount']          =  100;
+                        $wallet_trns['amount']          =  $this->signup_bonus;
                         $wallet_trns['payment_type']    =  1;
                         $wallet_trns['payment_type_string'] = "Bonus";
                         $wallet_trns['transaction_id']  = time().'-'.$user->id??null;
@@ -895,9 +895,9 @@ class UserController extends BaseController
 
             default:
                 $credentials = [
-                    'email'=>$request->get('email'),
-                    'password'=>$request->get('password'),
-                    'status' => 1
+                    'email'     =>$request->get('email'),
+                    'password'  =>$request->get('password'),
+                    'status'    => 1
                 ];
 
                 $auth = Auth::attempt($credentials);
