@@ -74,8 +74,8 @@ class UserController extends BaseController
         $signup_bonus = $program->where('signup',true)->first();
         $referral_bonus = $program->where('referral',true)->first();
 
-        $this->referral_bonus = $referral_bonus->amount??100;
-        $this->signup_bonus = $signup_bonus->amount??5;
+        $this->referral_bonus = $referral_bonus->amount??5;
+        $this->signup_bonus = $signup_bonus->amount??100;
     }
 
     public function inviteUser(Request $request,User $inviteUser)
@@ -1366,6 +1366,10 @@ class UserController extends BaseController
             \DB::table('mobile_otp')
                 ->where('otp',$request->get('otp'))
                 ->where('user_id',$request->get('user_id'))->update(['is_verified'=>1]);
+            \DB::table('referral_codes')
+                ->where('user_id',$request->get('user_id'))
+                ->update(['is_verified'=>1,'referral_amount'=>$this->referral_bonus]);
+
             if($data->mobile){
                 \DB::table('users')
                     ->where('id',$request->get('user_id'))
