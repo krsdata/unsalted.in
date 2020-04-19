@@ -275,7 +275,7 @@ class UserController extends BaseController
             ->get()
             ->transform(function($item,$key){
                 $user = User::find($item->user_id);
-                $item->name = $user->name;
+                $item->name = $user->name??$user->first_name;
                 return $item;
             }); 
         if($referal_user){
