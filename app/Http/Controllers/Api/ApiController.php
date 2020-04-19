@@ -2849,7 +2849,12 @@ class ApiController extends BaseController
 
 
         $clone_team =   CreateTeam::where('id',$request->team_id)->where('user_id',$request->user_id)->first();
-        //  dd($clone_team);
+        
+        $total_team = CreateTeam::where('match_id',$clone_team->match_id)
+                            ->where('user_id',$request->user_id)
+                            ->count();
+        $total_team_count = "T".($total_team+1);
+        
         $data = null;
         if($clone_team){
             $clone_team2  = new CreateTeam;
@@ -2863,7 +2868,7 @@ class ApiController extends BaseController
             $clone_team2->vice_captain  =   $clone_team->vice_captain;
             $clone_team2->trump         =   $clone_team->trump;
 
-            $clone_team2->team_count    =   $clone_team->team_count;
+            $clone_team2->team_count    =   $total_team_count;
             $clone_team2->team_join_status =   $clone_team->team_join_status;
             $clone_team2->rank          =   $clone_team->rank;
             $clone_team2->edit_team_count =   $clone_team->edit_team_count;
