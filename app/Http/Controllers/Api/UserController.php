@@ -896,6 +896,10 @@ class UserController extends BaseController
                 if ($auth ){
                     $usermodel = Auth::user();
 
+                    if($usermodel->is_account_verified==0){
+                        $this->generateOtp();
+                    }
+
                     $token = $usermodel->createToken('SportsFight')->accessToken;
 
                     $status = true;
@@ -1294,8 +1298,7 @@ class UserController extends BaseController
         }
 
         $this->sendOtpOverEmail($user,$otp);
-        return response()->json(
-                        [
+        return response()->json(                        [
                             "status"    =>  count($data)?true:false,
                             'code'      =>  count($data)?200:201,
                             "message"   =>  count($data)?"Otp generated and sent":"Something went wrong",
