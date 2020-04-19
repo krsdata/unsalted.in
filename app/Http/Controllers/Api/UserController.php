@@ -287,7 +287,7 @@ class UserController extends BaseController
                     'status' => true,
                     "code"=> 200,
                     'message' => "List of referal",
-                    'referal_user' => array_filter($referal_user)
+                    'referal_user' => array_values(array_filter($referal_user))
                 )
             );
         }else{
