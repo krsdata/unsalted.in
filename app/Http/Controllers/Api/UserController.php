@@ -275,8 +275,11 @@ class UserController extends BaseController
             ->get()
             ->transform(function($item,$key){
                 $user = User::find($item->user_id);
-                $item->name = isset($user)?($user->name??$user->first_name):null;
-                return $item;
+                if($user){
+                    $item->name = isset($user)?($user->name??$user->first_name):null;
+                    return $item; 
+                }
+               
             }); 
         if($referal_user){
             return Response::json(array(
