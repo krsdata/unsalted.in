@@ -33,7 +33,7 @@ class ReferralCode extends Eloquent
      */
 
      protected $hidden = [
-        'id', 'created_at','updated_at'
+    //    'id', 'created_at','updated_at'
     ];
     
 
