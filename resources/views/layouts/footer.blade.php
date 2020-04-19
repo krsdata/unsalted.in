@@ -6,8 +6,8 @@
                   <h3 style="border-bottom: 2px solid #fff;">About us</h3>
                   <span style="width: 200px;display: block;border-bottom: 2px solid #fff;margin-top: -4px;"></span>
                   <p class="mt-20">
-                    We are a young company always looking for new and creative ideas to help you with our products to increase your income.
-                  </p>
+                    We are here to help you generate income out of your interest by serving you with the best fantasy sports opportunity.
+                  </p><br>
                   <p>© Sportsfight.</p>
                       </div>
                 <div class="col-md-4 offset-md-1 footer-contact wow fadeInDown animated footpara " style="visibility: visible; animation-name: fadeInDown;">
