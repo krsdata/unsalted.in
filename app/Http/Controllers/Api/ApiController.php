@@ -1246,7 +1246,6 @@ class ApiController extends BaseController
 
         $this->saveMatchDataById($data);
         return [$match_id.' : match id updated successfully'];
-
     }
 
     public function updateMatchInfo(Request $request)
@@ -1307,6 +1306,43 @@ class ApiController extends BaseController
         return $this->saveMatchDataFromAPI($data);
 
         return [$fileName.' match data updated successfully'];
+
+    }
+
+     public function updateMatchDataByMatchId($match_id=null,$status=1)
+    {
+        if($status==1){
+            $fileName="upcoming";
+        }
+        elseif($status==2){
+            $fileName="completed";
+        }
+        elseif($status==3){
+            $fileName="live";
+        }elseif($status==4){
+            $fileName="cancelled";
+        }
+        else{
+            return ['data not available'];
+        }
+        // https://rest.entitysport.com/v2/matches/44198/info
+        //upcoming
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+
+        $json = json_decode($data); 
+        $datas['status']    = $json->status;
+        $arr['items'][]     = $json->response;
+        $datas['response']  = $arr;
+
+        $json_data = json_encode($datas); 
+
+        \File::put(public_path('/upload/json/'.$fileName.'.txt'),$json_data);
+
+        $data = $this->storeMatchInfo($fileName);
+
+         $this->saveMatchDataFromAPI($data);
+
+        return [$match_id.' match data updated successfully'];
 
     }
 
@@ -2013,14 +2049,10 @@ class ApiController extends BaseController
             $t1 =  date('h:i:s');
             $token =  $this->token;
             $path = 'https://rest.entitysport.com/v2/matches/'.$match_id.'/squads/?token='.$token;
-
-
             $data = $this->getJsonFromLocal($path);
-
             // update team a players
             $teama = $data->response->teama;
             foreach ($teama->squads as $key => $squads) {
-
                 $teama_obj = TeamASquad::firstOrNew(
                     [
                         'team_id'=>$teama->team_id,
