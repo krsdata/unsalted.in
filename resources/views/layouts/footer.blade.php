@@ -16,7 +16,7 @@
                       <p><i class="fa fa-map-marker-alt"></i> Mumbai, Maharastra </p>
                       <p><i class="fa fa-phone"></i> Phone: (+91) xxx xxx xxxx </p>
                       <p><i class="fa fa-envelope"></i> Email: <a href="mailto:sportsfight@domain.com">info@sportsfight.in</a></p>
-                      <p><i class="fa fa-skype"></i> Skype: sportsfight_online</p>
+                      <p><i class="fa fa-skype"></i> Skype: info@sportsfight.in</p>
                       </div>
                       <div class="col-md-4 footer-links wow fadeInUp animated footpara" style="visibility: visible; animation-name: fadeInUp;">
                         <div class="row">
