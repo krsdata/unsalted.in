@@ -535,6 +535,8 @@ class ApiController extends BaseController
         foreach ($matches as $key => $match) {   # code...
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
+        
+            $this->storeMatchInfoAtMachine($data,'info/'.$match->match_id.'.txt');
             $points_json = json_decode($points);
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
@@ -569,6 +571,8 @@ class ApiController extends BaseController
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
             $points_json = json_decode($points);
+            $this->storeMatchInfoAtMachine($data,'point/'.$match->match_id.'.txt');
+            
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
                 if($teams==""){
@@ -601,6 +605,8 @@ class ApiController extends BaseController
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
             $points_json = json_decode($points);
+            $this->storeMatchInfoAtMachine($points,'point/'.$match->match_id.'.txt');
+            
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
                 if($teams==""){
@@ -670,6 +676,8 @@ class ApiController extends BaseController
 
         $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$request->match_id.'/point?token='.$this->token);
         $points_json = json_decode($points);
+        $this->storeMatchInfoAtMachine($points,'point/'.$request->match_id.'.txt');
+            
         // dd($points_json->response->points);
         foreach ($points_json->response->points as $team => $teams) {
             foreach ($teams as $key => $players) {
@@ -1219,20 +1227,22 @@ class ApiController extends BaseController
 
     public function getMatchDataFromApi()
     {
-
         //upcoming
         $upcoming =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=1&token='.$this->token);
-
+        $this->storeMatchInfoAtMachine($upcoming,'upcoming/'.'upcoming.txt');
+        
         \File::put(public_path('/upload/json/upcoming.txt'),$upcoming);
 
         //complted
         $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&token='.$this->token);
 
+        $this->storeMatchInfoAtMachine($completed,'completed/'.'completed.txt');
         \File::put(public_path('/upload/json/completed.txt'),$completed);
 
         //live
         $live =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=3&token='.$this->token);
 
+        $this->storeMatchInfoAtMachine($live,'live/'.'live.txt');
         \File::put(public_path('/upload/json/live.txt'),$live);
 
         return ['file updated'];
@@ -1241,10 +1251,11 @@ class ApiController extends BaseController
     public function updateMatchDataById($match_id=null)
     {
         //upcoming
-
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
-
+        // store match info    
+        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
         $this->saveMatchDataById($data);
+
         return [$match_id.' : match id updated successfully'];
     }
 
@@ -1259,7 +1270,7 @@ class ApiController extends BaseController
         foreach ($matches as $key => $match) {
 
             $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/info?token='.$this->token);
-            $this->saveMatchDataFromAPI2DB($data);
+                $this->saveMatchDataFromAPI2DB($data);
         }
 
         return [$matches->count().' Match is updated successfully'];
@@ -1300,7 +1311,8 @@ class ApiController extends BaseController
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$this->token.'&per_page=20');
 
         \File::put(public_path('/upload/json/'.$fileName.'.txt'),$data);
-
+        $this->storeMatchInfoAtMachine($data,'status/'.$fileName.'.txt');
+        
         $data = $this->storeMatchInfo($fileName);
 
         return $this->saveMatchDataFromAPI($data);
@@ -1329,6 +1341,8 @@ class ApiController extends BaseController
         //upcoming
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
 
+        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
+        
         $json = json_decode($data); 
         $datas['status']    = $json->status;
         $arr['items'][]     = $json->response;
@@ -1350,6 +1364,28 @@ class ApiController extends BaseController
     public function getJsonFromLocal($path=null)
     {
         return json_decode(file_get_contents($path));
+    }
+
+    public function storeMatchInfoAtMachine($data,$fileName){
+
+        \File::put(public_path('/data/v2/matches/'.$fileName),$data);                
+    }
+
+    public function getMatchInfoFromMachine($fileName=null,$file_path="/upload/json/"){
+        if($fileName){
+            $files = [$fileName];
+        }else{
+            $files = ['live','completed','upcoming'];
+        }
+        try {
+            if(in_array($fileName, $files)){
+                return $this->getJsonFromLocal(public_path($file_path.$fileName.'.txt'));
+            }
+
+        } catch (Exception $e) {
+            //  dd($e);
+        }
+        return ['match info stored'];
     }
 
     // store by match type
@@ -1621,6 +1657,8 @@ class ApiController extends BaseController
             $token =  $this->token;
             $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token='.$this->token;
 
+            $data_sqd = file_get_contents($path);
+            $this->storeMatchInfoAtMachine($data_sqd,'squads/'.$match_id.'.txt');
             $data = $this->getJsonFromLocal($path);
 
             foreach ($data->response->squads as $key => $pvalue) {

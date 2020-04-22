@@ -41,6 +41,26 @@
 
         /*------------User Model and controller---------*/
 
+        Route::bind('updatePlayerPoints', function ($value, $route) {
+            return Modules\Admin\Models\UpdatePlayerPoints::find($value);
+        });
+
+        Route::resource(
+            'admin/updatePlayerPoints',
+            'Modules\Admin\Http\Controllers\UpdatePlayerPointsController',
+            [
+            'names' => [
+                'edit' => 'updatePlayerPoints.edit',
+                'show' => 'updatePlayerPoints.show',
+                'destroy' => 'updatePlayerPoints.destroy',
+                'update' => 'updatePlayerPoints.update',
+                'store' => 'updatePlayerPoints.store',
+                'index' => 'updatePlayerPoints',
+                'create' => 'updatePlayerPoints.create',
+            ]
+                ]
+        );
+
         Route::bind('user', function ($value, $route) {
             return Modules\Admin\Models\User::find($value);
         });
