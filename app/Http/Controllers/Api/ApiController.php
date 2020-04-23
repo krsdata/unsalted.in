@@ -1887,11 +1887,11 @@ class ApiController extends BaseController
                 $my_match = $upcomingMatches;
                 break;
             case 'completed':
-                $type_name = "completedMatch";
+                $type_name = "completed";
                 $my_match = $completedMatches;
                 break;
             case 'live':
-                $type_name = "liveMatch";
+                $type_name = "live";
                 $my_match = $liveMatches;
                 break;
 
