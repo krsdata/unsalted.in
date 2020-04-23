@@ -63,7 +63,7 @@ Route::middleware('auth:api')->group( function () {
     });
 });
 
-// Without Auth
+// Without AuthM
 Route::group([
     'prefix' => 'v2'
 ], function()
