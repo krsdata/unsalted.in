@@ -710,7 +710,7 @@ class ApiController extends BaseController
             ->where(function($q) use($user_id){
                 $q->where('user_id',$user_id);
             })
-            ->orderBy('rank','ASC');
+            ->orderBy('rank','ASC')
             ->get();
 
         $point = (int)($leader_board1[0]->point??null);
@@ -781,7 +781,7 @@ class ApiController extends BaseController
             $lb[] = $data;
         }
         $lb = $lb??null;
-        
+
         if($lb){
             return [
                 'status'=>true,
