@@ -322,7 +322,6 @@ class ApiController extends BaseController
             'team_id' => 'required'
         ]);
 
-
         // Return Error Message
         if ($validator->fails() ||  $team_id==null) {
             $error_msg  =   [];
@@ -433,7 +432,7 @@ class ApiController extends BaseController
                     'role'      => $result->role,
                     'captain'   =>  ($captain==$result->pid)?true:false,
                     'vice_captain'   => ($vice_captain==$result->pid)?true:false,
-                    'trump'     => ($trump==$result->pid)?true:fals
+                    'trump'     => ($trump==$result->pid)?true:false
                 ];
             }
             $total_points = array_sum($array_sum);
@@ -782,6 +781,7 @@ class ApiController extends BaseController
             $lb[] = $data;
         }
         $lb = $lb??null;
+
         if($lb){
             return [
                 'status'=>true,
