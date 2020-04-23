@@ -43,28 +43,30 @@ class PaymentController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
-
         $this->date = date('Y-m-d');
-        $this->token = "8740931958a5c24fed8b66c7609c1c49";
-
+        $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
        // $uname      = Helper::generateRandomString(); 
     } 
-
+  /**
+    *@var match_id
+    *Description Prize distribution
+    */
     public function prizeDistribution(Request $request)
-    {
-        $match_id = $request->match_id;
+    {  
+        $match_id = $request->match_id;  
         $get_join_contest = JoinContest::where('match_id',  $match_id)
+                        ->where('user_id',  $request->user_id)
           ->get()
           ->transform(function ($item, $key)   {
 
             $ct = CreateTeam::where('match_id',$item->match_id)
                             ->where('user_id',$item->user_id)
                             ->where('id',$item->created_team_id)
-                            ->first(); 
-
+                            ->first();
+            
             $user = User::where('id',$item->user_id)->select('id','first_name','last_name','user_name','email','profile_image','validate_user','phone','device_id','name')->first();
              
             $team_id  =   $ct->id;
@@ -109,12 +111,15 @@ class PaymentController extends BaseController
             $item->team_name = $team_name;
             $item->contest  = $contest[0]??null ;
             $item->createdTeam = $ct;
-             
+            
+            //echo $rank.'-'.$match_id.'-'.$user_id.'-'.$team_id.'<br>';
             $prize_dist =  PrizeDistribution::updateOrCreate(
                           [
                             'match_id'        => $match_id,
                             'user_id'         => $user_id,
-                            'created_team_id' => $team_id
+                            'created_team_id' => $team_id,
+                            'team_name'       => $team_name,
+                            'contest_id'       => $item->contest_id
                           ],
                           [
                             'match_id'        => $match_id,
@@ -149,21 +154,19 @@ class PaymentController extends BaseController
                             'user_teams'        => $item->createdTeam->teams
 
                           ]
-                        );
-        }) ; 
-
-        
-        $prize_distributions = PrizeDistribution::where('match_id',$match_id)
+                        ); 
+        }) ;  
+       $prize_distributions = PrizeDistribution::where('match_id',$match_id)
                                 ->get()
-                                ->transform(function($item,$key){
+                                ->transform(function($item,$key) use($match_id){
 
                                   $cid = \DB::table('matches')
-                                        ->where('match_id',44305)
+                                        ->where('match_id',$match_id)
                                         ->first();
                                      $subject = "You won prize for match - ".$cid->title??null;
                                  
                                  if((int)$item->prize_amount > 0){
-                                     $email_content = [
+                                     $email_content = [ //$item->email
                                             'receipent_email'=> $item->email,
                                             'subject'=>$subject,
                                             'greeting'=> 'SportsFight',
@@ -172,18 +175,15 @@ class PaymentController extends BaseController
                                             'rank' => $item->rank
                                             ];
                                       $helper = new Helper;
-                                      $m =   $helper->sendMailFrontEnd($email_content,'prize');
+                                      $m =   $helper->sendNotificationMail($email_content,'prize');
 
                                       $item->user_id = $item->user_id;
                                       $item->email = $item->email;
                                  }     
                                  return $item;
                                 });
-
+        
         return 'successfully prize distributed';
-  
-
-       
     }
     
     // Add Money

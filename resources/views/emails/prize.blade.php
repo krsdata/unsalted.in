@@ -388,49 +388,9 @@ td[class="buttonContent"] a {
 }
         /* end IOS targeting */
 .mobile-width {display:block !important; width:100% !important;}
-</style>
-<!--
-            Outlook Conditional CSS
-
-            These two style blocks target Outlook 2007 & 2010 specifically, forcing
-            columns into a single vertical stack as on mobile clients. This is
-            primarily done to avoid the 'page break bug' and is optional.
-
-            More information here:
-            http://templates.mailchimp.com/development/css/outlook-conditional-css
-        -->
-<!--[if mso 12]>
-            <style type="text/css">
-                .flexibleContainer{display:block !important; width:100% !important;}
-            </style>
-        <![endif]-->
-<!--[if mso 14]>
-                <style type="text/css">
-                    .flexibleContainer{display:block !important; width:100% !important;}
-
-    p.MsoNormal{
-    margin-bottom:0.0000pt;
-    font-family:'Times New Roman';
-    font-size:12.0000pt;
-    }
-
-                </style>
-            <![endif]-->
+</style> 
 </head>
-<body bgcolor="#fff" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0">
-
-<!-- CENTER THE EMAIL // --> 
-<!--
-            1.  The center tag should normally put all the
-                content in the middle of the email page.
-                I added "table-layout: fixed;" style to force
-                yahoomail which by default put the content left.
-
-            2.  For hotmail and yahoomail, the contents of
-                the email starts from this center, so we try to
-                apply necessary styling e.g. background-color.
-        -->
-
+<body bgcolor="#fff" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0"> 
 <table class="maintable" cellpadding="0" cellspacing="0" align="center" valign="top" width="700PX" border="0">
   <tr>
     <td>
@@ -438,13 +398,7 @@ td[class="buttonContent"] a {
 <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable" style="table-layout: fixed;max-width:100% !important;width: 100% !important;min-width: 100% !important;">
   <tr>
     <td align="center" valign="top" id="bodyCell"><!-- // EMAIL HEADER --> 
-      <!-- EMAIL CONTAINER // --> 
-      <!--
-                    The table "emailBody" is the email's container.
-                    Its width can be set to 100% for a color band
-                    that spans the width of the page.
-                -->
-      
+     
       <table bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" width="100%" id="emailBody">
         
         <!-- MODULE ROW // --> 
@@ -492,7 +446,7 @@ td[class="buttonContent"] a {
                                               </tbody>
                                             </table></td> 
                                             <td class="mobile-width" style="width: 50%;">
-                                          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="height: 64px">
+                                          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="height: 53px">
                                               <tbody>
                                                 <tr>
                                                   <td style="text-align:center;font-family:calibri, Lucida Grande;font-size: 16px;margin:0 auto;color:#000;line-height: 22px; color: #000; background:#c61d22;" > 

@@ -694,7 +694,13 @@ class ApiController extends BaseController
         }
         return ['points'=>$m];
     }
-    //LeaderBoard
+    
+  /**
+    * Description : Leaderboard data
+    * @var match_is
+    * @var user_id
+    * @var content_id
+    */
     public function leaderBoard(Request $request){
         // $join_contests = [];
 
@@ -728,7 +734,7 @@ class ApiController extends BaseController
                 }
             })
             ->get();
-
+        $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
             if(!isset($value->user)){
@@ -752,7 +758,6 @@ class ApiController extends BaseController
             ];
             $lb[] = $data;
         }
-
         foreach ($leader_board2 as $key => $value) {
 
             if(!isset($value->user)){
@@ -769,8 +774,6 @@ class ApiController extends BaseController
             $user_data =  $value->user->first_name;
             $fn = explode(" ",$user_data);
 
-
-
             $data['user'] = [
                 'first_name'    => reset($fn),
                 'last_name'     => end($fn),
@@ -781,7 +784,8 @@ class ApiController extends BaseController
             $lb[] = $data;
         }
         $lb = $lb??null;
-
+        dd($lb);
+        
         if($lb){
             return [
                 'status'=>true,
