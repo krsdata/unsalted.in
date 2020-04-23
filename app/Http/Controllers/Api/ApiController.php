@@ -722,7 +722,7 @@ class ApiController extends BaseController
             ->where(function($q) use($user_id,$point){
                 $q->where('user_id','!=',$user_id);
                 if($point){
-                    $q->orderBy('rank','DESC');
+                    $q->orderBy('rank','ASC');
                 }else{
                     $q->orderBy('rank','ASC');
                 }
