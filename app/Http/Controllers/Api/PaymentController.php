@@ -43,10 +43,8 @@ class PaymentController extends BaseController
     public $date;
 
     public function __construct(Request $request) {
-
         $this->date = date('Y-m-d');
         $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
-
         if ($request->header('Content-Type') != "application/json")  {
             $request->headers->set('Content-Type', 'application/json');
         }  
@@ -186,7 +184,6 @@ class PaymentController extends BaseController
                                 });
         
         return 'successfully prize distributed';
-
     }
     
     // Add Money
