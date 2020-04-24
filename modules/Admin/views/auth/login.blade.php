@@ -61,7 +61,7 @@
            
             <!-- END REGISTRATION FORM -->
         </div>
-        <div class="copyright"> {{date('Y')}} © Edifyartist. All rights reserved </div>
+        <div class="copyright"> {{date('Y')}} © Sportfight. All rights reserved </div>
         <!-- END LOGIN -->
         <!--[if lt IE 9]>
 <script src="{{ URL::asset('assets/global/plugins/respond.min.js') }}"></script>

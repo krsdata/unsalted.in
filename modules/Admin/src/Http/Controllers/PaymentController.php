@@ -62,13 +62,13 @@ class PaymentController extends Controller {
     //dd('here');
     return view('packages::payment.userreport', compact('page_title' ,'page_action'));
   }
-  public function edifyartistReport(Request $request)
+  public function sportfightReport(Request $request)
   {
 
       $page_title = 'Payment';
-      $page_action = 'edifyartist Report';
+      $page_action = 'sportfight Report';
     //dd('here');
-    return view('packages::payment.edifyartistreport', compact('page_title' ,'page_action'));
+    return view('packages::payment.sportfightreport', compact('page_title' ,'page_action'));
   }
   public function configServiceCharge(Request $request)
   {

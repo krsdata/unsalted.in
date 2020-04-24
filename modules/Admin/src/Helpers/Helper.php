@@ -119,8 +119,8 @@ class Helper {
         
         return  Mail::send('emails.'.$template, array('content' => $template_content), function($message) use($email_content)
           {
-            $name = "edifyartist";
-            $message->from('edifyartist@edifyartist.com',$name);  
+            $name = "sportfight";
+            $message->from('info@sportfight.in',$name);  
             $message->to($email_content['receipent_email'])->subject($email_content['subject']);
             
           });
@@ -135,8 +135,8 @@ class Helper {
         
         return  Mail::send('emails.'.$template, array('content' => $email_content), function($message) use($email_content)
           {
-            $name = "Udex";
-            $message->from('no-reply@edifyartist.com',$name);  
+            $name = "sportfight";
+            $message->from('no-reply@sportfight.in',$name);  
             $message->to($email_content['receipent_email'])->subject($email_content['subject']);
             
           });
