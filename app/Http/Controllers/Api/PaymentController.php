@@ -60,7 +60,6 @@ class PaymentController extends BaseController
         $get_join_contest = JoinContest::where('match_id',  $match_id)
           ->get()
           ->transform(function ($item, $key)   {
-
             $ct = CreateTeam::where('match_id',$item->match_id)
                             ->where('user_id',$item->user_id)
                             ->where('id',$item->created_team_id)
@@ -68,14 +67,14 @@ class PaymentController extends BaseController
             
             $user = User::where('id',$item->user_id)->select('id','first_name','last_name','user_name','email','profile_image','validate_user','phone','device_id','name')->first();
              
-            $team_id  =   $ct->id;
-            $match_id =   $ct->match_id;
-            $user_id  =   $ct->user_id;
-            $rank     =   $ct->rank; 
-            $team_name =  $ct->team_count;
-            $points    =  $ct->points;
+            $team_id    =   $ct->id;
+            $match_id   =   $ct->match_id;
+            $user_id    =   $ct->user_id;
+            $rank       =   $ct->rank; 
+            $team_name  =   $ct->team_count;
+            $points     =   $ct->points;
           
-            $contest =  CreateContest::with('contestType','defaultContest')
+            $contest    =  CreateContest::with('contestType','defaultContest')
                           ->with(['prizeBreakup'=>function($q) use($rank,$points  )
                             {
                               $q->where('rank_from','>=',$rank);
@@ -87,7 +86,6 @@ class PaymentController extends BaseController
                           ->where('id',$item->contest_id) 
                           ->get()
                           ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points )  {
-                             
                             if($contestItem->prizeBreakup){
                              $contestItem->prize_amount = $contestItem->prizeBreakup->prize_amount; 
                             }else{
@@ -111,7 +109,6 @@ class PaymentController extends BaseController
             $item->team_name = $team_name;
             $item->contest  = $contest[0]??null ;
             $item->createdTeam = $ct; 
-           
             //echo $rank.'-'.$match_id.'-'.$user_id.'-'.$team_id.'<br>';
             $prize_dist =  PrizeDistribution::updateOrCreate(
                           [
@@ -135,7 +132,6 @@ class PaymentController extends BaseController
                             'mobile'           => $item->user->phone,
                             'email'            => $item->user->email,
                             'device_id'        => $item->user->device_id,
-
                             'contest_name'     => $item->contest->contestType->contest_type??null,
                             'entry_fees'       => $item->contest->entry_fees,
                             'total_spots'      => $item->contest->total_spots,
@@ -146,8 +142,6 @@ class PaymentController extends BaseController
  
                             'prize_amount'      => $item->contest->prize_amount,
                             'contest_type_id'   => $item->contest->prizeBreakup->contest_type_id??null,
-
-
                             'captain'           => $item->createdTeam->captain,
                             'vice_captain'      => $item->createdTeam->vice_captain,
                             'trump'             => $item->createdTeam->trump,
@@ -156,33 +150,76 @@ class PaymentController extends BaseController
 
                           ]
                         ); 
-        }) ;  
-       $prize_distributions = PrizeDistribution::where('match_id',$match_id)
-                                ->get()
-                                ->transform(function($item,$key) use($match_id){
+        });
+        
 
-                                  $cid = \DB::table('matches')
-                                        ->where('match_id',$match_id)
-                                        ->first();
-                                     $subject = "You won prize for match - ".$cid->title??null;
-                                 
-                                 if((int)$item->prize_amount > 0){
-                                     $email_content = [ //$item->email
-                                            'receipent_email'=> $item->email,
-                                            'subject'=>$subject,
-                                            'greeting'=> 'SportsFight',
-                                            'first_name'=> ucfirst($item->name),
-                                            'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$cid->title.'</b> match.',
-                                            'rank' => $item->rank
-                                            ];
-                                      $helper = new Helper;
-                                    //  $m =   $helper->sendNotificationMail($email_content,'prize');
 
-                                      $item->user_id = $item->user_id;
-                                      $item->email = $item->email;
-                                 }     
-                                 return $item;
-                                });
+        $prize_distributions = PrizeDistribution::where('match_id',$match_id)
+            ->get()
+            ->transform(function($item,$key) use($match_id){
+              $cid = \DB::table('matches')
+                    ->where('match_id',$match_id)
+                    ->first();
+
+            $subject = "You won prize for match - ".$cid->title??null;
+            if((int)$item->prize_amount > 0){
+
+                $prize_amount = PrizeDistribution::where('match_id',$match_id)
+                           ->where('user_id',$item->user_id)->sum('prize_amount');
+
+                $wallets = Wallet::updateOrCreate(
+                            [
+                                'user_id'       => $item->user_id,
+                                'payment_type'  => 4
+                            ],
+                            [
+                                'user_id'       =>  $item->user_id,
+                                'validate_user' =>  Hash::make($item->user_id),
+                                'payment_type'  =>  4,
+                                'payment_type_string' => 'prize',
+                                'amount'        =>  $prize_amount,
+                                'prize_amount'  =>  $prize_amount,
+                                'prize_distributed_id' => $item->id
+                            ]
+                        );
+
+                $walletsTransaction = WalletTransaction::updateOrCreate(
+                            [
+                                'user_id'               => $item->user_id,
+                                'prize_distributed_id'  => $item->id
+                            ],
+                            [
+                                'user_id'           =>  $item->user_id, 
+                                'payment_type'      =>  4,
+                                'payment_type_string' => 'prize',
+                                'amount'            =>  $item->prize_amount,
+                                'prize_distributed_id' => $item->id,
+                                'payment_mode'      =>  'sportsfight',
+                                'payment_details'   =>  json_encode($item),
+                                'payment_status'    =>  'success',
+                                'transaction_id'    =>  time().'-'.$item->user_id
+                            ]
+                        );
+
+
+                $email_content = [ //$item->email
+                        'receipent_email'=> $item->email,
+                        'subject'=>$subject,
+                        'greeting'=> 'SportsFight',
+                        'first_name'=> ucfirst($item->name),
+                        'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$cid->title.'</b> match.',
+                        'rank' => $item->rank
+                        ];
+                $helper = new Helper;
+                //  $m = $helper->sendNotificationMail($email_content,'prize');
+                $item->user_id = $item->user_id;
+                $item->email = $item->email;
+            }   
+            return $item;
+        });
+
+        $match_id = $request->match_id;  
+        \DB::table('matches')->where('match_id',$match_id)->update(['current_status'=>1]);
         
         return 'successfully prize generated';
     }
@@ -288,34 +325,58 @@ class PaymentController extends BaseController
     public function transactionHistory(Request $request){
 
         $user = User::find($request->user_id);
-
         if($user){
             $wallet = Wallet::where('user_id',$user->id)
-                    ->get(['user_id','bonus_amount','referal_amount','prize_amount','deposit_amount','usable_amount'])
-                    ->transform(function($item,$key){ 
+                    ->select('user_id')
+                    ->get()
+                    ->transform(function($item,$key){
+                        $item->bonus_amount = 0;
+                        $item->prize_amount = 0;
+                        $item->referral_amount = 0;
+                        $item->deposit_amount = 0;
+                        
+                        $prize_amounts = Wallet::where('user_id',$item->user_id)->get();
+
+                        foreach ($prize_amounts  as $key => $prize_amount) {
+                            if($prize_amount->payment_type==1){
+                                $item->bonus_amount   = $prize_amount->amount;
+                            }
+                            elseif($prize_amount->payment_type==4){
+                                $item->prize_amount   = $prize_amount->amount;
+                            }
+                            elseif($prize_amount->payment_type==2){
+                                $item->referral_amount = $prize_amount->amount;
+                            }
+                            elseif($prize_amount->payment_type==3){
+                                $item->deposit_amount = $prize_amount->amount;
+                            }
+                        }
+                        
+
                         $transaction = [];
                         $wallet_transactions = \DB::table('wallet_transactions')->where('user_id',$item->user_id)->get();
-
                         foreach ($wallet_transactions as $key => $value) {
-                            $t = json_decode($value->payment_details);
+                            
                             $d =  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value->created_at, 'UTC')
                                 ->setTimezone('Asia/Kolkata')
                                 ->format('d-m-Y, h:i A');
                                                     
                              $transaction[] =  [
-                                'deposit_amount' => $t->deposit_amount??$item->deposit_amount,
-                                'payment_mode' => $t->payment_mode??'Online',
-                                'payment_status' => $t->payment_status??'success',
-                                'transaction_id' => $t->transaction_id,
-                                'date' => $d 
+                                'user_id'        => $item->user_id,
+                                'amount'         => $value->amount??$item->deposit_amount,
+                                'payment_mode'   => $value->payment_mode??'Online',
+                                'payment_status' => $value->payment_status??'success',
+                                'transaction_id' => $value->transaction_id??time(),
+                                'payment_type'   => $value->payment_type_string??'Deposit',
+                                'debit_credit_status' => $value->debit_credit_status,
+                                'date'           => $d 
 
                              ];
                         } 
                         $item->transaction = $transaction;
                         return $item;
 
-                    }); 
-                  
+                    });       
             return response()->json(
                         [ 
                             "status"=>true,

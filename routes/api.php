@@ -13,8 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-
-
 Route::group(['prefix' => 'v2'], function () {
     Route::post('/login', 'Api\UserController@member/memberLogin');
     Route::post('/register', 'Api\UserController@member/registration');

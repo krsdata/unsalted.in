@@ -1971,7 +1971,7 @@ class ApiController extends BaseController
             foreach ($created_team as $match_id => $join_contest) {
 
                 # code...
-                $jmatches = Matches::with('teama','teamb')->where('match_id',$match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str');
+                $jmatches = Matches::with('teama','teamb')->where('match_id',$match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str','current_status');
 
 
                 $join_match_count   =   $join_contest->count();
@@ -1983,8 +1983,12 @@ class ApiController extends BaseController
                     ->selectRaw('distinct contest_id')
                     ->get();
 
-                if(($join_match->timestamp_end < time())  && $join_match->timestamp_end > strtotime("-120 minutes")){
+                if((($join_match->timestamp_end < time())  && $join_match->timestamp_end > strtotime("-1440 minutes") &&  $join_match->current_status!=1) ||
+                    ($join_match->status==2 && $join_match->current_status!=1)     
+                    ){
                     $join_match->status_str = "In Review";
+                }elseif($join_match->current_status==1){
+                    $join_match->status_str = "Completed";
                 }else{
                     if($join_match->status==4){
                        $join_match->status_str = "Cancel"; 
@@ -2012,7 +2016,7 @@ class ApiController extends BaseController
             ->whereIn('status',[1,3])
             ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
             ->orderBy('timestamp_start','ASC')
-            ->where('timestamp_start','>=' , time())
+          //  ->where('timestamp_start','>=' , time())
             ->limit(10)
             ->get();
 
@@ -2409,6 +2413,7 @@ class ApiController extends BaseController
                     $wallets = Wallet::where('user_id',$user_id)->first();
 
                     $wallets->usable_amount = $wallets->usable_amount-$deduct_from_usable_amount;
+
                     $wallets->bonus_amount = $wallets->bonus_amount-$deduct_from_bonus;
                     $wallets->save();
 
@@ -2784,14 +2789,57 @@ class ApiController extends BaseController
             $myArr['bonus_amount']    = (float)$wallet->bonus_amount;
             $myArr['is_account_verified']    = $this->isAccountVerified($request);
             $myArr['refferal_friends_count']    = $this->getRefferalsCounts($request);
-            $myArr['user_id']         = (float)$wallet->user_id;
+            $myArr['user_id']         =  $wallet->user_id;
+        }else{
+            $myArr['wallet_amount']   = 0;
+            $myArr['bonus_amount']    = 0;
+            $myArr['is_account_verified']    = $this->isAccountVerified($request);
+            $myArr['refferal_friends_count']    = $this->getRefferalsCounts($request);
+            $myArr['user_id']         = (int)$request->user_id;
         }
+
+        $wallet = Wallet::where('user_id',$request->user_id)
+                    ->select('user_id')
+                    ->get()
+                    ->transform(function($item,$key)use($request){
+                        $wallet_amount = 0;
+                        $item->bonus_amount = 0;
+                        $item->prize_amount = 0;
+                        $item->referral_amount = 0;
+                        $item->deposit_amount = 0;
+                        $item->is_account_verified = $this->isAccountVerified($request);
+                        $item->refferal_friends_count = $this->getRefferalsCounts($request);
+                        
+                        $prize_amounts = Wallet::where('user_id',$item->user_id)->get();
+
+                        foreach ($prize_amounts  as $key => $prize_amount) {
+                            if($prize_amount->payment_type==1){
+                                $item->bonus_amount   = $prize_amount->amount;
+
+                            }
+                            elseif($prize_amount->payment_type==4){
+                                $wallet_amount = $wallet_amount+$prize_amount->amount;
+                                $item->prize_amount   = $prize_amount->amount;
+                            }
+                            elseif($prize_amount->payment_type==2){
+                                $wallet_amount = $wallet_amount+$prize_amount->amount;
+                                $item->referral_amount = $prize_amount->amount;
+                            }
+                            elseif($prize_amount->payment_type==3){
+                                $wallet_amount = $wallet_amount+$prize_amount->amount;
+                                $item->deposit_amount = $prize_amount->amount;
+                            }
+                        }
+                        $item->wallet_amount = $wallet_amount;
+                        return $item;
+
+                    });
 
         return response()->json(
             [
                 "status"=>true,
                 "code"=>200,
-                "walletInfo"=>$myArr
+                "walletInfo"=>$wallet[0]??$myArr
             ]
         );
     }
@@ -2811,8 +2859,6 @@ class ApiController extends BaseController
            2. PAN OR ADHAR
            3. BANK ADDRESS
            4. PAYTM NO
-
-
          */
         $emailStatus = 0;
         $documentsStatus = 0;
