@@ -223,7 +223,7 @@ class DefaultContestController extends Controller {
             \DB::table('create_contests')
                     ->where('default_contest_id',$result->match_id)
                     ->where('match_id',$id)
-                    ->update($request->except('_token'));
+                    ->update($request->except(['_token','_method']));
         }
         
         return Redirect::to(route('defaultContest'))
