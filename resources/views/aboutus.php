@@ -1,27 +1,9 @@
-     <?php $bgUrl = URL::asset("webmedia/images/bg_2.jpg"); ?>
-      <section class="hero-wrap js-fullheight" style="background-image: url('<?php echo $bgUrl; ?>')" data-section="home" data-stellar-background-ratio="0.5" id="home-section">
-        <img src="">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
-          <div class="col-md-5 ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-            <h1 class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Sportsfight Fantasy League</h1>
-            <p class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Fantasy League</p>
-            <form action="#" class="search-location">
-                    <div class="row">
-                        <div class="col-lg align-items-end">
-                             <a href="https://sportsfight.in/public/upload/apk/sportsfight.apk" target="_blank">
-                            <img  src="{{ URL::asset('webmedia/images/download-android-new.png')}}" alt="android-new" style="width: 200px;">
-
-                            
-                        </a>
-                        </div>
-                    </div>
-                </form>
-          </div>
-        </div>
-      </div>
-    </section>
+@extends('layouts.master')
+    @section('content') 
+      @include('partials.navigation')
+      <!-- Left side column. contains the logo and sidebar -->
+     
+ 
 
         <!-- services -->
         <section class="ftco-section ftco-services-2" id="services-section">
@@ -310,3 +292,5 @@ are getting rewarded based on their ranks.</p>
             
           </div>
       </div>
+
+@stop

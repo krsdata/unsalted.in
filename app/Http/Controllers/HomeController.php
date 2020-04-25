@@ -43,6 +43,10 @@ class HomeController extends BaseController
     public function home(Request $request){
          return view('home');
     }
+    public function aboutus(Request $request){
+
+        return view('aboutus');
+    }
     public function contactus(Request $request){
 
         if($request->method()=="POST"){
