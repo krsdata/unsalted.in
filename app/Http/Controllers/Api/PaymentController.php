@@ -303,9 +303,9 @@ class PaymentController extends BaseController
                                 ->format('d-m-Y, h:i A');
                                                     
                              $transaction[] =  [
-                                'deposit_amount' => $t->deposit_amount,
-                                'payment_mode' => $t->payment_mode,
-                                'payment_status' => $t->payment_status,
+                                'deposit_amount' => $t->deposit_amount??0,
+                                'payment_mode' => $t->payment_mode??'Online',
+                                'payment_status' => $t->payment_status??'success',
                                 'transaction_id' => $t->transaction_id,
                                 'date' => $d 
 
