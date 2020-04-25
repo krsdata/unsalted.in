@@ -784,7 +784,6 @@ class ApiController extends BaseController
             $lb[] = $data;
         }
         $lb = $lb??null;
-        dd($lb);
         
         if($lb){
             return [

@@ -2,8 +2,7 @@
 
 namespace Modules\Admin\Models;
 
-use Illuminate\Database\Eloquent\Model as Eloquent; 
-use Modules\Admin\Models\Category;
+use Illuminate\Database\Eloquent\Model as Eloquent;  
 use Illuminate\Foundation\Http\FormRequest;
 use Response;
 
@@ -15,7 +14,7 @@ class Transaction extends Eloquent {
      *
      * @var string
      */
-    protected $table = 'transactions';
+    protected $table = 'payment_history';
     /**
      * The attributes that are mass assignable.
      *
@@ -33,52 +32,23 @@ class Transaction extends Eloquent {
      *
      * @var array
      */
-    protected $fillable = [
-                            'user_id',
-                            'product_id',
-                            'product_key_id',
-                            'payment_mode',
-                            'status',
-                            'coupan_id',
-                            'discount',
-                            'total_price',
-                            'discount_price',
-                            'transaction_id',
-                            'product_details'
-                        ]; 
-
-                         // All field of user table here    
-
+    
 
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
-     */
-    
-
+     */ 
     public function user()
     {
        
-        return $this->belongsTo('Modules\Admin\Models\User','user_id','id');
+        return $this->hasOne('Modules\Admin\Models\User','id','user_id');
     }
-    /*---product---*/
-    public function product()
-    {
-       
-        return $this->belongsTo('Modules\Admin\Models\Product','product_id','id');
+    
+    public function order()
+    { 
+     return $this->hasOne('Modules\Admin\Models\PrizeDistribution','id','user_id');
     }
-    /*---Product key--------*/
-    public function productkey()
-    {
-       
-        return $this->belongsTo('Modules\Admin\Models\ProductKey','product_key_id','id');
-    }
-    /*-----Coupam-------*/
-    public function coupan()
-    {
-       
-        return $this->belongsTo('Modules\Admin\Models\Coupan','coupan_id','id');
-    }
+   
   
 }

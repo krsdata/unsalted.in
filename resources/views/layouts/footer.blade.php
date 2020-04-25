@@ -8,8 +8,7 @@
                   <p class="mt-20">
                     We drive one of the biggest virtual yet fancy sports platform. Also, we help you set-up your
 fan base by keeping a watch over shared posts in the feed. <a href="{{url('about-us')}}" class="btn"> Read More...</a>
-                  </p><br>
-                  <p>© Sportsfight.</p>
+                  </p>  
                       </div>
                 <div class="col-md-4 offset-md-1 footer-contact wow fadeInDown animated footpara " style="visibility: visible; animation-name: fadeInDown;">
                   <h3 style="border-bottom: 2px solid #fff;">Contact</h3>
