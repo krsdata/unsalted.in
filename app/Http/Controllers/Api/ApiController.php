@@ -110,40 +110,64 @@ class ApiController extends BaseController
             ->where('id',$contest_id)
             ->first();
 
-        $create_teams_count = \DB::table('create_teams')
+        $create_teams = \DB::table('create_teams')
+            ->where('match_id',$match_id)
+            ->where('user_id',$request->user_id);
+        
+
+        $create_teams_count = $create_teams->count();
+
+        $join_contests = \DB::table('join_contests')
             ->where('match_id',$match_id)
             ->where('user_id',$request->user_id)
-            ->count();
-
-        $join_contests_count = \DB::table('join_contests')
-            ->where('match_id',$match_id)
-            ->where('user_id',$request->user_id)
-            ->where('contest_id',$request->contest_id)
-            ->count();
-
+            ->where('contest_id',$request->contest_id);
+        
+        $close_team_id = $join_contests->pluck('created_team_id')->toArray();
+        
+        $request->merge(['close_team_id'=> $close_team_id]);
+        // not join team id
+        $close_team_id = $join_contests->pluck('created_team_id')->toArray();
+        
+        $close_team = $this->getMyTeam($request);
+        $ct = $close_team->getdata()->response->myteam;
+        $team_list['close_team'] = $ct; 
+        //  join team id
+        $open_team_id = $create_teams->whereNotIn('id',$close_team_id)
+                                    ->pluck('id')->toArray();
+        
+        $request->merge(['open_team_id'=> $open_team_id]);
+        $request->request->remove('close_team_id');
+        
+        $open_team = $this->getMyTeam($request);   
+        $ot = $open_team->getdata()->response->myteam;
+        $team_list['open_team'] = $ot; 
+      
+        $join_contests_count = $join_contests->count();
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
             return [
                 'status'=>true,
                 'code' => 200,
                 'message' => 'Contest is full',
-                'action'=>3
+                'action'=>3,
+                'team_list' => $team_list 
             ];
         }elseif($create_teams_count > $join_contests_count){
             return [
                 'status'=>true,
                 'code' => 200,
                 'message' => ' Join contest ',
-                'action'=>2
+                'action'=>2,
+                'team_list' => $team_list
             ];
         }else{
             return [
                 'status'=>true,
                 'code' => 200,
                 'message' => 'create new team to join this contest',
-                'action'=>1
+                'action'=>1,
+                'team_list' => $team_list
             ];
         }
-
     }
 
     public function prizeBreakup(Request $request){
@@ -813,7 +837,6 @@ class ApiController extends BaseController
         $match_id =  $request->match_id;
         $user_id  =  $request->user_id;
 
-
         $userVald = User::find($request->user_id);
         $matchVald = Matches::where('match_id',$request->match_id)->count();
 
@@ -822,13 +845,27 @@ class ApiController extends BaseController
                 'status'=>false,
                 'code' => 201,
                 'message' => 'user id or match id is invalid'
-
+    
             ];
         }
 
-        $myTeam   =  CreateTeam::where('match_id',$match_id)
+        if($request->close_team_id){
+            $myTeam   =  CreateTeam::where('match_id',$match_id)
+                        ->whereIn('id',$request->close_team_id)   
+                        ->where('user_id',$user_id )
+                        ->get();
+        }elseif($request->open_team_id){
+            $myTeam   =  CreateTeam::where('match_id',$match_id)
+                        ->whereIn('id',$request->open_team_id)
+                        ->where('user_id',$user_id)
+                        ->get(); 
+        }else{
+            $myTeam   =  CreateTeam::where('match_id',$match_id)
             ->where('user_id',$user_id )
             ->get();
+        }
+
+        
 
         $user_name = User::find($user_id);
         $data = [];
@@ -847,7 +884,7 @@ class ApiController extends BaseController
             $team_count = $result->team_count;
             $user_id = $result->user_id;
             $match_id = $result->match_id;
-
+    
             $k['created_team'] = ['team_id' => $result->id];
 
             $player = Player::WhereIn('team_id',$team_id)
@@ -1930,7 +1967,6 @@ class ApiController extends BaseController
             ->get()
             ->groupBy('match_id');
 
-
         if($created_team->count()){
             foreach ($created_team as $match_id => $join_contest) {
 
@@ -1940,11 +1976,27 @@ class ApiController extends BaseController
 
                 $join_match_count   =   $join_contest->count();
                 $join_match = $jmatches->first();
+               // dd($join_match);
                 $join_contests_count =  \DB::table('join_contests')
                     ->where('user_id',$user)
                     ->where('match_id',$match_id)
                     ->selectRaw('distinct contest_id')
                     ->get();
+
+                if(($join_match->timestamp_end < time())  && $join_match->timestamp_end > strtotime("-120 minutes")){
+                    $join_match->status_str = "In Review";
+                }else{
+                    if($join_match->status==4){
+                       $join_match->status_str = "Cancel"; 
+                    }elseif($join_match->status==2){
+                       $join_match->status_str = "Completed" ;
+                    }
+                    elseif($join_match->status==1){
+                       $join_match->status_str = "Upcoming"; 
+                    }elseif($join_match->status==3){
+                       $join_match->status_str = "Live" ;
+                    }
+                }
 
                 $join_match->total_joined_team   =  $join_match_count;
                 $join_match->total_join_contests =  $join_contests_count->count();
@@ -1955,7 +2007,6 @@ class ApiController extends BaseController
                 'viewType'=>1,
                 'joinedmatches'=>array_values($jm)
             ];
-
         }
         $match = Matches::with('teama','teamb')
             ->whereIn('status',[1,3])
@@ -1968,6 +2019,7 @@ class ApiController extends BaseController
 
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
+
 
         return ['total_result'=>count($match),'status'=>true,'code'=>200,'message'=>'success','system_time'=>time(),'response'=>$data];
     }
