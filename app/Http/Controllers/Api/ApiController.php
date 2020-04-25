@@ -2016,7 +2016,7 @@ class ApiController extends BaseController
             ->whereIn('status',[1,3])
             ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
             ->orderBy('timestamp_start','ASC')
-          //  ->where('timestamp_start','>=' , time())
+            ->where('timestamp_start','>=' , time())
             ->limit(10)
             ->get();
 
