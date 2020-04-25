@@ -129,7 +129,7 @@ class DefaultContestController extends Controller {
             $request->merge(['match_id' => $result->match_id]);
             $request->merge(['default_contest_id' => $default_contest_id]);
         }
-        
+
         \DB::table('create_contests')->insert($request->except('_token'));
          
         return Redirect::to(route('defaultContest'))
@@ -209,12 +209,23 @@ class DefaultContestController extends Controller {
             default:
                 # code...
                 break;
-        }
-
+        } 
 
         $defaultContest = DefaultContest::find($id);
         $defaultContest->fill(Input::all()); 
         $defaultContest->save(); 
+        $default_contest_id = $id;
+        $match  = Matches::where('status',1)->get('match_id');
+        //$request->merge(['filled_spot' => 0]);
+        foreach ($match as $key => $result) {
+            $request->merge(['match_id' => $result->match_id]);
+            $request->merge(['default_contest_id' => $default_contest_id]);
+            \DB::table('create_contests')
+                    ->where('default_contest_id',$result->match_id)
+                    ->where('match_id',$id)
+                    ->update($request->except('_token'));
+        }
+        
         return Redirect::to(route('defaultContest'))
                         ->with('flash_alert_notice', 'Default Contest  successfully updated.');
     }
@@ -226,29 +237,32 @@ class DefaultContestController extends Controller {
     public function destroy($id) { 
         
         DefaultContest::where('id',$id)->delete();
+        
+        $contest = \DB::table('create_contests')
+                    ->where('default_contest_id',$id)
+                    ->where('filled_spot',0)->delete();
+
         return Redirect::to(route('defaultContest'))
                         ->with('flash_alert_notice', 'Contest successfully deleted.');
     }
 
     public function show(Request $request, $id) {
 	
-        $page_title     = '  Contest Prize Breakup';
+        $page_title     = 'Contest Prize Breakup';
         $page_action    = 'Show   Contest Prize Breakup'; 
         $expected_amount    =   "";
-
+        
         try{
-         
             $defaultContest = DefaultContest::find((int)$id);
-
          	if(!$defaultContest){
         		return Redirect::to(route('defaultContest'));
         	} 
-            $contestType   =  DefaultContest::with('contestType')->where('id',$id)->first();
+          $contestType   =  DefaultContest::with('contestType')->where('id',$id)->first();
             
-            $contest_type  = [$contestType->contestType->id=>$contestType->contestType->contest_type] ;
+          $contest_type  = [$contestType->contestType->id=>$contestType->contestType->contest_type] ;
 
-            $match = false;    
-            if($request->get('match_id')){
+          $match = false;    
+          if($request->get('match_id')){
                 $match_id = $request->match_id;
 
                 $match = \App\Models\Matches::where('match_id',$match_id)->first();
@@ -257,22 +271,17 @@ class DefaultContestController extends Controller {
                 }
             }
 
-            $prizeBreakup = \DB::table('prize_breakups')
+          $prizeBreakup = \DB::table('prize_breakups')
                         ->where('default_contest_id',$defaultContest->id)
                         ->where('contest_type_id',$defaultContest->contest_type)
                         ->get();
 
- 
-
             $rank_list = $request->list??$prizeBreakup->count();
-
             $expected_amount =  $contestType->entry_fees*$contestType->total_spots;
             $html       = view::make('packages::defaultContest.addPrizeForm',compact('expected_amount','rank_list','prizeBreakup'));
             
            $default_contest_id = $id;
-            return view('packages::defaultContest.prizeBreakup', compact( 'defaultContest','page_title', 'page_action','contest_type','match','expected_amount','html','rank_list','default_contest_id')); 
-
-            
+            return view('packages::defaultContest.prizeBreakup', compact( 'defaultContest','page_title', 'page_action','contest_type','match','expected_amount','html','rank_list','default_contest_id'));
             
          } catch(Exception $e){
          	 
