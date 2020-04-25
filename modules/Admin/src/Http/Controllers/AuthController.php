@@ -125,11 +125,11 @@ class AuthController extends Controller
  
         $email_content = array(
                         'receipent_email'   => $request->get('email'),
-                        'subject'           => 'Your edifyartist Account Password',
+                        'subject'           => 'Your Sportfight Account Password',
                         'name'              => $user_data->first_name,
                         'temp_password'     => $temp_password,
                         'encrypt_key'       => Crypt::encrypt($email),
-                        'greeting'          => 'edifyartist Team',
+                        'greeting'          => 'Sportfight Team',
                         'name'              => $user[0]->name
                     );
         //print_r($email_content);

@@ -12,11 +12,6 @@
 
         $credentials = ['email' => Input::get('email'), 'password' => Input::get('password')];
 
-        // $credentials = ['email' => 'kundan@gmail.com', 'password' => 123456];
-
-        // $auth = auth()->guard('web');
-        // Session::set('role','admin');
-
         $admin_auth = auth()->guard('admin');
         $user_auth =  auth()->guard('web'); //Auth::attempt($credentials);
 
@@ -37,14 +32,12 @@
 
 
     Route::group(['middleware' => ['admin']], function () {
+
         Route::get('admin', 'Modules\Admin\Http\Controllers\AdminController@index');
-
         /*------------User Model and controller---------*/
-
         Route::bind('updatePlayerPoints', function ($value, $route) {
             return Modules\Admin\Models\UpdatePlayerPoints::find($value);
         });
-
         Route::resource(
             'admin/updatePlayerPoints',
             'Modules\Admin\Http\Controllers\UpdatePlayerPointsController',
@@ -60,6 +53,26 @@
             ]
                 ]
         );
+        // Prize distribution
+        Route::bind('prizeDistribution', function ($value, $route) {
+            return Modules\Admin\Models\UpdatePlayerPoints::find($value);
+        });
+        Route::resource(
+            'admin/prizeDistribution',
+            'Modules\Admin\Http\Controllers\PrizeDistributionController',
+            [
+                'names' => [
+                    'edit' => 'prizeDistribution.edit',
+                    'show' => 'prizeDistribution.show',
+                    'destroy' => 'prizeDistribution.destroy',
+                    'update' => 'prizeDistribution.update',
+                    'store' => 'prizeDistribution.store',
+                    'index' => 'prizeDistribution',
+                    'create' => 'prizeDistribution.create',
+                ]
+            ]
+        );
+
 
         Route::bind('user', function ($value, $route) {
             return Modules\Admin\Models\User::find($value);
@@ -203,7 +216,7 @@
                     ]
         );
 
-         
+
         /*---------Contact Route ---------*/
 
         Route::bind('contestType', function ($value, $route) {
@@ -262,7 +275,7 @@
 
         Route::post('admin/supportReply', 'Modules\Admin\Http\Controllers\CompaintController@supportReply');
 
-        
+
 
         Route::bind('postTask', function ($value, $route) {
             return Modules\Admin\Models\PostTask::find($value);
@@ -524,7 +537,7 @@
 
         Route::get('admin/payment/release-fund', 'Modules\Admin\Http\Controllers\PaymentController@index');
         Route::get('admin/payment/user-report', 'Modules\Admin\Http\Controllers\PaymentController@userReport');
-        Route::get('admin/payment/edifyartist-report', 'Modules\Admin\Http\Controllers\PaymentController@edifyartistReport');
+        Route::get('admin/payment/sportfight-report', 'Modules\Admin\Http\Controllers\PaymentController@sportfightReport');
         Route::get('admin/payment/config-service-charge', 'Modules\Admin\Http\Controllers\PaymentController@configServiceCharge');
         Route::get('admin/payment/close-task', 'Modules\Admin\Http\Controllers\PaymentController@closeTask');
 

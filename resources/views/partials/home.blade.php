@@ -76,7 +76,7 @@ do not share it with any third party without your consent</p>
             <div class="media block-6 services text-center d-block mt-lg-5 pt-lg-4">
               <div class="icon justify-content-center align-items-center d-flex"><span class="flaticon-purse"></span></div>
               <div class="media-body">
-                <h3 class="heading mb-3">Easy to Withdrowy</h3>
+                <h3 class="heading mb-3">Easy to Withdraw</h3>
                 <p>Sportsfight Fantasy League is a dream come true for the users, as they get an excellent
 chance to choose their ideal players alongside you can even earn points by winning
 the contest or a bonus by inviting a friend. After winning users switch to withdraw the

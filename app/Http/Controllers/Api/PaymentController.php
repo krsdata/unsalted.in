@@ -58,7 +58,6 @@ class PaymentController extends BaseController
     {  
         $match_id = $request->match_id;  
         $get_join_contest = JoinContest::where('match_id',  $match_id)
-                        ->where('user_id',  $request->user_id)
           ->get()
           ->transform(function ($item, $key)   {
 
@@ -74,9 +73,10 @@ class PaymentController extends BaseController
             $user_id  =   $ct->user_id;
             $rank     =   $ct->rank; 
             $team_name =  $ct->team_count;
-   
+            $points    =  $ct->points;
+          
             $contest =  CreateContest::with('contestType','defaultContest')
-                          ->with(['prizeBreakup'=>function($q) use($rank )
+                          ->with(['prizeBreakup'=>function($q) use($rank,$points  )
                             {
                               $q->where('rank_from','>=',$rank);
                               $q->orwhere('rank_upto','<=',$rank)->where('rank_from','>=',$rank); 
@@ -86,7 +86,7 @@ class PaymentController extends BaseController
                           ->where('match_id',$item->match_id)
                           ->where('id',$item->contest_id) 
                           ->get()
-                          ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name)  {
+                          ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points )  {
                              
                             if($contestItem->prizeBreakup){
                              $contestItem->prize_amount = $contestItem->prizeBreakup->prize_amount; 
@@ -110,8 +110,8 @@ class PaymentController extends BaseController
             $item->rank = $rank;
             $item->team_name = $team_name;
             $item->contest  = $contest[0]??null ;
-            $item->createdTeam = $ct;
-            
+            $item->createdTeam = $ct; 
+           
             //echo $rank.'-'.$match_id.'-'.$user_id.'-'.$team_id.'<br>';
             $prize_dist =  PrizeDistribution::updateOrCreate(
                           [
@@ -122,6 +122,7 @@ class PaymentController extends BaseController
                             'contest_id'       => $item->contest_id
                           ],
                           [
+                            'points'          => $points,
                             'match_id'        => $match_id,
                             'user_id'         => $user_id,
                             'created_team_id' => $team_id,
@@ -175,7 +176,7 @@ class PaymentController extends BaseController
                                             'rank' => $item->rank
                                             ];
                                       $helper = new Helper;
-                                      $m =   $helper->sendNotificationMail($email_content,'prize');
+                                    //  $m =   $helper->sendNotificationMail($email_content,'prize');
 
                                       $item->user_id = $item->user_id;
                                       $item->email = $item->email;
@@ -183,7 +184,7 @@ class PaymentController extends BaseController
                                  return $item;
                                 });
         
-        return 'successfully prize distributed';
+        return 'successfully prize generated';
     }
     
     // Add Money
