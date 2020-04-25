@@ -389,14 +389,12 @@
                 ]
         );
 
-
         Route::bind('transaction', function ($value, $route) {
             return Modules\Admin\Models\Transaction::find($value);
         });
-
         Route::resource(
             'admin/transaction',
-            'Modules\Admin\Http\Controllers\TransactionController',
+            'Modules\Admin\Http\Controllers\PaymentController',
             [
             'names' => [
                 'edit'      => 'transaction.edit',
@@ -409,7 +407,45 @@
             ]
                 ]
         );
+        Route::bind('paymentsHistory', function ($value, $route) {
+            return Modules\Admin\Models\Transaction::find($value);
+        });
 
+        Route::resource(
+            'admin/paymentsHistory',
+            'Modules\Admin\Http\Controllers\TransactionHistoryController',
+            [
+            'names' => [
+                'edit'      => 'paymentsHistory.edit',
+                'show'      => 'paymentsHistory.show',
+                'destroy'   => 'paymentsHistory.destroy',
+                'update'    => 'paymentsHistory.update',
+                'store'     => 'paymentsHistory.store',
+                'index'     => 'paymentsHistory',
+                'create'    => 'paymentsHistory.create',
+            ]
+                ]
+        );
+        Route::bind('payments', function ($value, $route) {
+            return Modules\Admin\Models\Transaction::find($value);
+        });
+
+        Route::resource(
+            'admin/payments',
+            'Modules\Admin\Http\Controllers\TransactionController',
+            [
+            'names' => [
+                'edit'      => 'payments.edit',
+                'show'      => 'payments.show',
+                'destroy'   => 'payments.destroy',
+                'update'    => 'payments.update',
+                'store'     => 'payments.store',
+                'index'     => 'payments',
+                'create'    => 'payments.create',
+            ]
+                ]
+        );
+        
         Route::bind('setting', function ($value, $route) {
             return Modules\Admin\Models\Settings::find($value);
         });
@@ -533,13 +569,7 @@
                 'create' => 'press.create',
             ]
                 ]
-        );
-
-        Route::get('admin/payment/release-fund', 'Modules\Admin\Http\Controllers\PaymentController@index');
-        Route::get('admin/payment/user-report', 'Modules\Admin\Http\Controllers\PaymentController@userReport');
-        Route::get('admin/payment/sportfight-report', 'Modules\Admin\Http\Controllers\PaymentController@sportfightReport');
-        Route::get('admin/payment/config-service-charge', 'Modules\Admin\Http\Controllers\PaymentController@configServiceCharge');
-        Route::get('admin/payment/close-task', 'Modules\Admin\Http\Controllers\PaymentController@closeTask');
+        ); 
 
         Route::match(['get','post'], 'admin/permission', 'Modules\Admin\Http\Controllers\RoleController@permission');
 
