@@ -28,6 +28,7 @@ use Modules\Admin\Http\Requests\DefaultContestRequest;
 use Modules\Admin\Models\DefaultContest;
 use Modules\Admin\Models\ContestType;
 use Modules\Admin\Models\PrizeBreakups;
+use App\Models\Matches;
 
 
 
@@ -114,11 +115,22 @@ class DefaultContestController extends Controller {
     /*
      * Save Group method
      * */
-
+    //DefaultContestRequest
     public function store(DefaultContestRequest $request, DefaultContest $defaultContest) 
     {   
         $defaultContest->fill(Input::all()); 
-        $defaultContest->save();   
+        $defaultContest->save(); 
+
+        $default_contest_id = $defaultContest->id;
+
+        $match  = Matches::where('status',1)->get('match_id');
+        $request->merge(['filled_spot' => 0]);
+        foreach ($match as $key => $result) {
+            $request->merge(['match_id' => $result->match_id]);
+            $request->merge(['default_contest_id' => $default_contest_id]);
+        }
+        
+        \DB::table('create_contests')->insert($request->except('_token'));
          
         return Redirect::to(route('defaultContest'))
                             ->with('flash_alert_notice', 'New Contest successfully created!');
