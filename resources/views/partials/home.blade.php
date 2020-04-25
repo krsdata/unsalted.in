@@ -108,11 +108,11 @@ earnings into your account.</p>
             <h2 class="mb-4">Our Works</h2>
 
           <p class="text-muted">We are here to help you generate income out of your interest by serving you with the best
-fantasy sports opportunity. We help accomplish your dream of playing a digital sport picking
-your favourite players with a live Leadership board to track top winners performances. Along
-with this, we undertake the fan code by serving you the hands-on experience over your
-prediction via fantasy sport.
-</p>
+          fantasy sports opportunity. We help accomplish your dream of playing a digital sport picking
+          your favourite players with a live Leadership board to track top winners performances. Along
+          with this, we undertake the fan code by serving you the hands-on experience over your
+          prediction via fantasy sport.
+          </p>
 
           <hr class="my-5">
 
@@ -139,10 +139,8 @@ prediction via fantasy sport.
         </div>
         <!--Grid column-->
 
+      </div> 
       </div>
-      <!--Grid row-->
-
-    </div>
 
 
     </section>
