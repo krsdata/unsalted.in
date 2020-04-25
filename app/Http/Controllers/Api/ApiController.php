@@ -2028,14 +2028,23 @@ class ApiController extends BaseController
         $com = \DB::table('competitions')->select('id','match_id','cid')->get()->toArray();
         return $com;
     }
+    public function getAnalytics(){
+        $analytics = [
+                'selection' => (float)0.0,
+                'captain' => (float)0.0,
+                'vice_captain' => (float)0.0,
+                'trump' => (float)0.0
+        ];
 
+        return $analytics;
+
+    }
     // get players
     public function getPlayer(Request $request)
     {
-        $match_id =  $request->get('match_id');
-
-        $matchVald = Matches::where('match_id',$request->match_id)->count();
-
+        $analytics  = $this->getAnalytics();
+        $match_id   =  $request->get('match_id');
+        $matchVald  = Matches::where('match_id',$request->match_id)->count();
         if(!$matchVald){
             return [
                 'status'=>false,
@@ -2111,6 +2120,7 @@ class ApiController extends BaseController
                 }
             }
             $data['fantasy_player_rating'] = ($results->fantasy_player_rating);
+            $data['analytics'] = $analytics;
             if($results->playing_role=="wkbat")
             {
                 $rs['wk'][]  = $data;
