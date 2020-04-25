@@ -123,7 +123,12 @@ class DefaultContestController extends Controller {
 
         $default_contest_id = $defaultContest->id;
 
-        $match  = Matches::where('status',1)->get('match_id');
+        if($request->match_id){
+            $match  = Matches::where('match_id',$request->match_id)->get('match_id');
+        }else{0
+            $match  = Matches::where('status',1)->get('match_id');
+        }
+
         $request->merge(['filled_spot' => 0]);
         foreach ($match as $key => $result) {
             $request->merge(['match_id' => $result->match_id]);
