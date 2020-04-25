@@ -30,7 +30,17 @@ Route::match(
         'uses' => 'HomeController@contactus',
     ]
 );
- 
+
+
+
+Route::match(
+    ['post','get'],
+    '/aboutus',
+    [
+        'as'   => 'aboutus',
+        'uses' => 'HomeController@aboutus',
+    ]
+);
 
 Route::match(
     ['post','get'],
@@ -40,4 +50,3 @@ Route::match(
         'uses' => 'HomeController@getPage',
     ]
 );
- 

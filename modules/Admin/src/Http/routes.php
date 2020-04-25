@@ -12,11 +12,6 @@
 
         $credentials = ['email' => Input::get('email'), 'password' => Input::get('password')];
 
-        // $credentials = ['email' => 'kundan@gmail.com', 'password' => 123456];
-
-        // $auth = auth()->guard('web');
-        // Session::set('role','admin');
-
         $admin_auth = auth()->guard('admin');
         $user_auth =  auth()->guard('web'); //Auth::attempt($credentials);
 
@@ -37,9 +32,47 @@
 
 
     Route::group(['middleware' => ['admin']], function () {
-        Route::get('admin', 'Modules\Admin\Http\Controllers\AdminController@index');
 
+        Route::get('admin', 'Modules\Admin\Http\Controllers\AdminController@index');
         /*------------User Model and controller---------*/
+        Route::bind('updatePlayerPoints', function ($value, $route) {
+            return Modules\Admin\Models\UpdatePlayerPoints::find($value);
+        });
+        Route::resource(
+            'admin/updatePlayerPoints',
+            'Modules\Admin\Http\Controllers\UpdatePlayerPointsController',
+            [
+            'names' => [
+                'edit' => 'updatePlayerPoints.edit',
+                'show' => 'updatePlayerPoints.show',
+                'destroy' => 'updatePlayerPoints.destroy',
+                'update' => 'updatePlayerPoints.update',
+                'store' => 'updatePlayerPoints.store',
+                'index' => 'updatePlayerPoints',
+                'create' => 'updatePlayerPoints.create',
+            ]
+                ]
+        );
+        // Prize distribution
+        Route::bind('prizeDistribution', function ($value, $route) {
+            return Modules\Admin\Models\UpdatePlayerPoints::find($value);
+        });
+        Route::resource(
+            'admin/prizeDistribution',
+            'Modules\Admin\Http\Controllers\PrizeDistributionController',
+            [
+                'names' => [
+                    'edit' => 'prizeDistribution.edit',
+                    'show' => 'prizeDistribution.show',
+                    'destroy' => 'prizeDistribution.destroy',
+                    'update' => 'prizeDistribution.update',
+                    'store' => 'prizeDistribution.store',
+                    'index' => 'prizeDistribution',
+                    'create' => 'prizeDistribution.create',
+                ]
+            ]
+        );
+
 
         Route::bind('user', function ($value, $route) {
             return Modules\Admin\Models\User::find($value);
@@ -183,7 +216,7 @@
                     ]
         );
 
-         
+
         /*---------Contact Route ---------*/
 
         Route::bind('contestType', function ($value, $route) {
@@ -242,7 +275,7 @@
 
         Route::post('admin/supportReply', 'Modules\Admin\Http\Controllers\CompaintController@supportReply');
 
-        
+
 
         Route::bind('postTask', function ($value, $route) {
             return Modules\Admin\Models\PostTask::find($value);
@@ -356,14 +389,12 @@
                 ]
         );
 
-
         Route::bind('transaction', function ($value, $route) {
             return Modules\Admin\Models\Transaction::find($value);
         });
-
         Route::resource(
             'admin/transaction',
-            'Modules\Admin\Http\Controllers\TransactionController',
+            'Modules\Admin\Http\Controllers\PaymentController',
             [
             'names' => [
                 'edit'      => 'transaction.edit',
@@ -376,7 +407,45 @@
             ]
                 ]
         );
+        Route::bind('paymentsHistory', function ($value, $route) {
+            return Modules\Admin\Models\Transaction::find($value);
+        });
 
+        Route::resource(
+            'admin/paymentsHistory',
+            'Modules\Admin\Http\Controllers\TransactionHistoryController',
+            [
+            'names' => [
+                'edit'      => 'paymentsHistory.edit',
+                'show'      => 'paymentsHistory.show',
+                'destroy'   => 'paymentsHistory.destroy',
+                'update'    => 'paymentsHistory.update',
+                'store'     => 'paymentsHistory.store',
+                'index'     => 'paymentsHistory',
+                'create'    => 'paymentsHistory.create',
+            ]
+                ]
+        );
+        Route::bind('payments', function ($value, $route) {
+            return Modules\Admin\Models\Transaction::find($value);
+        });
+
+        Route::resource(
+            'admin/payments',
+            'Modules\Admin\Http\Controllers\TransactionController',
+            [
+            'names' => [
+                'edit'      => 'payments.edit',
+                'show'      => 'payments.show',
+                'destroy'   => 'payments.destroy',
+                'update'    => 'payments.update',
+                'store'     => 'payments.store',
+                'index'     => 'payments',
+                'create'    => 'payments.create',
+            ]
+                ]
+        );
+        
         Route::bind('setting', function ($value, $route) {
             return Modules\Admin\Models\Settings::find($value);
         });
@@ -500,13 +569,7 @@
                 'create' => 'press.create',
             ]
                 ]
-        );
-
-        Route::get('admin/payment/release-fund', 'Modules\Admin\Http\Controllers\PaymentController@index');
-        Route::get('admin/payment/user-report', 'Modules\Admin\Http\Controllers\PaymentController@userReport');
-        Route::get('admin/payment/edifyartist-report', 'Modules\Admin\Http\Controllers\PaymentController@edifyartistReport');
-        Route::get('admin/payment/config-service-charge', 'Modules\Admin\Http\Controllers\PaymentController@configServiceCharge');
-        Route::get('admin/payment/close-task', 'Modules\Admin\Http\Controllers\PaymentController@closeTask');
+        ); 
 
         Route::match(['get','post'], 'admin/permission', 'Modules\Admin\Http\Controllers\RoleController@permission');
 

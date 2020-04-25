@@ -63,11 +63,14 @@ Route::middleware('auth:api')->group( function () {
     });
 });
 
-// Without Auth
+// Without AuthM
 Route::group([
     'prefix' => 'v2'
 ], function()
 {
+
+
+    Route::match(['post','get'],'updateMatchDataByMatchId/{match_id}/{status}', 'Api\ApiController@updateMatchDataByMatchId'); 
     Route::match(['get','post'], 'generateOtp', [
         'as' => 'generateOtp',
         'uses' => 'Api\UserController@generateOtp'

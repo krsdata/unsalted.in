@@ -6,17 +6,16 @@
                   <h3 style="border-bottom: 2px solid #fff;">About us</h3>
                   <span style="width: 200px;display: block;border-bottom: 2px solid #fff;margin-top: -4px;"></span>
                   <p class="mt-20">
-                    We are here to help you generate income out of your interest by serving you with the best fantasy sports opportunity.
-                  </p><br>
-                  <p>© Sportsfight.</p>
+                    We drive one of the biggest virtual yet fancy sports platform. Also, we help you set-up your
+fan base by keeping a watch over shared posts in the feed. <a href="{{url('about-us')}}" class="btn"> Read More...</a>
+                  </p>  
                       </div>
                 <div class="col-md-4 offset-md-1 footer-contact wow fadeInDown animated footpara " style="visibility: visible; animation-name: fadeInDown;">
                   <h3 style="border-bottom: 2px solid #fff;">Contact</h3>
                   <span style="width: 98px;display: block;border-bottom: 2px solid #fff;margin-top: -4px;"></span>
-                      <p><i class="fa fa-map-marker-alt"></i> Mumbai, Maharastra </p>
-                      <p><i class="fa fa-phone"></i> Phone: (+91) xxx xxx xxxx </p>
+                      <p><i class="fa fa-map-marker"></i> Address: Mumbai, Maharastra </p>
                       <p><i class="fa fa-envelope"></i> Email: <a href="mailto:sportsfight@domain.com">info@sportsfight.in</a></p>
-                      <p><i class="fa fa-skype"></i> Skype: sportsfight_online</p>
+                      <p><i class="fa fa-skype"></i> Skype: info@sportsfight.in</p>
                       </div>
                       <div class="col-md-4 footer-links wow fadeInUp animated footpara" style="visibility: visible; animation-name: fadeInUp;">
                         <div class="row">

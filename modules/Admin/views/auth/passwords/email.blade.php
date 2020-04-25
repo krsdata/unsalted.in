@@ -40,7 +40,7 @@
     <body class=" login">
         <!-- BEGIN LOGO -->
         <div class="logo">
-            <p style="font-size: 30px; font-family: inherit; color:#fff; margin: 0px; padding: 0px"> <b style="color:yellow">Edifyartist </b> CMS</p>
+            <p style="font-size: 30px; font-family: inherit; color:#fff; margin: 0px; padding: 0px"> <b style="color:yellow">sportfight </b> CMS</p>
         </div>
 
         <!-- END LOGO -->
@@ -85,7 +85,7 @@
            
             <!-- END REGISTRATION FORM -->
         </div>
-        <div class="copyright"> {{date('Y')}} © edifyartist. All rights reserved </div>
+        <div class="copyright"> {{date('Y')}} © sportfight. All rights reserved </div>
         <!-- END LOGIN -->
         <!--[if lt IE 9]>
 <script src="{{ URL::asset('assets/global/plugins/respond.min.js') }}"></script>

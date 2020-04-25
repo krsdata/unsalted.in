@@ -44,7 +44,7 @@ class ApiController extends BaseController
     public function __construct(Request $request) {
 
         $this->date = date('Y-m-d');
-        $this->token = "8740931958a5c24fed8b66c7609c1c49";
+        $this->token = "7f7c1c8df02f5f8c25a405fbbc7d59cf";
 
         $request->headers->set('Accept', 'application/json');
 
@@ -95,11 +95,12 @@ class ApiController extends BaseController
                 'release_note'  =>  null
             ];
         }
-
-
-
     }
-
+    /*
+    @var match_id
+    @var content_id
+    @desc join contest status
+    */
     public function joinNewContestStatus(Request $request){
 
         $match_id   = $request->match_id;
@@ -118,9 +119,7 @@ class ApiController extends BaseController
             ->where('match_id',$match_id)
             ->where('user_id',$request->user_id)
             ->where('contest_id',$request->contest_id)
-            ->selectRaw('distinct contest_id')
-            ->get()->count();
-
+            ->count();
 
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
             return [
@@ -185,18 +184,12 @@ class ApiController extends BaseController
                     'range' => $rank_rang,
                     'price' => $prize
                 ];
-
             }
-
             $item->rank = $rank;
             return $item;
-
         });
 
         $data['prizeBreakup'] = $contest[0]->rank??null ;
-
-
-
         return [
             'status'=>true,
             'code' => 200,
@@ -329,7 +322,6 @@ class ApiController extends BaseController
             'team_id' => 'required'
         ]);
 
-
         // Return Error Message
         if ($validator->fails() ||  $team_id==null) {
             $error_msg  =   [];
@@ -440,7 +432,7 @@ class ApiController extends BaseController
                     'role'      => $result->role,
                     'captain'   =>  ($captain==$result->pid)?true:false,
                     'vice_captain'   => ($vice_captain==$result->pid)?true:false,
-                    'trump'     => ($trump==$result->pid)?true:fals
+                    'trump'     => ($trump==$result->pid)?true:false
                 ];
             }
             $total_points = array_sum($array_sum);
@@ -542,7 +534,44 @@ class ApiController extends BaseController
         foreach ($matches as $key => $match) {   # code...
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
+        
+            $this->storeMatchInfoAtMachine($data,'info/'.$match->match_id.'.txt');
             $points_json = json_decode($points);
+            $m = [];
+            foreach ($points_json->response->points as $team => $teams) {
+                if($teams==""){
+                    continue;
+                }
+                foreach ($teams as $key => $players) {
+                    foreach ($players as $key => $result) {
+                        $result->match_id = $match->match_id;
+                        if($result->pid==null){
+                            continue;
+                        }
+                        $m[] = MatchPoint::updateOrCreate(
+                            ['match_id'=>$match->match_id,'pid'=>$result->pid],
+                            (array)$result);
+
+                    }
+                }
+            }
+        }
+
+        echo 'points_updated';
+    }
+
+    // update points by LIVE Match
+    public function updatePointsAndPlayerByMatchId(Request $request){
+        $matches = Matches::where('status',3)
+            ->get();
+
+
+        foreach ($matches as $key => $match) {   # code...
+
+            $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
+            $points_json = json_decode($points);
+            $this->storeMatchInfoAtMachine($data,'point/'.$match->match_id.'.txt');
+            
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
                 if($teams==""){
@@ -575,6 +604,8 @@ class ApiController extends BaseController
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
             $points_json = json_decode($points);
+            $this->storeMatchInfoAtMachine($points,'point/'.$match->match_id.'.txt');
+            
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
                 if($teams==""){
@@ -644,6 +675,8 @@ class ApiController extends BaseController
 
         $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$request->match_id.'/point?token='.$this->token);
         $points_json = json_decode($points);
+        $this->storeMatchInfoAtMachine($points,'point/'.$request->match_id.'.txt');
+            
         // dd($points_json->response->points);
         foreach ($points_json->response->points as $team => $teams) {
             foreach ($teams as $key => $players) {
@@ -661,7 +694,13 @@ class ApiController extends BaseController
         }
         return ['points'=>$m];
     }
-    //LeaderBoard
+    
+  /**
+    * Description : Leaderboard data
+    * @var match_is
+    * @var user_id
+    * @var content_id
+    */
     public function leaderBoard(Request $request){
         // $join_contests = [];
 
@@ -677,7 +716,7 @@ class ApiController extends BaseController
             ->where(function($q) use($user_id){
                 $q->where('user_id',$user_id);
             })
-            ->orderBy('id','ASC')
+            ->orderBy('rank','ASC')
             ->get();
 
         $point = (int)($leader_board1[0]->point??null);
@@ -689,13 +728,13 @@ class ApiController extends BaseController
             ->where(function($q) use($user_id,$point){
                 $q->where('user_id','!=',$user_id);
                 if($point){
-                    $q->orderBy('rank','DESC');
+                    $q->orderBy('rank','ASC');
                 }else{
                     $q->orderBy('rank','ASC');
                 }
             })
             ->get();
-
+        $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
             if(!isset($value->user)){
@@ -719,7 +758,6 @@ class ApiController extends BaseController
             ];
             $lb[] = $data;
         }
-
         foreach ($leader_board2 as $key => $value) {
 
             if(!isset($value->user)){
@@ -736,8 +774,6 @@ class ApiController extends BaseController
             $user_data =  $value->user->first_name;
             $fn = explode(" ",$user_data);
 
-
-
             $data['user'] = [
                 'first_name'    => reset($fn),
                 'last_name'     => end($fn),
@@ -748,6 +784,7 @@ class ApiController extends BaseController
             $lb[] = $data;
         }
         $lb = $lb??null;
+        
         if($lb){
             return [
                 'status'=>true,
@@ -1193,20 +1230,22 @@ class ApiController extends BaseController
 
     public function getMatchDataFromApi()
     {
-
         //upcoming
         $upcoming =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=1&token='.$this->token);
-
+        $this->storeMatchInfoAtMachine($upcoming,'upcoming/'.'upcoming.txt');
+        
         \File::put(public_path('/upload/json/upcoming.txt'),$upcoming);
 
         //complted
         $completed =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=2&token='.$this->token);
 
+        $this->storeMatchInfoAtMachine($completed,'completed/'.'completed.txt');
         \File::put(public_path('/upload/json/completed.txt'),$completed);
 
         //live
         $live =    file_get_contents('https://rest.entitysport.com/v2/matches/?status=3&token='.$this->token);
 
+        $this->storeMatchInfoAtMachine($live,'live/'.'live.txt');
         \File::put(public_path('/upload/json/live.txt'),$live);
 
         return ['file updated'];
@@ -1215,12 +1254,12 @@ class ApiController extends BaseController
     public function updateMatchDataById($match_id=null)
     {
         //upcoming
-
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
-
+        // store match info    
+        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
         $this->saveMatchDataById($data);
-        return [$match_id.' : match id updated successfully'];
 
+        return [$match_id.' : match id updated successfully'];
     }
 
     public function updateMatchInfo(Request $request)
@@ -1234,7 +1273,7 @@ class ApiController extends BaseController
         foreach ($matches as $key => $match) {
 
             $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/info?token='.$this->token);
-            $this->saveMatchDataFromAPI2DB($data);
+                $this->saveMatchDataFromAPI2DB($data);
         }
 
         return [$matches->count().' Match is updated successfully'];
@@ -1275,7 +1314,8 @@ class ApiController extends BaseController
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$this->token.'&per_page=20');
 
         \File::put(public_path('/upload/json/'.$fileName.'.txt'),$data);
-
+        $this->storeMatchInfoAtMachine($data,'status/'.$fileName.'.txt');
+        
         $data = $this->storeMatchInfo($fileName);
 
         return $this->saveMatchDataFromAPI($data);
@@ -1284,10 +1324,71 @@ class ApiController extends BaseController
 
     }
 
+     public function updateMatchDataByMatchId($match_id=null,$status=1)
+    {
+        if($status==1){
+            $fileName="upcoming";
+        }
+        elseif($status==2){
+            $fileName="completed";
+        }
+        elseif($status==3){
+            $fileName="live";
+        }elseif($status==4){
+            $fileName="cancelled";
+        }
+        else{
+            return ['data not available'];
+        }
+        // https://rest.entitysport.com/v2/matches/44198/info
+        //upcoming
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+
+        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
+        
+        $json = json_decode($data); 
+        $datas['status']    = $json->status;
+        $arr['items'][]     = $json->response;
+        $datas['response']  = $arr;
+
+        $json_data = json_encode($datas); 
+
+        \File::put(public_path('/upload/json/'.$fileName.'.txt'),$json_data);
+
+        $data = $this->storeMatchInfo($fileName);
+
+         $this->saveMatchDataFromAPI($data);
+
+        return [$match_id.' match data updated successfully'];
+
+    }
+
     //get file data from local
     public function getJsonFromLocal($path=null)
     {
         return json_decode(file_get_contents($path));
+    }
+
+    public function storeMatchInfoAtMachine($data,$fileName){
+
+        \File::put(public_path('/data/v2/matches/'.$fileName),$data);                
+    }
+
+    public function getMatchInfoFromMachine($fileName=null,$file_path="/upload/json/"){
+        if($fileName){
+            $files = [$fileName];
+        }else{
+            $files = ['live','completed','upcoming'];
+        }
+        try {
+            if(in_array($fileName, $files)){
+                return $this->getJsonFromLocal(public_path($file_path.$fileName.'.txt'));
+            }
+
+        } catch (Exception $e) {
+            //  dd($e);
+        }
+        return ['match info stored'];
     }
 
     // store by match type
@@ -1559,6 +1660,8 @@ class ApiController extends BaseController
             $token =  $this->token;
             $path = 'https://rest.entitysport.com/v2/competitions/'.$cid->cid.'/squads/'.$match_id.'?token='.$this->token;
 
+            $data_sqd = file_get_contents($path);
+            $this->storeMatchInfoAtMachine($data_sqd,'squads/'.$match_id.'.txt');
             $data = $this->getJsonFromLocal($path);
 
             foreach ($data->response->squads as $key => $pvalue) {
@@ -1787,11 +1890,11 @@ class ApiController extends BaseController
                 $my_match = $upcomingMatches;
                 break;
             case 'completed':
-                $type_name = "completedMatch";
+                $type_name = "completed";
                 $my_match = $completedMatches;
                 break;
             case 'live':
-                $type_name = "liveMatch";
+                $type_name = "live";
                 $my_match = $liveMatches;
                 break;
 
@@ -1987,14 +2090,10 @@ class ApiController extends BaseController
             $t1 =  date('h:i:s');
             $token =  $this->token;
             $path = 'https://rest.entitysport.com/v2/matches/'.$match_id.'/squads/?token='.$token;
-
-
             $data = $this->getJsonFromLocal($path);
-
             // update team a players
             $teama = $data->response->teama;
             foreach ($teama->squads as $key => $squads) {
-
                 $teama_obj = TeamASquad::firstOrNew(
                     [
                         'team_id'=>$teama->team_id,
@@ -2823,7 +2922,12 @@ class ApiController extends BaseController
 
 
         $clone_team =   CreateTeam::where('id',$request->team_id)->where('user_id',$request->user_id)->first();
-        //  dd($clone_team);
+        
+        $total_team = CreateTeam::where('match_id',$clone_team->match_id)
+                            ->where('user_id',$request->user_id)
+                            ->count();
+        $total_team_count = "T".($total_team+1);
+        
         $data = null;
         if($clone_team){
             $clone_team2  = new CreateTeam;
@@ -2837,7 +2941,7 @@ class ApiController extends BaseController
             $clone_team2->vice_captain  =   $clone_team->vice_captain;
             $clone_team2->trump         =   $clone_team->trump;
 
-            $clone_team2->team_count    =   $clone_team->team_count;
+            $clone_team2->team_count    =   $total_team_count;
             $clone_team2->team_join_status =   $clone_team->team_join_status;
             $clone_team2->rank          =   $clone_team->rank;
             $clone_team2->edit_team_count =   $clone_team->edit_team_count;

@@ -43,7 +43,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 		var pathArray = window.location.pathname.split( '/' );
         $scope.currDomain=pathArray[1]=='uat'?window.location.origin+'/uat':window.location.origin;
 		$scope.loading = true;
-		$http.get('http://api.edifyartist.com/api/v1/getPostTask?releasedFund=0&taskStatus=completed').
+		$http.get('http://api.sportsfight.in/api/v1/getPostTask?releasedFund=0&taskStatus=completed').
 		success(function(data, status, headers, config) {
 			$scope.list = data.data;
 			$scope.showReleaseFundList=$scope.list.length>0?true:false;
@@ -55,7 +55,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 	}
 	// get withrawal list
 	$scope.getWithrawalList = function() {
-		$http.get('http://api.edifyartist.com/api/v1/withdrawalsRequest').
+		$http.get('http://api.sportsfight.in/api/v1/withdrawalsRequest').
 		success(function(data, status, headers, config) {
 			if(data.status==1&&data.message=='Withdrawals List found.')
 			$scope.withdrawallist = data.data;
@@ -70,7 +70,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 		if(response!=null&&response!='') {
 			alert(response)
 		} else {
-			$http.get('http://api.edifyartist.com/api/v1/user/withdrawal/approve?withdrawalId='+id).
+			$http.get('http://api.sportsfight.in/api/v1/user/withdrawal/approve?withdrawalId='+id).
 			success(function(data, status, headers, config) {
 				console.log('id',data.status,data.message);
 				if(data.status==1&&data.message=='Withdrawal request initialize successfully.') {
@@ -89,15 +89,15 @@ app.controller('paymentController', function($scope, $http,$location) {
 
 	$scope.sendWithrawalReq = function(taskId,userId,doerId,amount) {
 		$scope.loading = true;
-			$http.get('http://api.edifyartist.com/api/v1/user/task/release-fund?taskId='+taskId+'&userId='+doerId).
+			$http.get('http://api.sportsfight.in/api/v1/user/task/release-fund?taskId='+taskId+'&userId='+doerId).
 		success(function(data, status, headers, config) {
-			$http.get('http://api.edifyartist.com/api/v1/user/bank_detail/list?userId='+doerId).
+			$http.get('http://api.sportsfight.in/api/v1/user/bank_detail/list?userId='+doerId).
 			success(function(data, status, headers, config) {
 				if(data.message=='Records found.') {
 					var bankId=data.data[0].id;
-						$http.get('http://api.edifyartist.com/api/v1/user/withdrawal/newrequest?userId='+doerId+'&amount='+amount+'&bankId='+bankId).success(function(data, status, headers, config) {
+						$http.get('http://api.sportsfight.in/api/v1/user/withdrawal/newrequest?userId='+doerId+'&amount='+amount+'&bankId='+bankId).success(function(data, status, headers, config) {
 						if(data.message=='Withdrawal request added succesfully.'){
-							$http.post('http://api.edifyartist.com/api/v1/taskCompleteFromDoer', {
+							$http.post('http://api.sportsfight.in/api/v1/taskCompleteFromDoer', {
 								taskId : taskId,
 								taskDoerId : doerId,
 								status : 'closed '
@@ -125,7 +125,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 	$scope.getUserData = function() {
 		var userId=$scope.userId;
 		$scope.loading = true;
-		$http.get('http://api.edifyartist.com/api/v1/user/payments-histroy/outgoing?userId='+userId+'page_size=20&page_num=1').
+		$http.get('http://api.sportsfight.in/api/v1/user/payments-histroy/outgoing?userId='+userId+'page_size=20&page_num=1').
 		success(function(data, status, headers, config) {
 			if(data.net_incoming!='0.00'||data.net_outgoing!='0.00') {
 				    $scope.userReportOutgoing=data;
@@ -160,7 +160,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 			$scope.outgoingIndicator=false;
 			$scope.incomingIndicator=true;
 			var userId=$scope.userId;
-			$http.get('http://api.edifyartist.com/api/v1/user/payments-histroy/earned?userId='+userId+'page_size=20&page_num=1').
+			$http.get('http://api.sportsfight.in/api/v1/user/payments-histroy/earned?userId='+userId+'page_size=20&page_num=1').
 			success(function(data, status, headers, config) {
 				if(data.message=='Payment histroy found.') {
 						$scope.userReportIncoming=data;
@@ -250,7 +250,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 			var endDate=$("#enddate").val()
 			if(startDate&&endDate) {
 				$scope.showError = false;
-				$http.get('http://api.edifyartist.com/api/v1/incomeDetail?startDate='+startDate+'&endDate='+endDate).
+				$http.get('http://api.sportsfight.in/api/v1/incomeDetail?startDate='+startDate+'&endDate='+endDate).
 				success(function(data, status, headers, config) {
 					if(data.message=='edifyartist income details') {
 							$scope.yelloEarn=data.income_details.earn;
@@ -272,7 +272,7 @@ app.controller('paymentController', function($scope, $http,$location) {
 // get service charge 
 $scope.getServiceCharge = function() {
 	$scope.loading = true;
-	$http.get('http://api.edifyartist.com/api/v1/serviceCharge').
+	$http.get('http://api.sportsfight.in/api/v1/serviceCharge').
 	success(function(data, status, headers, config) {
 		if(data.message=='Service charge'){
 			$scope.currentServiceCharge=data.data.field_value;
@@ -289,7 +289,7 @@ $scope.saveServiceCharge=function() {
 	var newServiceCharge=$scope.model.serviceCharge;
 	if (/^\d*[1-9]\d*$/.test(+newServiceCharge)&&newServiceCharge!=''){
 		$scope.serviceChargeError=false;
-		$http.post('http://api.edifyartist.com/api/v1/serviceCharge', {
+		$http.post('http://api.sportsfight.in/api/v1/serviceCharge', {
 			service_charge :newServiceCharge
 		}).success(function(data, status, headers, config) {
 			if(data.message=='Service charge updated') {

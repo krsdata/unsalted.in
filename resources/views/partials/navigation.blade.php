@@ -12,10 +12,12 @@
           <div class="collapse navbar-collapse" id="ftco-nav">
             <ul class="navbar-nav nav ml-auto">
               <li class="nav-item"><a href="{{URL::asset('/')}}#home-section" class="nav-link"><span>Home</span></a></li>
+              
+              <li class="nav-item"><a href="{{URL::asset('aboutus')}}" class="nav-link"><span>About us</span></a></li> 
 
               <li class="nav-item"><a href="{{URL::asset('/')}}#services-section" class="nav-link"><span>Our Features</span></a></li>
 
-              <li class="nav-item"><a href="{{URL::asset('/')}}#properties-section" class="nav-link"><span>Screenshots</span></a></li> 
+              
 
               <li class="nav-item"><a href="{{URL::asset('contactus')}}" class="nav-link"><span>Contact us</span></a></li>
             </ul>

@@ -93,7 +93,7 @@
                                                 <th> Player List </th> 
                                                 <th> Status</th> 
                                                 <th> Start Date</th> 
-                                                 <th> Distribute Prize</th>
+                                                 <th> Generate Prize</th>
 
                                                  <th> View Details  </th> 
                                                 <th>  Cron run at</th>  
@@ -123,7 +123,7 @@
                                                  <td> 
                                                     @if($result->status==2)
                                                    <a class="btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
-                                                     Distribute Prize
+                                                     Generate Prize
                                                         </a> 
                                                     @else
                                                      Pending
