@@ -54,24 +54,26 @@ class DocumentController extends Controller
         $page_title     = 'Document';
         $sub_page_title = 'Document';
         $page_action    = 'View Bank Accounts'; 
-
-        if($request->post()){
-                $ba = BankAccounts::find($request->bank_doc_id);
-                $ba->status = 1;
-                $ba->save();
-        }
+ 
         
         // Search by name ,email and  
         $search = Input::get('search'); 
         $user = User::where('email','LIKE',"%$search%")
                             ->orWhere('first_name','LIKE',"%$search%")
+                            ->orWhere('name','LIKE',"%$search%")
                             ->get('id')->pluck('id');
-          
+        
         if ((isset($search) && !empty($search))) {
 
-            $documents = BankAccounts::with('user')->where(function ($query) use ($search,$pid,$user) {
-                if (!empty($search) && !empty($user)) {
-                   $query->whereIn('user', $user);
+            $documents = BankAccounts::with('user')->where(function ($query) use ($search,$user) {
+                if (!empty($search) && $user->count()) {
+                    
+                   $query->whereIn('user_id', $user);
+                }elseif ($user->count()==0) { 
+                    $query->orWhere('bank_name','LIKE',"%$search%");
+                    $query->orWhere('account_name','LIKE',"%$search%");
+                    $query->orWhere('account_number','LIKE',"%$search%");
+                    $query->orWhere('ifsc_code','LIKE',"%$search%");
                 }
             })->orderBy('id','desc')->Paginate($this->record_per_page);
         } else {
@@ -97,7 +99,7 @@ class DocumentController extends Controller
           
         if ((isset($search) && !empty($search))) {
 
-            $documents = Document::with('user')->where(function ($query) use ($search,$pid,$user) {
+            $documents = Document::with('user')->where(function ($query) use ($search,$user) {
                 if (!empty($search) && !empty($user)) {
                    $query->whereIn('user', $user);
                 }
