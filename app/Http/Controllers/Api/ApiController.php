@@ -70,7 +70,7 @@ class ApiController extends BaseController
                     'url'           =>  $apk_update_status->url,
                     'title'         =>  $apk_update_status->title,
                     'url'           =>  $apk_update_status->url,
-                    'release_note'  =>  $apk_update_status->release_notes
+                    'release_note'  =>  $apk_update_status->release_notes??'new updates'
                 ];
             }else{
                 return [
@@ -290,8 +290,8 @@ class ApiController extends BaseController
 
                 $match_stats_team_id = \DB::table('match_stats')
                     ->where('match_id',$match_stat->match_id)
-                    ->get();
-                // dd($match_stats_team_id);
+                    ->get(); 
+                  
                 foreach ($match_stats_team_id as $key => $value) {
                     \DB::table('create_teams')
                         ->where('id',$value->team_id)
@@ -759,7 +759,7 @@ class ApiController extends BaseController
             })
             ->orderBy('rank','ASC')
             ->get();
-            
+
         $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
