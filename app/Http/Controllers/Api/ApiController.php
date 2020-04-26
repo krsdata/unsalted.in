@@ -1596,7 +1596,7 @@ class ApiController extends BaseController
             $mid = [];
             foreach ($results as $key => $result_set) {
                 if($result_set->format==5   or $result_set->format==17){
-                    continue;
+                 //   continue;
                 }
                 foreach ($result_set as $key => $rs) {
                     $data_set[$key] = $rs;
