@@ -1361,7 +1361,7 @@ class ApiController extends BaseController
         
         $data = $this->storeMatchInfo($fileName);
 
-        return $this->saveMatchDataFromAPI($data);
+        $this->saveMatchDataFromAPI($data);
 
         return [$fileName.' match data updated successfully'];
 
@@ -2227,8 +2227,28 @@ class ApiController extends BaseController
 
                 $data_set->save();
             }
+            // update player in updatepoint table
 
-            $t2=  date('h:i:s');
+            foreach ($data->response->players as $pkey => $pvalue)
+            {
+                $data_mp =  MatchPoint::firstOrNew(
+                    [
+                        'pid'=>$pvalue->pid,
+                        'match_id'=>$match_id
+                    ]
+                ); 
+                if($data_mp->short_name==null){
+                    $data_mp->match_id  =  $match_id;
+                    $data_mp->pid = $pvalue->pid; 
+                    $data_mp->role = $pvalue->playing_role; 
+                    $data_mp->name = $pvalue->short_name; 
+                    $data_mp->rating = $pvalue->fantasy_player_rating;
+                
+                    $data_mp->save(); 
+                } 
+            }
+            $t2 =  date('h:i:s');
+            //echo $t1.'--'.$t2;
         }
     }
 
