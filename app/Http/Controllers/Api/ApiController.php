@@ -70,7 +70,7 @@ class ApiController extends BaseController
                     'url'           =>  $apk_update_status->url,
                     'title'         =>  $apk_update_status->title,
                     'url'           =>  $apk_update_status->url,
-                    'release_note'  =>  $apk_update_status->release_notes
+                    'release_note'  =>  $apk_update_status->release_notes??'new updates'
                 ];
             }else{
                 return [
@@ -290,8 +290,8 @@ class ApiController extends BaseController
 
                 $match_stats_team_id = \DB::table('match_stats')
                     ->where('match_id',$match_stat->match_id)
-                    ->get();
-                // dd($match_stats_team_id);
+                    ->get(); 
+                  
                 foreach ($match_stats_team_id as $key => $value) {
                     \DB::table('create_teams')
                         ->where('id',$value->team_id)
@@ -559,7 +559,7 @@ class ApiController extends BaseController
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
         
-            $this->storeMatchInfoAtMachine($data,'info/'.$match->match_id.'.txt');
+            $this->storeMatchInfoAtMachine($points,'info/'.$match->match_id.'.txt');
             $points_json = json_decode($points);
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
@@ -759,7 +759,7 @@ class ApiController extends BaseController
             })
             ->orderBy('rank','ASC')
             ->get();
-            
+
         $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
