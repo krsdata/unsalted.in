@@ -66,7 +66,10 @@ Route::group([
     'prefix' => 'v2'
 ], function()
 {
-
+    Route::match(['get','post'], 'playerAnalytics', [
+        'as' => 'playerAnalytics',
+        'uses' => 'Api\ApiController@playerAnalytics'
+    ]);
 
     Route::match(['post','get'],'updateMatchDataByMatchId/{match_id}/{status}', 'Api\ApiController@updateMatchDataByMatchId'); 
     Route::match(['get','post'], 'generateOtp', [

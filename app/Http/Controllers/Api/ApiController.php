@@ -757,7 +757,9 @@ class ApiController extends BaseController
                     $q->orderBy('rank','ASC');
                 }
             })
+            ->orderBy('rank','ASC')
             ->get();
+            
         $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
@@ -962,7 +964,6 @@ class ApiController extends BaseController
     }
     /*
      @method : createTeam
-
     */
     public function createTeam(Request $request){
 
@@ -1041,11 +1042,13 @@ class ApiController extends BaseController
             $ct->edit_team_count = $ct->edit_team_count+1;
         }
 
-
         try {
             $ct->save();
             $ct->team_id  = $request->team_id;
             $ct->create_team_id  = $ct->id;
+            // player analytics
+            $request->merge(['created_team_id'=>$ct->id]);
+            $this->playerAnalytics($request);
 
             Log::channel('after_create_team')->info($request->all());
             return response()->json(
@@ -3328,6 +3331,28 @@ class ApiController extends BaseController
                 ]
             );
         }
+    }
+
+    public function playerAnalytics(Request $request){
+
+        $teams = $request->teams;
+        if($teams){
+            $data['match_id'] = $request->match_id;
+            $data['created_team_id'] = $request->create_team_id;
+            $data['captain'] = $request->captain;
+            $data['vice_captain'] = $request->vice_captain;
+            $data['trump'] = $request->trump;
+            $data['user_id'] = $request->user_id;
+
+            foreach ($teams as $key => $result) {
+                $data['player_id'] = $result;
+                \DB::table('player_analytics')->insert($data);
+            }
+
+            return ['Player details added'];
+        }
+        
+
     }
 
 }

@@ -25,15 +25,16 @@
                             <i class="fa fa-angle-down"></i>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="{{ route('role')}}">
-                                    <i class="icon-user"></i> View Roles </a>
-                            </li>
-
+                             
+                              @foreach($main_menu as $key => $result) 
+                                  
+                               
                              <li>
-                                <a href="{{ route('clientuser')}}">
-                                    <i class="glyphicon glyphicon-th"></i> View Customers </a>
+                                <a href="{{ route($result->title)}}">
+                                    <i class="glyphicon glyphicon-th"></i> 
+                                    {{ $result->title }} </a>
                             </li> 
+                             @endforeach
                         </ul>
                     </div>
                 </div>
@@ -131,3 +132,6 @@
         <!-- END HEADER -->
         <!-- BEGIN HEADER & CONTENT DIVIDER -->
         <div class="clearfix"> </div>
+
+
+        
