@@ -138,8 +138,11 @@ class ApiController extends BaseController
         $request->merge(['open_team_id'=> $open_team_id]);
          $request->merge(['type'=> 'open']);
         $open_team = $this->getMyTeam($request);   
-        $ot = $open_team->getdata()->response->myteam;
-        $team_list[] = ['open_team' => $ot]; 
+        if($open_team->getdata()->response->myteam){
+            $ot = $open_team->getdata()->response->myteam;
+            $team_list[] = ['open_team' => $ot];   
+        }
+        
       
         $join_contests_count = $join_contests->count();
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
