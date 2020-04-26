@@ -35,6 +35,37 @@
 
         Route::get('admin', 'Modules\Admin\Http\Controllers\AdminController@index');
         /*------------User Model and controller---------*/
+        
+        Route::post('login', [ 'as' => 'custom.login', 'uses' => 'FrontEndController@login']);
+
+
+        Route::match(['get','post'],'admin/bankAccount', 
+            [ 
+                'as' => 'bankAccount', 
+                'uses' => 'Modules\Admin\Http\Controllers\DocumentController@bankAccount'
+            ]
+        );
+
+        Route::bind('documents', function ($value, $route) {
+            return Modules\Admin\Models\Document::find($value);
+        });
+
+        Route::resource(
+            'admin/documents',
+            'Modules\Admin\Http\Controllers\DocumentController',
+            [
+                'names' => [
+                    'edit'      => 'documents.edit',
+                    'show'      => 'documents.show',
+                    'destroy'   => 'documents.destroy',
+                    'update'    => 'documents.update',
+                    'store'     => 'documents.store',
+                    'index'     => 'documents',
+                    'create'    => 'documents.create',
+                ]
+                    ]
+        );
+
         Route::bind('updatePlayerPoints', function ($value, $route) {
             return Modules\Admin\Models\UpdatePlayerPoints::find($value);
         });
@@ -445,7 +476,7 @@
             ]
                 ]
         );
-        
+
         Route::bind('setting', function ($value, $route) {
             return Modules\Admin\Models\Settings::find($value);
         });
