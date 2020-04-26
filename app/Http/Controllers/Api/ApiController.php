@@ -559,7 +559,7 @@ class ApiController extends BaseController
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
         
-            $this->storeMatchInfoAtMachine($data,'info/'.$match->match_id.'.txt');
+            $this->storeMatchInfoAtMachine($points,'info/'.$match->match_id.'.txt');
             $points_json = json_decode($points);
             $m = [];
             foreach ($points_json->response->points as $team => $teams) {
