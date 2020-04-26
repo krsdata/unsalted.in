@@ -123,7 +123,7 @@ class ApiController extends BaseController
             ->where('contest_id',$request->contest_id);
         
         $close_team_id = $join_contests->pluck('created_team_id')->toArray();
-        
+        $request->merge(['type'=> 'close']);
         $request->merge(['close_team_id'=> $close_team_id]);
         // not join team id
         $close_team_id = $join_contests->pluck('created_team_id')->toArray();
@@ -134,10 +134,9 @@ class ApiController extends BaseController
         //  join team id
         $open_team_id = $create_teams->whereNotIn('id',$close_team_id)
                                     ->pluck('id')->toArray();
-        
+         
         $request->merge(['open_team_id'=> $open_team_id]);
-        $request->request->remove('close_team_id');
-        
+         $request->merge(['type'=> 'open']);
         $open_team = $this->getMyTeam($request);   
         $ot = $open_team->getdata()->response->myteam;
         $team_list[] = ['open_team' => $ot]; 
@@ -838,7 +837,7 @@ class ApiController extends BaseController
 
         $match_id =  $request->match_id;
         $user_id  =  $request->user_id;
-
+         
         $userVald = User::find($request->user_id);
         $matchVald = Matches::where('match_id',$request->match_id)->count();
 
@@ -851,16 +850,17 @@ class ApiController extends BaseController
             ];
         }
 
-        if($request->close_team_id){
+        if($request->type=="close"){
             $myTeam   =  CreateTeam::where('match_id',$match_id)
                         ->whereIn('id',$request->close_team_id)   
                         ->where('user_id',$user_id )
                         ->get();
-        }elseif($request->open_team_id){
+        }elseif($request->type=="open"){
             $myTeam   =  CreateTeam::where('match_id',$match_id)
                         ->whereIn('id',$request->open_team_id)
                         ->where('user_id',$user_id)
                         ->get(); 
+            
         }else{
             $myTeam   =  CreateTeam::where('match_id',$match_id)
             ->where('user_id',$user_id )
