@@ -1301,12 +1301,18 @@ class ApiController extends BaseController
 
     public function updateMatchInfo(Request $request)
     {
-        //upcoming
+        //upcoming 
         $match_id = $request->match_id;
-        $matches =  Matches::where('status',3)
+        if($match_id){
+           $matches =  Matches::where('match_id',$match_id)
+            ->get(); 
+        }else{
+            $matches =  Matches::where('status',3)
             ->where('timestamp_start','>=',strtotime("-1 days"))
             ->where('timestamp_start','<=',time())
             ->get();
+        }
+        
         foreach ($matches as $key => $match) {
 
             $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/info?token='.$this->token);
