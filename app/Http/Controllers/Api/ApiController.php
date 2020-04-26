@@ -291,7 +291,7 @@ class ApiController extends BaseController
                 $match_stats_team_id = \DB::table('match_stats')
                     ->where('match_id',$match_stat->match_id)
                     ->get(); 
-                  
+
                 foreach ($match_stats_team_id as $key => $value) {
                     \DB::table('create_teams')
                         ->where('id',$value->team_id)
@@ -1805,14 +1805,11 @@ class ApiController extends BaseController
             ];
         }
 
-
-
         $status = '(
                         CASE
                         WHEN status_str = "Scheduled" THEN "Upcoming"
                         ELSE
                         "Scheduled" end) as status_str';
-
 
         $upcomingMatches = Matches::with('teama','teamb')
             ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str',\DB::raw($status))
@@ -1843,6 +1840,21 @@ class ApiController extends BaseController
                     ->where('user_id',$user_id)
                     ->count();
                 $items->total_created_team = $total_created_team;
+
+                if($items->status==4){
+                    $items->status_str = "Cancel"; 
+                }
+                elseif($items->status==2){
+                    $items->status_str = "Completed" ;
+                }
+                elseif($items->status==1){
+                   $items->status_str = "Upcoming"; 
+                }elseif($items->status==3){
+                   $items->status_str = "Live" ;
+                }else{
+                   $items->status_str = $items->status_str; 
+                }
+
 
                 return $items;
             });
@@ -1878,6 +1890,26 @@ class ApiController extends BaseController
                     ->count();
                 $items->total_created_team = $total_created_team;
 
+                $prize = \DB::table('prize_distributions')
+                        ->where('match_id' ,$items->match_id)
+                        ->where('user_id',$user_id)
+                        ->sum('prize_amount');
+                $items->prize_amount = $prize;
+
+                if($items->status==4){
+                    $items->status_str = "Cancel"; 
+                }
+                elseif($items->status==2){
+                    $items->status_str = "Completed" ;
+                }
+                elseif($items->status==1){
+                   $items->status_str = "Upcoming"; 
+                }elseif($items->status==3){
+                   $items->status_str = "Live" ;
+                }else{
+                   $items->status_str = $items->status_str; 
+                }        
+
                 return $items;
             });
 
@@ -1912,6 +1944,20 @@ class ApiController extends BaseController
                     ->where('user_id',$user_id)
                     ->count();
                 $items->total_created_team = $total_created_team;
+
+                if($items->status==4){
+                    $items->status_str = "Cancel"; 
+                }
+                elseif($items->status==2){
+                    $items->status_str = "Completed" ;
+                }
+                elseif($items->status==1){
+                   $items->status_str = "Upcoming"; 
+                }elseif($items->status==3){
+                   $items->status_str = "Live" ;
+                }else{
+                   $items->status_str = $items->status_str; 
+                }
 
                 return $items;
             });
@@ -3332,7 +3378,7 @@ class ApiController extends BaseController
             );
         }
     }
-
+    /*Player sell percetages*/
     public function playerAnalytics(Request $request){
 
         $teams = $request->teams;
@@ -3351,8 +3397,13 @@ class ApiController extends BaseController
 
             return ['Player details added'];
         }
-        
-
     }
 
+    /*getMyPlayedMatches*/
+
+    public function getMyPlayedMatches(Request $request)
+    {
+         $join_contest =\DB::table('join_contests')->where('user_id',285)
+                    ->get();
+    }
 }

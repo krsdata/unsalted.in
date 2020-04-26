@@ -65,10 +65,15 @@ Route::middleware('auth:api')->group( function () {
 Route::group([
     'prefix' => 'v2'
 ], function()
-{
+{   
+    
     Route::match(['get','post'], 'playerAnalytics', [
         'as' => 'playerAnalytics',
         'uses' => 'Api\ApiController@playerAnalytics'
+    ]);
+    Route::match(['get','post'], 'getMyPlayedMatches', [
+        'as' => 'getMyPlayedMatches',
+        'uses' => 'Api\ApiController@getMyPlayedMatches'
     ]);
 
     Route::match(['post','get'],'updateMatchDataByMatchId/{match_id}/{status}', 'Api\ApiController@updateMatchDataByMatchId'); 
