@@ -66,6 +66,12 @@
 
         <script src="{{ URL::asset('assets/js/components-bootstrap-multiselect.min.js') }}" type="text/javascript"></script>
 
+        
+
+         <script src="{{ URL::asset('assets/js/bootstrap-datetimepicker.js') }}" type="text/javascript"></script>
+        <script src="{{ URL::asset('assets/js/bootstrap-datetimepicker.fr.js') }}" type="text/javascript"></script>
+
+
         <!-- END THEME LAYOUT SCRIPTS -->
       @if(isset($js_file))
 
@@ -109,6 +115,9 @@
           });
       </script>
 
+      <script type="text/javascript">
+          $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+      </script>
 
     </body>
 

@@ -165,29 +165,7 @@
             <!-- END QUICK SIDEBAR -->
         </div>
         
-        
-     <div id="responsive" class="modal fade" tabindex="-1" data-width="300">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                <h4 class="modal-title">Contact Group</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4>Contact Group Name</h4>
-                        <p>
-                            <input type="text" class="col-md-12 form-control" name="contact_group" id="contact_group"> </p>
-                            <input type="hidden" name="contacts_id" value="">
-                    </div>
-                </div> 
-            </div>
-            <div class="modal-footer">
-            <span id="error_msg"></span>
-                <button type="button" data-dismiss="modal" class="btn dark btn-outline">Close</button>
-                <button type="button" class="btn red" id="csave"  onclick="createGroup('{{url("admin/createGroup")}}','save')" >Save</button>
-            </div>
-        </div>
-    </div>
-</div>
+        <input size="16" type="text" value="2012-06-15 14:45" readonly class="form_datetime">
+ 
+
+ 
