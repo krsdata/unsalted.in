@@ -890,9 +890,11 @@ class ApiController extends BaseController
             $vice_captain = $result->vice_captain;
             $team_count = $result->team_count;
             $team_count = $result->team_count;
-            $user_id = $result->user_id;
-            $match_id = $result->match_id;
-    
+            $user_id    = $result->user_id;
+            $match_id   = $result->match_id;
+            $points     = $result->points;
+            $rank       = $result->rank;
+
             $k['created_team'] = ['team_id' => $result->id];
 
             $player = Player::WhereIn('team_id',$team_id)
@@ -944,7 +946,7 @@ class ApiController extends BaseController
             $t[]   = ['name' => $t_a->short_name, 'count' => $tac->count()];
             $t[]   = ['name' => $t_b->short_name, 'count' => $tbc->count()];
 
-
+               
             $k['match']         = [$t_a->short_name.'-'.$t_b->short_name];
             $k['team']          = $t;
             $k['c_img']         = "";
@@ -952,7 +954,8 @@ class ApiController extends BaseController
             $k['t_img']         = "";
             // username
             $k['team_name'] =  $user_name->user_name. '('.$result->team_count.')';
-
+            $k['points']        = $points;
+            $k['rank']          = $rank;
             $data[] = $k;
             $t = [];
 
