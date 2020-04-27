@@ -1,7 +1,7 @@
 <!-- END CONTAINER -->
         <!-- BEGIN FOOTER -->
         <div class="page-footer">
-            <div class="page-footer-inner"> 2020 &copy; Plug11
+            <div class="page-footer-inner"> 2020 &copy; Sportsfight
 
             </div>
             <div class="scroll-to-top">
@@ -116,13 +116,30 @@
       </script>
 
       <script type="text/javascript">
-          $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+          $(".form_datetime_start").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+          $(".form_datetime_end").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+
+       $(".form_datetime_start").datetimepicker({
+        todayBtn:  1,
+        autoclose: true,
+        format: 'yyyy-mm-dd hh:ii'
+      }).on('changeDate', function (selected) {
+          var minDate = new Date(selected.date.valueOf());
+          $('.form_datetime_end').datetimepicker('setStartDate', minDate);
+      });
+          
+      $(".form_datetime_end").datetimepicker()
+        .on('changeDate', function (selected) {
+            var maxDate = new Date(selected.date.valueOf());
+            $('#form_datetime_start').datetimepicker('setEndDate', maxDate);
+      });
+
       </script>
 
     </body>
 
 
-    <style type="text/css">
+<style type="text/css">
   .cke_button__source{
     display: none !important;
   }
