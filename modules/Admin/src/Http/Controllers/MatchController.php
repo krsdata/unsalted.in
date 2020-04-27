@@ -60,6 +60,35 @@ class MatchController extends Controller {
         $sub_page_title = 'View Match';
         $page_action = 'View Match'; 
 
+        if($request->date_start && $request->date_end && $request->match_id){
+            $timestamp_start = strtotime($request->date_start);
+            $timestamp_end   = strtotime($request->date_end);
+            $status = $request->status;
+            if($status==1){
+                $status_str = "Upcoming";
+            }elseif($status==2){
+                $status_str = "Completed";
+            }elseif($status==3){
+                $status_str = "Live";
+            }else{
+                $status_str = "Cancelled";
+            }
+            \DB::table('matches')->where('match_id',$request->match_id)
+                        ->update(
+                            [
+                                'timestamp_start' => $timestamp_start,
+                                'timestamp_end' => $timestamp_end,
+                                'date_start'  => $request->date_start,
+                                'date_end'  => $request->date_end,
+                                'status'  => $request->status,
+                                'status_str' => $status_str
+                            ]
+                        );
+            return Redirect::to(route('match'));            
+        }
+
+
+
         // Search by name ,email and group
         $search = Input::get('search');
         $status = Input::get('status');
@@ -86,8 +115,7 @@ class MatchController extends Controller {
                         if (!empty($search)) {
                             $query->orWhere('short_title', 'LIKE', "%$search%");
                         } 
-                    })->orderBy('timestamp_start','DESC')->Paginate($this->record_per_page);
- 
+                    })->orderBy('timestamp_start','DESC')->Paginate($this->record_per_page); 
              
         } else {
             $match = Match::with('teama','teamb')->orderBy('status','ASC')->Paginate($this->record_per_page);

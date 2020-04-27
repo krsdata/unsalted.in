@@ -154,7 +154,7 @@ class ApiController extends BaseController
                 'code' => 200,
                 'message' => 'Contest is full',
                 'action'=>3,
-                'team_list' => $team_list 
+                'team_list' => $team_list??null 
             ];
         }elseif($create_teams_count > $join_contests_count){
             return [
@@ -162,7 +162,7 @@ class ApiController extends BaseController
                 'code' => 200,
                 'message' => ' Join contest ',
                 'action'=>2,
-                'team_list' => $team_list
+                'team_list' => $team_list??null
             ];
         }else{
             return [
@@ -170,7 +170,7 @@ class ApiController extends BaseController
                 'code' => 200,
                 'message' => 'create new team to join this contest',
                 'action'=>1,
-                'team_list' => $team_list
+                'team_list' => $team_list?null
             ];
         }
     }
@@ -1198,7 +1198,10 @@ class ApiController extends BaseController
         if($contest){
             $matchcontests = [];
             foreach ($contest as $key => $result) {
-                // dd($result);
+                if($result->total_spots!=0 && $result->total_spots > $result->filled_spot){
+                    continue;
+                }
+
                 $data2['totalSpots'] =   $result->total_spots;
                 $data2['firstPrice'] =   $result->first_prize;
                 $data2['totalWinningPrize'] =    $result->total_winning_prize;
@@ -3108,7 +3111,6 @@ class ApiController extends BaseController
 
 
     public function cloneMyTeam(Request $request){
-
 
         $clone_team =   CreateTeam::where('id',$request->team_id)->where('user_id',$request->user_id)->first();
         
