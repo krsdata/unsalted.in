@@ -1002,7 +1002,7 @@ class ApiController extends BaseController
                 ]
             )->first();
          
-            if($is_exist){
+            if($is_exist && $request->create_team_id==0){
                 return [
                     'status'=>false,
                     'code' => 201,
