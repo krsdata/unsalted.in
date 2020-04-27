@@ -170,7 +170,7 @@ class ApiController extends BaseController
                 'code' => 200,
                 'message' => 'create new team to join this contest',
                 'action'=>1,
-                'team_list' => $team_list?null
+                'team_list' => $team_list??null
             ];
         }
     }
