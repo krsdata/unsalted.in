@@ -1198,7 +1198,7 @@ class ApiController extends BaseController
         if($contest){
             $matchcontests = [];
             foreach ($contest as $key => $result) {
-                if($result->total_spots!=0 && $result->total_spots > $result->filled_spot){
+                if($result->total_spots >= $result->filled_spot){
                     continue;
                 }
 
