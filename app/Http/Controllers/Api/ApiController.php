@@ -946,7 +946,7 @@ class ApiController extends BaseController
             $t[]   = ['name' => $t_a->short_name, 'count' => $tac->count()];
             $t[]   = ['name' => $t_b->short_name, 'count' => $tbc->count()];
 
-               
+
             $k['match']         = [$t_a->short_name.'-'.$t_b->short_name];
             $k['team']          = $t;
             $k['c_img']         = "";
@@ -978,7 +978,7 @@ class ApiController extends BaseController
 
         $ct = CreateTeam::firstOrNew(['id'=>$request->create_team_id]);
         Log::channel('before_create_team')->info($request->all());
-        if($request->create_team_id){
+        if($request->create_team_id){ 
 
             if($ct->id==null){
                 return [
@@ -989,6 +989,27 @@ class ApiController extends BaseController
                 ];
             }
         }
+        $is_exist = CreateTeam::where(
+                [
+                    'match_id'       => $request->match_id,
+                    'contest_id'     => $request->contest_id,
+                    'team_id'        => json_encode($request->team_id),
+                    'teams'          => json_encode($request->teams),
+                    'captain'        => $request->captain,
+                    'vice_captain'   => $request->vice_captain,
+                    'trump'          => $request->trump,
+                    'user_id'        => $request->user_id
+                ]
+            )->first();
+         
+            if($is_exist){
+                return [
+                    'status'=>false,
+                    'code' => 201,
+                    'message' => 'You have already created this team!'
+
+                ];
+            }
 
         $team_count = CreateTeam::where('user_id',$request->user_id)
             ->where('match_id',$request->match_id)->count();
