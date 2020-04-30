@@ -57,7 +57,7 @@
                                          {{ Session::get('flash_alert_notice') }} 
                                          </div>
                                     @endif
-                                <div class="portlet-body">
+                                <div class="portlet-body table-responsive">
                                     <div class="table-toolbar">
                                         <div class="row">
                                             <form action="{{route('match')}}" method="get" id="filter_data">
@@ -93,12 +93,11 @@
                                                 <th> Match Between </th> 
                                                 <th> Add Contest</th> 
                                                 <th> Player List </th>  
+                                                <th> Action</th> 
                                                 <th> Status</th> 
-                                                <th> Start Date</th> 
-                                                 <th> Generate Prize</th>
-
-                                                 <th> View Details  </th> 
-                                                <th>  Cron run at</th>  
+                                                <th> Date </th> 
+                                                <th> Prize Status</th>  
+ 
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -113,7 +112,38 @@
                                                   </td>
                                                  <td> <a class="btn btn-success" href="{{route('match.show',$result->id)}}?player={{$result->match_id}}">
                                                     View Players
-                                                 </a></td>
+
+                                                 </a>
+                                                 
+                                               </td>
+                                               <td>    
+<style type="text/css">
+  .dropdown-item{
+    width: 200px;
+    float: left;
+  }
+</style>
+<div class="btn-group dropleft"> 
+  <button class="btn btn-danger" type="button" data-toggle="dropdown">Action
+  <span class="caret"></span></button>
+
+  <div class="dropdown-menu">
+    <a class="dropdown-item btn btn-primary" href="{{ route('match.show',$result->id)}}">View Details <i class="fa fa-eye" title="details"></i> </a>
+    @if($result->status==2)
+     <a class="dropdown-item btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
+       Generate Prize
+          </a> 
+      @else
+      <a class="dropdown-item btn btn-warning" href="#">Generate Prize - NA</a>
+      @endif  
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item btn btn-info" href="{{route('triggerEmail','match_id='.$result->match_id)}}">Prize Email Trigger</a>
+  </div>
+</div>
+
+
+                                                      </td> 
+                                                     
 
                                                  <td> {{$result->status_str}} </td>
                                                  <td> 
@@ -124,27 +154,12 @@
                                                     !!}
                                                 </td>
                                                  <td> 
-                                                    @if($result->status==2)
-                                                   <a class="btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
-                                                     Generate Prize
-                                                        </a> 
+                                                    @if($result->current_status==1) 
+                                                     Prize Distributed 
                                                     @else
-                                                     Pending
+                                                     NA
                                                     @endif
-                                                    </td>
-                                                    <td>  <a href="{{ route('match.show',$result->id)}}">
-                                                            <i class="fa fa-eye" title="details"></i> 
-                                                        </a> </td> 
-                                                     
-                                                    <td> 
-
-                                                        {!!
-                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->created_at, 'UTC')
-                                                        ->setTimezone('Asia/Kolkata')
-                                                        ->format('H:i:s A')
-                                                    !!}
-                                        </td> 
-                                               
+                                                    </td> 
                                             </tr>
                                            @endforeach
                                             
@@ -218,6 +233,35 @@
     </div>
   </div>
 </div>
- 
 
- 
+<div class="modal fade" id="popMsg" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Email sent successfully</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> 
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="popMsg2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Prize distributed successfully!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> 
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>

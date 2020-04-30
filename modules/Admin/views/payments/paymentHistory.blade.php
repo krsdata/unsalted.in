@@ -44,7 +44,7 @@
                                 <div class="portlet-body table-responsive">
                                     <div class="table-toolbar">
                                         <div class="row">
-                                            <form action="{{route('payments')}}" method="get" id="filter_data">
+                                            <form action="{{route('paymentsHistory')}}" method="get" id="filter_data">
                                              
                                             <div class="col-md-3">
                                                 <input value="{{ (isset($_REQUEST['search']))?$_REQUEST['search']:''}}" placeholder="Search by  name" type="text" name="search" id="search" class="form-control" >
@@ -55,7 +55,7 @@
                                            
                                         </form>
                                          <div class="col-md-2">
-                                             <a href="{{ route('transaction') }}">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
+                                             <a href="{{ route('paymentsHistory') }}">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
                                         </div>
                                        
                                         </div>

@@ -1083,7 +1083,16 @@ class UserController extends BaseController
     public function changePassword(Request $request)
     {
         $token = $request->token;
-        return view('changePassword',compact('token'));
+        $pages = \DB::table('pages')->get(['title','slug']);
+        View::share('static_page',$pages);
+
+        $settings = \DB::table('settings')
+                    ->pluck('field_value','field_key')
+                    ->toArray();
+       
+        View::share('settings',(object)$settings);
+
+        return view('changePassword',compact('token','pages'));
     }
 
     public function emailVerification(Request $request)

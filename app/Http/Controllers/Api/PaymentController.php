@@ -51,6 +51,50 @@ class PaymentController extends BaseController
        // $uname      = Helper::generateRandomString(); 
     } 
   /**
+    * Check Repeat Rank;
+    *
+    */
+    public function checkReaptedRank($rank, $match_id){
+        $rank = CreateTeam::where('match_id',$match_id)
+                            ->where('rank',$rank)
+                            ->count();
+        return $rank; 
+    }
+  /**
+    *@var match_id
+    *@var contest_id
+    *@var rank
+    *Description get Amount as per Rank
+    */
+    public function getAmountPerRank($rank,$match_id=null,$contest_id=null,$repeat_rank=1)
+    {
+
+        $rank_from = $rank; //$rank;
+        $rank_to   = $rank+($repeat_rank-1);
+      
+        $cid = $contest_id;  
+        $rank_prize    =    $prizeBreakup = \DB::table('prize_breakups')
+                                ->where(function($q) use ($rank,$cid,$rank_to){
+                                    $q->where('rank_upto','>=',$rank_to);
+                                    $q->where('rank_from','<=',$rank_to);
+                                    $q->where('default_contest_id',$cid);
+
+                                })
+                                ->orwhere(function($q) use ($rank_from,$rank_to,$cid){
+                                    $q->where('rank_from','>=',$rank_from);
+                                    $q->where('rank_from','<=',$rank_to);
+                                    $q->where('default_contest_id',$cid);
+                                }) 
+                                ->avg('prize_amount');  
+        if($rank_prize){
+            return $prizeBreakup;    
+        }else{
+            return $prizeBreakup=0;
+        }
+        
+    }
+
+  /**
     *@var match_id
     *Description Prize distribution
     */
@@ -78,19 +122,21 @@ class PaymentController extends BaseController
                           ->with(['prizeBreakup'=>function($q) use($rank,$points  )
                             {
                               $q->where('rank_from','>=',$rank);
-                              $q->orwhere('rank_upto','<=',$rank)->where('rank_from','>=',$rank); 
+                              $q->orwhere('rank_upto','<=',$rank)
+                              ->where('rank_from','>=',$rank); 
                             }
                           ]
                         )
                           ->where('match_id',$item->match_id)
                           ->where('id',$item->contest_id) 
-                          ->get()
+                          ->get() 
                           ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points )  {
-                            if($contestItem->prizeBreakup){
-                             $contestItem->prize_amount = $contestItem->prizeBreakup->prize_amount; 
-                            }else{
-                              $contestItem->prize_amount = 0;
-                            }
+                            // check wether rank is repeated
+                            $rank_repeat = $this->checkReaptedRank($rank, $match_id);
+                            //get average amount in case of repeated rank
+                            $rank_amount = $this->getAmountPerRank($rank,$match_id,$contestItem->default_contest_id,$rank_repeat);
+                              
+                             $contestItem->prize_amount = $rank_amount;
                              $contestItem->team_id = $team_id;
                              $contestItem->match_id = $match_id;
                              $contestItem->user_id = $user_id;
@@ -99,7 +145,7 @@ class PaymentController extends BaseController
                              return $contestItem;
                            });
 
-
+           
            // $item->createdTeam = $ct;
             $item->user = $user;
             $item->team_id = $team_id;
@@ -108,7 +154,7 @@ class PaymentController extends BaseController
             $item->rank = $rank;
             $item->team_name = $team_name;
             $item->contest  = $contest[0]??null ;
-            $item->createdTeam = $ct; 
+            $item->createdTeam = $ct;  
             //echo $rank.'-'.$match_id.'-'.$user_id.'-'.$team_id.'<br>';
             $prize_dist =  PrizeDistribution::updateOrCreate(
                           [
@@ -140,7 +186,7 @@ class PaymentController extends BaseController
                             'first_prize'        => $item->contest->first_prize,
                             'default_contest_id'=> $item->contest->default_contest_id,
  
-                            'prize_amount'      => $item->contest->prize_amount,
+                            'prize_amount'      => $item->contest->prize_amount??0.0,
                             'contest_type_id'   => $item->contest->prizeBreakup->contest_type_id??null,
                             'captain'           => $item->createdTeam->captain,
                             'vice_captain'      => $item->createdTeam->vice_captain,
@@ -221,7 +267,7 @@ class PaymentController extends BaseController
         $match_id = $request->match_id;  
         \DB::table('matches')->where('match_id',$match_id)->update(['current_status'=>1]);
         
-        return 'successfully prize generated';
+        return  Redirect::to(route('match','prize=true'));
     }
     
     // Add Money

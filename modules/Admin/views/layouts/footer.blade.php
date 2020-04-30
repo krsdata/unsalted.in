@@ -136,6 +136,23 @@
 
       </script>
 
+
+<script type="text/javascript">
+  $(function(){
+
+    @if(isset($_REQUEST['email']) && $_REQUEST['email']==true)
+    $('#popMsg').modal('show'); 
+    @endif
+
+    @if(isset($_REQUEST['prize']) && $_REQUEST['prize']==true)
+    $('#popMsg2').modal('show'); 
+    @endif 
+
+  });
+</script>
+
+
+
     </body>
 
 
