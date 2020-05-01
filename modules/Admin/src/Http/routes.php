@@ -291,8 +291,7 @@
 
         Route::get(
             'admin/match/triggerEmail',
-            'Modules\Admin\Http\Controllers\MatchController@triggerEmail',
-        )->name('triggerEmail');
+            'Modules\Admin\Http\Controllers\MatchController@triggerEmail')->name('triggerEmail');
 
         Route::bind('match', function ($value, $route) {
             return App\Models\Match::find($value);
