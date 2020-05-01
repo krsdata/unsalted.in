@@ -48,8 +48,45 @@ class MatchController extends Controller {
         View::share('route_url',route('match')); 
         $this->record_per_page = Config::get('app.record_per_page'); 
     }
+  /**
+    * @var $pd = prize distribution
+    */
+    public function triggerEmail(Request $request){
 
-   
+        $match_id = $request->match_id; 
+
+        $pd = \DB::table('prize_distributions')
+                ->where('match_id',$match_id)
+                ->where('email_trigger',0)  
+                ->get()  
+                ->transform(function($item,$key)use($match_id){
+
+                    $match = Match::where('match_id',$match_id)
+                            ->select('match_id','title','short_title','status_note','format_str')->first();
+                    $pd_user = \DB::table('prize_distributions')
+                        ->where('match_id',$match_id)
+                        ->where('user_id',$item->user_id);
+
+                   // $item->prize_amount = $pd_user->sum('prize_amount');    
+                   // $item->total_team = $pd_user->sum('team_name');
+
+                    $email_content = [ //
+                        'receipent_email'=> $item->email,
+                        'subject'=> 'Sportsfight | Prize',
+                        'greeting'=> 'SportsFight',
+                        'first_name'=> ucfirst($item->name),
+                        'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$match->title.'</b> match.',
+                        'rank' => $item->rank
+                        ];
+                if($item->prize_amount){
+                    $helper = new Helper;
+                   // $m = $helper->sendNotificationMail($email_content,'prize'); 
+                }
+                 
+                \DB::table('prize_distributions')->where('id',$item->id)->update(['email_trigger'=>1]);  
+                }); 
+        return  Redirect::to(route('match','email=true'));
+    }
     /*
      * Dashboard
      * */

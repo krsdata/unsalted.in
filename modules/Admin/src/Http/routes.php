@@ -84,6 +84,25 @@
             ]
                 ]
         );
+        //wallets
+         Route::bind('wallets', function ($value, $route) {
+            return Modules\Admin\Models\Wallets::find($value);
+        });
+        Route::resource(
+            'admin/wallets',
+            'Modules\Admin\Http\Controllers\WalletsController',
+            [
+                'names' => [
+                    'edit' => 'wallets.edit',
+                    'show' => 'wallets.show',
+                    'destroy' => 'wallets.destroy',
+                    'update' => 'wallets.update',
+                    'store' => 'wallets.store',
+                    'index' => 'wallets',
+                    'create' => 'wallets.create',
+                ]
+            ]
+        );
         // Prize distribution
         Route::bind('prizeDistribution', function ($value, $route) {
             return Modules\Admin\Models\UpdatePlayerPoints::find($value);
@@ -269,6 +288,11 @@
             ]
                 ]
         );
+
+        Route::get(
+            'admin/match/triggerEmail',
+            'Modules\Admin\Http\Controllers\MatchController@triggerEmail',
+        )->name('triggerEmail');
 
         Route::bind('match', function ($value, $route) {
             return App\Models\Match::find($value);

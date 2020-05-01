@@ -118,14 +118,17 @@ class TransactionHistoryController extends Controller {
 
         if ((isset($search) && !empty($search))) { 
                
-            $transaction = $transaction->with('user')->where(function ($query) use ($search,$user) {
+            $transaction = $transaction->whereHas('user')->where(function ($query) use ($search,$user) {
                 if (!empty($search) && !empty($user)) {
                    $query->whereIn('user_id', $user);
+                   $query->orWhere('user_id', $search);
+                   $query->orWhere('transaction_id', $search);
+                   $query->orWhere('payment_type_string', $search); 
                 }
                  
             })
             ->orderBy('id','desc')->Paginate($this->record_per_page);
-
+            
              $transaction->transform(function($item, $Key){
                             $user = User::find($item->user_id); 
                             $item->name = $user->first_name??null;

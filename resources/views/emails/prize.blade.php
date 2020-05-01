@@ -1,4 +1,4 @@
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -399,7 +399,7 @@ td[class="buttonContent"] a {
   <tr>
     <td align="center" valign="top" id="bodyCell"><!-- // EMAIL HEADER --> 
      
-      <table bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" width="100%" id="emailBody">
+      <table bgcolor="#F7F7F7" style="padding: 20px" border="0" cellpadding="0" cellspacing="0" width="100%" id="emailBody">
         
         <!-- MODULE ROW // --> 
         <!--
@@ -416,66 +416,7 @@ td[class="buttonContent"] a {
                             -->
             
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color:#FFFFFF;">
-                <!-- MODULE ROW // -->
-              <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 0px 10px 10px 10px;"><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"><div style="text-align:justify;font-family:calibri, Lucida Grande;font-size: 16px;margin-bottom:0;color:#333;line-height: 22px; ">
-                                      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                        <tr> <td class="mobile-width" style="width: 50%;">
-                                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="text-align:center;font-family:calibri, Lucida Grande;font-size: 16px;color:#000;line-height: 53px; color: #000;  background:#c61d22;" >
-													  
-                                                  <a   target="_blank" style="color:#ffffff; font-family: calibri, Lucida Grande; font-size:50px"> 
-                                                  		SportsFight </a>
-                                                  </td>
-                                                </tr>
-                                               
-                                              </tbody>
-                                            </table></td> 
-                                            <td class="mobile-width" style="width: 50%;">
-                                          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="height: 53px">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="text-align:center;font-family:calibri, Lucida Grande;font-size: 16px;margin:0 auto;color:#000;line-height: 22px; color: #000; background:#c61d22;" > 
-                                                  
-                                                   </td>
-                                                </tr>
-                                               
-                                              </tbody>
-                                            </table></td>
-                                        </tr>
-                                      </table>
-                                    </div></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
-              <!-- MODULE ROW // --> 
-
-              
-			  
+             
 			  <!-- MODULE ROW // --> 
               <tr mc:hideable="mc:hideable">
                 <td align="center" valign="top"><!-- CENTERING TABLE // -->
@@ -686,208 +627,13 @@ td[class="buttonContent"] a {
                   
                   <!-- // CENTERING TABLE --></td>
               </tr>
-              <!-- MODULE ROW // -->
-              
-              
-			  <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 10px 10px 10px 10px;"><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="20%" style="margin:auto;">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"><div style=" text-align:center;font-family:calibri, Lucida Grande;font-size: 17px;margin:auto;color:#bba10b;line-height: 22px; padding:10px; display:block;    border-radius: 20px;
-    border: 1px solid #f3df6b;">INVITE NOW </div></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
-              <!-- MODULE ROW // -->
-              
-              
-              
-              
-              
-              
-                <!-- MODULE ROW // -->
-              <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 0px 10px 20px 10px;"><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"><div style="text-align:justify;font-family:calibri, Lucida Grande;font-size: 16px;margin-bottom:0;color:#333;line-height: 22px; ">
-                                      <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                                        <tr> <td class="mobile-width" style="width: 50%;">
-                                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="text-align:center;font-family:calibri, Lucida Grande;font-size: 15px;margin-bottom:0;color:#333;line-height: 22px; color: #333;" ><a href="" target="_blank"><img src="{{url('assets/mail_icons/appstore.png')}}"  style="max-width:100%; margin:auto;"></a></td>
-                                                </tr>
-                                               
-                                              </tbody>
-                                            </table></td> 
-                                            <td class="mobile-width" style="width: 50%;">
-                                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                                              <tbody>
-                                                <tr>
-                                                  <td style="text-align:center;font-family:calibri, Lucida Grande;font-size: 15px;margin-bottom:0;color:#333;line-height: 22px; color: #333;" ><a download href="" target="_blank"><img src="{{url('assets/mail_icons/android.png')}}"  style="max-width:100%; margin:auto;"></a></td>
-                                                </tr>
-                                               
-                                              </tbody>
-                                            </table></td>
-                                        </tr>
-                                      </table>
-                                    </div></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
               <!-- MODULE ROW // --> 
-
+             
               
-              
-              
-              
-              
-               <!-- MODULE ROW // --> 
-              <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 0px 10px 10px 10px;"><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
-              <!-- MODULE ROW // -->
-               
 			   
-			    <!-- MODULE ROW // --> 
-              <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 0px 10px 10px 10px; "><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"><div style="text-align:center;font-family:calibri, Lucida Grande;font-size: 16px;margin-bottom:0;color: #bbbbbb;"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tbody>
-    <tr>
-      <td><a href="" target="_blank" style="padding-right: 8px;"><strong>Contact Us</strong> |</a><a href="" target="_blank" style="padding-right: 8px;"><strong>Unsubscribe</strong> |</a><a href="#" target="_blank" style="padding-right: 8px;"><strong>Email Preferences</strong></a></td>
-    </tr>
-    
-    
- 
-  </tbody>
-</table>
-</div></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
-              <!-- MODULE ROW // -->
+			   
              
               
-               
-              <!-- MODULE ROW // --> 
-              <tr mc:hideable="mc:hideable">
-                <td align="center" valign="top"><!-- CENTERING TABLE // -->
-                  
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <td align="center" valign="top"><!-- FLEXIBLE CONTAINER // -->
-                        
-                        <table border="0" cellpadding="30" cellspacing="0" width="700" class="flexibleContainer">
-                          <tr>
-                            <td valign="top" width="700" class="flexibleContainerCell" style="padding: 0px 10px 10px 10px; border-bottom: 1px solid #d7d7d7;"><!-- CONTENT TABLE // -->
-                              
-                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                <tr>
-                                  <td valign="top" align="center" class="textContent"><div style="text-align:center;font-family:calibri, Lucida Grande;font-size: 16px;margin-bottom:0;color:#333;"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-  
-</table>
-</div></td>
-                                </tr>
-                              </table>
-                              
-                              <!-- // CONTENT TABLE --></td>
-                          </tr>
-                        </table>
-                        
-                        <!-- // FLEXIBLE CONTAINER --></td>
-                    </tr>
-                  </table>
-                  
-                  <!-- // CENTERING TABLE --></td>
-              </tr>
-              <!-- MODULE ROW // -->
-              
-             
 
             
               
@@ -908,12 +654,10 @@ td[class="buttonContent"] a {
                                   <td valign="top" class="textContent"><div align="center"><table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="padding-top: 5px; padding-bottom: 5px;">
   <tbody>
     <tr>
-      <td align="center" style="font-family:calibri, Lucida Grande; font-size:13px; color:#666666;"><a href="" style="text-decoration:none;color: #666;">SportsFight Fantasy Pvt. Ltd.</a></td>
-    
+      <td align="center" style="font-family:calibri, Lucida Grande; font-size:13px; color:#666666;"><a href="{{url('/')}}" style="text-decoration:none;color: #666;">SportsFight Fantasy Pvt. Ltd.</a></td>
+ 
     </tr>
-	<tr>
-	  <td align="center" style="font-family:calibri, Lucida Grande; font-size:13px; color:#666666;"><a href="" style="text-decoration:none;color: #666;">Mumbai, Maharashtra</a></td>
-	</tr>
+	 
   </tbody>
 </table></div></td>
                                 </tr>
@@ -942,16 +686,6 @@ td[class="buttonContent"] a {
 
 </td>
 </tr>
-</table>
-
-<map name="Map">
-  <area shape="rect" coords="41,36,221,55" href="mailto:orders@ashidiamonds.com">
-  <area shape="rect" coords="106,65,108,67" href="#">
-  <area shape="rect" coords="47,58,211,79" href="http://www.ashidiamonds.com" target="_blank">
-</map>
-     
-     
-  
-    
+</table> 
 </body>
 </html>
