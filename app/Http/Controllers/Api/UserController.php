@@ -71,11 +71,13 @@ class UserController extends BaseController
 
                 return $item;
             });
-        $signup_bonus = $program->where('signup',true)->first();
-        $referral_bonus = $program->where('referral',true)->first();
 
+        $signup_bonus = $program->where('bonus',true)->first();
+        $referral_bonus = $program->where('referral',true)->first();
+        
         $this->referral_bonus = $referral_bonus->amount??5;
         $this->signup_bonus = $signup_bonus->amount??100;
+        
     }
 
     public function inviteUser(Request $request,User $inviteUser)

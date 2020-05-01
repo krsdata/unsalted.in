@@ -12,8 +12,9 @@
 
                     <!-- END PAGE BREADCRUMB -->
                     <!-- BEGIN PAGE BASE CONTENT -->
-                    <div class="row">
-                        <div class="col-md-12">
+
+<div class="row">
+    <div class="col-md-12">
                             <!-- BEGIN EXAMPLE TABLE PORTLET-->
                             <div class="portlet light portlet-fit bordered">
                                 <div class="portlet-title">
@@ -103,7 +104,10 @@
                                         <tbody>
                                         @foreach($match as $key => $result)
                                             <tr>
-                                              <td> {{ (($match->currentpage()-1)*15)+(++$key) }}</td>
+                                              <td>
+                                               
+
+                                               {{ (($match->currentpage()-1)*15)+(++$key) }}</td>
                                                 <td> {{$result->match_id}} </td>
                                                  <td> {{$result->title}} </td>
                                                  <td> <a class="btn btn-success" href="{{route('defaultContest.create')}}?match_id={{$result->match_id}}">
@@ -117,75 +121,71 @@
                                                  
                                                </td>
                                                <td>    
-<style type="text/css">
-  .dropdown-item{
-    width: 200px;
-    float: left;
-  }
-</style>
-<div class="btn-group dropleft"> 
-  <button class="btn btn-danger" type="button" data-toggle="dropdown">Action
-  <span class="caret"></span></button>
+    <style type="text/css">
+      .dropdown-item{
+        width: 200px;
+        float: left;
+      }
+    </style>
+    <div class="btn-group dropleft"> 
+      <button class="btn btn-danger" type="button" data-toggle="dropdown">Action
+      <span class="caret"></span></button>
 
-  <div class="dropdown-menu">
-    <a class="dropdown-item btn btn-primary" href="{{ route('match.show',$result->id)}}">View Details <i class="fa fa-eye" title="details"></i> </a>
-    @if($result->status==2)
-     <a class="dropdown-item btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
-       Generate Prize
-          </a> 
-      @else
-      <a class="dropdown-item btn btn-warning" href="#">Generate Prize - NA</a>
-      @endif  
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item btn btn-info" href="{{route('triggerEmail','match_id='.$result->match_id)}}">Prize Email Trigger</a>
-  </div>
-</div>
+      <div class="dropdown-menu">
+        <a class="dropdown-item btn btn-primary" href="{{ route('match.show',$result->id)}}">View Details <i class="fa fa-eye" title="details"></i> </a>
+        @if($result->status==2)
+         <a class="dropdown-item btn btn-success" target="_blank" href=" {{url('api/v2/prizeDistribution?match_id='.$result->match_id)}}">
+           Generate Prize
+              </a> 
+          @else
+          <a class="dropdown-item btn btn-warning" href="#">Generate Prize - NA</a>
+          @endif  
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item btn btn-info" href="{{route('triggerEmail','match_id='.$result->match_id)}}">Prize Email Trigger</a>
+      </div>
+    </div>
 
 
-                                                      </td> 
-                                                     
+                                              </td> 
+                                             
 
-                                                 <td> {{$result->status_str}} </td>
-                                                 <td> 
-                                                    {!!
-                                                        \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->date_start, 'UTC')
-                                                        ->setTimezone('Asia/Kolkata')
-                                                        ->format('d-m-y, H:i:s A')
-                                                    !!}
-                                                </td>
-                                                 <td> 
-                                                    @if($result->current_status==1) 
-                                                     Prize Distributed 
-                                                    @else
-                                                     NA
-                                                    @endif
-                                                    </td> 
-                                            </tr>
-                                           @endforeach
-                                            
-                                        </tbody>
-                                    </table>
-                                    <span>
-                                      Showing {{($match->currentpage()-1)*$match->perpage()+1}} to {{$match->currentpage()*$match->perpage()}}
-                                    of  {{$match->total()}} entries
-                                     <div class="center" align="center">  {!! $match->appends(['search' => isset($_GET['search'])?$_GET['search']:'','status' => isset($_GET['status'])?$_GET['status']:''])->render() !!}</div>
-                                </div>
-                            </div>
-                            <!-- END EXAMPLE TABLE PORTLET-->
+                                         <td> {{$result->status_str}} </td>
+                                         <td> 
+                                            {!!
+                                                \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $result->date_start, 'UTC')
+                                                ->setTimezone('Asia/Kolkata')
+                                                ->format('d-m-y, H:i:s A')
+                                            !!}
+                                        </td>
+                                         <td> 
+                                            @if($result->current_status==1) 
+                                             Prize Distributed 
+                                            @else
+                                             NA
+                                            @endif
+                                            </td> 
+                                    </tr>
+                                   @endforeach
+                                    
+                                </tbody>
+                            </table>
+                            <span>
+                              Showing {{($match->currentpage()-1)*$match->perpage()+1}} to {{$match->currentpage()*$match->perpage()}}
+                            of  {{$match->total()}} entries
+                             <div class="center" align="center">  {!! $match->appends(['search' => isset($_GET['search'])?$_GET['search']:'','status' => isset($_GET['status'])?$_GET['status']:''])->render() !!}</div>
                         </div>
                     </div>
-                    <!-- END PAGE BASE CONTENT -->
+                    <!-- END EXAMPLE TABLE PORTLET-->
                 </div>
-                <!-- END CONTENT BODY -->
             </div>
-            
-            
-            <!-- END QUICK SIDEBAR -->
+            <!-- END PAGE BASE CONTENT -->
         </div>
-        
- 
-        
-
+        <!-- END CONTENT BODY -->
+    </div>
+    
+    
+    <!-- END QUICK SIDEBAR -->
+</div>  
 <div class="modal fade" id="changeDate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
