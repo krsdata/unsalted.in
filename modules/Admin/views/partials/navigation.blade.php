@@ -65,6 +65,11 @@
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('errorLog')}}">
                                     <i class="glyphicon glyphicon-th"></i>Error Logs </a>
                     </div>
+
+                     <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('flashMatch')}}">
+                                    <i class="glyphicon glyphicon-th"></i>Flash Matches </a>
+                    </div>
                 </div>
                 <!-- END PAGE ACTIONS -->
                 <!-- BEGIN PAGE TOP -->

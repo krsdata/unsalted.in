@@ -584,7 +584,7 @@
 
         Route::resource(
             'admin/flashMatch',
-            'Modules\Admin\Http\Controllers\FlashMatch',
+            'Modules\Admin\Http\Controllers\FlashMatchController',
             [
             'names' => [
                 'edit' => 'flashMatch.edit',
