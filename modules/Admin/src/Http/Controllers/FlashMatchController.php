@@ -153,7 +153,7 @@ class FlashMatchController extends Controller {
         elseif ($request->file('point_json')) {
 
            $file = file_get_contents($request->point_json);
-           $status =  $this->saveMatchDataFromJson($file);
+           $status =  $this->savePointsFromJson($file);
            if( $status ){
                 $msg = " Match player points is uploaded";
            }else{
@@ -194,11 +194,10 @@ class FlashMatchController extends Controller {
         return Redirect::to(route('flashMatch'))
                         ->with('flash_alert_notice', ' wallets  successfully deleted.');
     }
-
-     public function saveMatchDataFromJson($data){
-
+    // save Match
+    public function saveMatchDataFromJson($data)
+    {
         $data = json_decode($data);
-
         if(isset($data->response) && isset($data->response->format)){
             
             $result_set = $data->response;
@@ -289,16 +288,73 @@ class FlashMatchController extends Controller {
             $matches->upload_type = 'manual';
             
             $matches->save();
-          
-            $this->createContest($data_set['match_id']);
+
+            if(isset($result_set->points)){
+                $m = [];
+                foreach ($result_set->points as $team => $teams) {
+                    if($teams==""){
+                        continue;
+                    }
+                    foreach ($teams as $key => $players) {
+                        foreach ($players as $key => $result) {
+                            $result->match_id = $match->match_id;
+                            if($result->pid==null){
+                                continue;
+                            }
+                            $m[] = MatchPoint::updateOrCreate(
+                                ['match_id'=>$match->match_id,'pid'=>$result->pid],
+                                (array)$result);
+
+                        }
+                }
+            }
+            }else{
+              $this->createContest($data_set['match_id']);  
+            } 
 
             return true;
         }else{
-
             return false;
         }
-        //
-         
+    }
+
+    // save Match
+    public function savePointsFromJson($data)
+    {
+        $data = json_decode($data);
+        if(isset($data->response) && isset($data->response->match_id)){
+           
+            $match_id = $data->response->match_id;
+            $result_set = $data->response; 
+
+            if(isset($result_set->points)){
+                $m = [];
+                foreach ($result_set->points as $team => $teams) {
+                    if($teams==""){
+                        continue;
+                    }
+                        foreach ($teams as $key => $players) {
+                            foreach ($players as $key => $result) {
+                                $result->match_id = $match_id;
+                                if($result->pid==null){
+                                    continue;
+                                }
+                                $m[] = MatchPoint::updateOrCreate(
+                                    ['match_id'=>$match_id,'pid'=>$result->pid],
+                                    (array)$result);
+                                
+                            }
+                    }
+                }
+                return true;
+            }else{
+              return false;
+            } 
+
+            return true;
+        }else{
+            return false;
+        }
     }
      // crrate contest dyanamic
     public function createContest($match_id=null){
@@ -373,10 +429,8 @@ class FlashMatchController extends Controller {
             return true;
         }
     }
-
-    public function getSquad($data=null){ 
-            # code...    
-        
+    /*Save player info*/
+    public function getSquad($data=null){  
         $match_id = $data->response->match_id;
         if(isset($data->response) && isset($data->response->match_id))
         {
