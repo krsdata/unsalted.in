@@ -108,13 +108,33 @@ class MenuController extends Controller {
     public function store(Request $request, Menu $menu) 
     {  
         $pid = $request->parent_id ? $request->parent_id : 0;
-         
-        $menu = new Menu;
-        $menu->title         =  $request->get('title');
-        $menu->parent_id     =  $pid;
-        $menu->save();  
-        return Redirect::to(route('menu'))
+        
+        $routeCollection = \Route::getRoutes();
+        foreach ($routeCollection as $route) {
+            if($route->getPrefix()=='/admin'){
+               //  $data['uri'][]       = $route->uri();
+                 $data['getName'][]   = $route->getName();  
+               //  $data['getActionMethod'][] = $route->getActionMethod();           
+            }
+       
+        }
+        $is_route_exist = in_array($request->route_name, $data['getName']);
+        
+        if($is_route_exist){
+            $menu = new Menu;
+            $menu->title            =  $request->get('title');
+            $menu->route_name       =  $request->get('route_name');
+            $menu->action           =  $request->get('action');
+            $menu->url              =  $request->get('url');
+            $menu->display_order    =  $request->get('display_order');
+            $menu->parent_id        =  $pid;
+            $menu->save();  
+            return Redirect::to(route('menu'))
                             ->with('flash_alert_notice', 'new Menu  successfully created !');
+        }    
+        return Redirect::to(route('menu'))
+                            ->with('flash_alert_notice', 'Route name does not exit!');
+       
         }
 
     /*

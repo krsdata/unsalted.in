@@ -125,7 +125,7 @@ class DefaultContestController extends Controller {
 
         if($request->match_id){
             $match  = Matches::where('match_id',$request->match_id)->get('match_id');
-        }else{0
+        }else{
             $match  = Matches::where('status',1)->get('match_id');
         }
 

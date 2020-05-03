@@ -21,6 +21,7 @@ use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\Debug\Exception\FatalErrorException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Str;
+use Facade\Ignition\Exceptions\ViewException;
 
 
 class Handler extends ExceptionHandler
@@ -68,13 +69,20 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
-    {   //dd($exception);
-        
-        if($request->is('admin/*')){
+    {   
+       // dd($exception);
 
-           $exception = $exception->getMessage();
-           $exception = ($exception=="")?"Page not found!":$exception;
-            return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
+        if($request->is('admin/*')){
+            if ($exception instanceof ViewException) {
+                $exception = $exception->getMessage();
+                echo $exception;
+                exit();
+            }else{
+            
+                $exception = $exception->getMessage();
+                $exception = ($exception=="")?"Page not found!":$exception;
+                return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
+            }
         }
         
         $headers = getallheaders(); 
