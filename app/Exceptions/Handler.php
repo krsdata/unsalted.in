@@ -70,15 +70,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {   
-       // dd($exception);
-
         if($request->is('admin/*')){
             if ($exception instanceof ViewException) {
                 $exception = $exception->getMessage();
                 echo $exception;
                 exit();
-            }else{
-            
+            }else{    
                 $exception = $exception->getMessage();
                 $exception = ($exception=="")?"Page not found!":$exception;
                 return redirect('admin/error?message='.Str::slug($exception))->with('flash_alert_notice', $exception);
