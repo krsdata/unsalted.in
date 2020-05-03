@@ -24,11 +24,7 @@
                         ->withErrors(['message'=>'Invalid email or password. Try again!']);
         }
     });
-
-
-    Route::get('admin/supportTicket', 'Modules\Admin\Http\Controllers\ArticleTypeController@supportTicket')->name('supportTicket');
-
-    Route::post('admin/supportTicket', 'Modules\Admin\Http\Controllers\ArticleTypeController@supportTicketAddreply')->name('supportTicket');
+ 
 
 
     Route::group(['middleware' => ['admin']], function () {
@@ -582,45 +578,22 @@
                 ]
         );
 
-
-        Route::bind('article', function ($value, $route) {
-            return Modules\Admin\Models\Article::find($value);
+        Route::bind('flashMatch', function ($value, $route) {
+            return Modules\Admin\Models\FlashMatch::find($value);
         });
 
         Route::resource(
-            'admin/article',
-            'Modules\Admin\Http\Controllers\ArticleController',
+            'admin/flashMatch',
+            'Modules\Admin\Http\Controllers\FlashMatch',
             [
             'names' => [
-                'edit' => 'article.edit',
-                'show' => 'article.show',
-                'destroy' => 'article.destroy',
-                'update' => 'article.update',
-                'store' => 'article.store',
-                'index' => 'article',
-                'create' => 'article.create',
-            ]
-                ]
-        );
-
-
-
-        Route::bind('press', function ($value, $route) {
-            return Modules\Admin\Models\Press::find($value);
-        });
-
-        Route::resource(
-            'admin/press',
-            'Modules\Admin\Http\Controllers\PressController',
-            [
-            'names' => [
-                'edit' => 'press.edit',
-                'show' => 'press.show',
-                'destroy' => 'press.destroy',
-                'update' => 'press.update',
-                'store' => 'press.store',
-                'index' => 'press',
-                'create' => 'press.create',
+                'edit' => 'flashMatch.edit',
+                'show' => 'flashMatch.show',
+                'destroy' => 'flashMatch.destroy',
+                'update' => 'flashMatch.update',
+                'store' => 'flashMatch.store',
+                'index' => 'flashMatch',
+                'create' => 'flashMatch.create',
             ]
                 ]
         ); 

@@ -51,16 +51,8 @@
     </div>
 
     @endif 
-    <div class="form-group {{ $errors->first('skills', ' has-error') }}">
-        <label class="control-label">Skills</label>
-        <input type="text" placeholder="Skills" class="form-control" name="skills" value="{{$user->skills}}"> </div>
-
-
-
-    <div class="form-group">
-        <label class="control-label">Language</label>
-        <input type="text" placeholder="Language" class="form-control" name="language" value="{{$user->language}}">
-         </div>
+   
+ 
     <div class="form-group {{ $errors->first('about_me', ' has-error') }}">
         <label class="control-label">About</label>
         <textarea class="form-control" rows="3" placeholder="Basic detail" name="about_me">{{$user->about_me}}</textarea>
@@ -77,40 +69,14 @@
      <div class="form-group {{ $errors->first('phone', ' has-error') }}">
         <label class="control-label">Mobile Number</label>
         <input type="text" placeholder="Mobile or Phone" class="form-control phone" name="phone"  value="{{ ($user->phone)?$user->phone:old('phone')}}"> </div>
-    <div class="form-group">
-        <label class="control-label">Qualification</label>
-        <input type="text" placeholder="qualification" class="form-control" name="qualification" value="{{$user->qualification}} "> 
-    </div>
-
-     <div class="form-group">
-        <label class="control-label">Work Experience</label>
-        <input type="number" placeholder="workExperience" class="form-control" min=0 name="workExperience" value="{{$user->workExperience}}"> 
-    </div>
+    
+    
       @if($user->role_type==3)
-     <div class="form-group">
-        <label class="control-label">Percentage Completion</label>
-        <input type="number" placeholder="percentage Completion" class="form-control" name="percentageCompletion" value="{{$user->percentageCompletion}}"> 
-    </div>
+      
 @endif
     @if($user->role_type==3)
-    <div class="form-group">
-        <label class="control-label">Rating</label>
-        <input type="text" placeholder="rating" class="form-control" name="rating" value="{{$user->rating}}"> 
-    </div>
-    <div class="form-group">
-        <label class="control-label">Rating</label>
-        <input type="text" placeholder="rating" class="form-control" name="rating" value="{{$user->rating}}"> 
-    </div>
-    <div class="form-group">
-        <label class="control-label">Tag Line</label>
-        <input type="text" placeholder="tagLine" class="form-control" name="tagLine" value="{{$user->tagLine}}"> 
-    </div>
-
-     <div class="form-group">
-        <label class="control-label">Mode Of Reach</label>
-        <input type="text" placeholder="Mode Of Reach" class="form-control" name="modeOfreach" value="{{$user->modeOfreach}}"> 
-    </div>
-    
+     
+ 
     @endif
      <div class="margin-top-10">
 

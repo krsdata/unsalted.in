@@ -90,6 +90,7 @@
                                                  <th> Sno. </th>
                                                 <th> Full Name </th>
                                                 <th> Email </th>
+                                                 <th> Account Balance </th>
                                                 <th> Phone </th>
                                                 <th> {{($heading=='Admin Users')?'User Type':''}} </th>
                                                 <th>Signup Date</th>
@@ -105,6 +106,7 @@
                                                  <td> {{ (($users->currentpage()-1)*15)+(++$key) }}</td>
                                                 <td> {{$result->first_name.'  '.$result->last_name}} </td>
                                                 <td> {{$result->email}} </td>
+                                                 <td> {{$result->balance}} INR </td>
                                                 <td> {{$result->phone}} </td>
                                                 <td class="center"> 
                                                
