@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $controllers = [];
 
-        foreach (Route::getRoutes()->getRoutes() as $route)
+       /* foreach (Route::getRoutes()->getRoutes() as $route)
         {
             $action = $route->getAction();
 
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                 }
                 
             }
-        }  
+        }*/  
 
         try{
             $main_menu = \DB::table('menus')->where('parent_id',0)
@@ -54,12 +54,15 @@ class AppServiceProvider extends ServiceProvider
                         return $item;
 
                     });
+            $settings = \DB::table('settings')->pluck('field_value','field_key')->toArray();        
+            $setting  = (object)$settings;
+
         }catch(\Illuminate\Database\QueryException $e){
             $main_menu = (object)[];
         } 
-
+        
         View::share('main_menu',$main_menu??null); 
-        View::share('controllers',$controllers);
+        View::share('setting',$setting);
     }
 
     /**

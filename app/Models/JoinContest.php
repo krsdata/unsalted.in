@@ -52,5 +52,9 @@ class JoinContest extends Eloquent
     {
         return $this->hasOne('App\Models\CreateContest', 'id', 'contest_id') ;
     }
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id') ;
+    }
 }
 

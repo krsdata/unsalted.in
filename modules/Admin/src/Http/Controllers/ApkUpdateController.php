@@ -50,25 +50,15 @@ class ApkUpdateController extends Controller {
 
     public function index(ApkUpdate $apkUpdate, Request $request) 
     { 
-        $page_title = 'ApkUpdate';
+        $page_title     = 'ApkUpdate';
         $sub_page_title = 'ApkUpdate';
-        $page_action = 'View ApkUpdate'; 
-
-
-        if ($request->ajax()) {
-            $id = $request->get('id'); 
-            $banner = ApkUpdate::find($id); 
-            $banner->status = $s;
-            $banner->save(); 
-            exit();
-        }
+        $page_action    = 'View ApkUpdate'; 
 
         // Search by name ,email and group
         $search = Input::get('search');
         if ((isset($search) && !empty($search))) {
 
             $search = isset($search) ? Input::get('search') : '';
-               
             $apkUpdate = ApkUpdate::where(function($query) use($search) {
                         if (!empty($search)) {
                             $query->Where('title', 'LIKE', "%$search%");
@@ -77,9 +67,7 @@ class ApkUpdateController extends Controller {
                     })->Paginate($this->record_per_page);
         } else {
             $apkUpdate = ApkUpdate::Paginate($this->record_per_page);
-        }
-         
-          
+        } 
         return view('packages::apkUpdate.index', compact('apkUpdate', 'page_title', 'page_action','sub_page_title'));
     }
 

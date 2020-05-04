@@ -115,6 +115,7 @@ Route::group([
     Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');
     Route::match(['post','get'],'createContest/{match_id}', 'Api\ApiController@createContest');
     Route::match(['post','get'],'updateMatchDataById/{match_id}', 'Api\ApiController@updateMatchDataById');
+    Route::match(['post','get'],'saveMatchDataByMatchId/{match_id}', 'Api\ApiController@saveMatchDataByMatchId');
     Route::match(['post','get'],'updateMatchInfo', 'Api\ApiController@updateMatchInfo');
     Route::match(['post','get'],'updateSquad/{match_id}', 'Api\ApiController@updateSquad');
     Route::match(['post','get'],'updateLiveMatchFromApp', 'Api\ApiController@updateLiveMatchFromApp');

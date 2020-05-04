@@ -28,7 +28,7 @@
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon-settings font-red"></i>
-                                        <span class="caption-subject font-dark sbold uppercase">Edit Match</span>
+                                        <span class="caption-subject font-dark sbold uppercase">Edit Player Points</span>
                                     </div>
                                     
                                 </div>
@@ -36,8 +36,8 @@
                                     <!-- BEGIN FORM--> 
 
 
-                                {!! Form::model($match, ['method' => 'PATCH', 'route' => ['match.update', $match->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
-                                    @include('packages::match.form', compact('match'))
+                                {!! Form::model($players, ['method' => 'PATCH', 'route' => ['players.update', $players->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
+                                    @include('packages::players.form', compact('players'))
                                 {!! Form::close() !!} 
                                     <!-- END FORM-->
                                 </div>

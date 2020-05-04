@@ -34,9 +34,9 @@
                                 <div class="portlet-body">
                                     <!-- BEGIN FORM-->
                                 
-                                  {!! Form::model($program, ['route' => ['program.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
+                                  {!! Form::model($match, ['route' => ['match.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
                                   
-                                  @include('packages::program.form')
+                                  @include('packages::match.form')
                                   
                                   {!! Form::close() !!}   
                                     <!-- END FORM-->

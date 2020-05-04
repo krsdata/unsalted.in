@@ -1324,13 +1324,25 @@ class ApiController extends BaseController
         return ['file updated'];
     }
 
+    public function saveMatchDataByMatchId($match_id=null)
+    {
+        //upcoming
+        $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+        // store match info    
+        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
+        $this->saveMatchDataFromAPI2DB($data);
+
+        return [$match_id.' : match id updated successfully'];
+    }
+
     public function updateMatchDataById($match_id=null)
     {
         //upcoming
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
         // store match info    
         $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
-        $this->saveMatchDataById($data);
+        $this->saveMatchDataFromAPI2DB($data);
+        //$this->saveMatchDataById($data);
 
         return [$match_id.' : match id updated successfully'];
     }
@@ -1724,7 +1736,6 @@ class ApiController extends BaseController
                 $this->getSquad($mid);
                 // $this->saveSquad($mid);
             }
-
         }
         //
         return ["match info updated "];

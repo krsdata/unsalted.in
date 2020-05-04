@@ -161,13 +161,29 @@ class MatchController extends Controller {
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));
     }
 
-    
+    public function create(Match $match)
+    {
+        $page_title     = 'Match';
+        $page_action    = 'Create Match';
+        $table_cname = \Schema::getColumnListing('matches');
+        $except = ['id','created_at','updated_at','pid','team_id'];
+       
+        foreach ($table_cname as $key => $value) {
+
+           if(in_array($value, $except )){
+                continue;
+           }
+            $tables[] = $value;
+        }
+
+        return view('packages::match.create', compact('match', 'page_title', 'page_action','tables'));
+    }
 
     /*
      * Save Group method
      * */
 
-    public function store(ProgramRequest $request, Program $program) 
+    public function store(Request $request, Match $program) 
     {   
         $program->fill(Input::all()); 
         $program->save();   
@@ -176,23 +192,53 @@ class MatchController extends Controller {
                             ->with('flash_alert_notice', 'New Match  successfully created!');
     }
 
+
     /*
      * Edit Group method
      * @param 
      * object : $category
      * */
 
-    public function edit($id) {
-        
-        return view('packages::match.edit');
+   public function edit($id) {
+        $match = Match::find($id);
+        $page_title = 'Match';
+        $page_action = 'Match';
+
+        $table_cname = \Schema::getColumnListing('matches');
+        $except = ['id','created_at','updated_at','pid','team_id'];
+        $data = [];
+        foreach ($table_cname as $key => $value) {
+
+           if(in_array($value, $except )){
+                continue;
+           }
+             $tables[] = $value;
+        }
+        return view('packages::match.edit', compact( 'match', 'page_title','page_action', 'tables'));
     }
 
-    public function update(Request $request, $id) {
-        $program = Program::find($id);
-        $program->fill(Input::all()); 
-        $program->save();  
-        return Redirect::to(route('program'))
-                        ->with('flash_alert_notice', 'program  successfully updated.');
+     public function update(Request $request, $id) {
+
+        $match = Match::find($id);
+        $data = [];
+        $table_cname = \Schema::getColumnListing('matches');
+        $except = ['id','created_at','updated_at','_token','_method','match_id','pid'];
+        $data = [];
+        foreach ($table_cname as $key => $value) {
+
+           if(in_array($value, $except )){
+                continue;
+           }
+            if($request->$value){
+                $match->$value = $request->$value;
+           }
+
+        }
+
+        $match->save();
+
+        return Redirect::to(route('match'))
+                        ->with('flash_alert_notice', ' Match  successfully updated.');
     }
     /*
      *Delete User

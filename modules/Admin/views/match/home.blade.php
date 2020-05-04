@@ -1,7 +1,7 @@
 
             <!-- END SIDEBAR -->
             <!-- BEGIN CONTENT -->
-             <div class="page-content-wrapper">
+<div class="page-content-wrapper">
                 <!-- BEGIN CONTENT BODY -->
                 <div class="page-content">
                     <!-- BEGIN PAGE HEAD-->
@@ -13,8 +13,8 @@
                     <!-- END PAGE BREADCRUMB -->
                     <!-- BEGIN PAGE BASE CONTENT -->
 
-<div class="row">
-    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
                             <!-- BEGIN EXAMPLE TABLE PORTLET-->
                             <div class="portlet light portlet-fit bordered">
                                 <div class="portlet-title">
@@ -46,6 +46,8 @@
                                         </div>
 
                                         <button type="button" class="btn pull-right btn-primary" data-toggle="modal" data-target="#changeDate" data-whatever="@" style="margin-right: 10px">Change Match Date</button> 
+
+                                         <button type="button" class="btn pull-right btn-primary" data-toggle="modal" data-target="#changeMatchStatus" data-whatever="@" style="margin-right: 10px">Change Match Status</button> 
                                          
                                     </div>
                                      
@@ -98,7 +100,7 @@
                                                 <th> Status</th> 
                                                 <th> Date </th> 
                                                 <th> Prize Status</th>  
- 
+                                                <th> Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -164,6 +166,12 @@
                                              NA
                                             @endif
                                             </td> 
+                                            <td> <a href="{{ route('match.edit',$result->id)}}">
+                            <button class="btn btn-success btn-xs">
+                            <i class="fa fa-fw fa-edit" title="edit"></i> 
+                            </button>
+                        </a>
+ </td>
                                     </tr>
                                    @endforeach
                                     
@@ -186,6 +194,51 @@
     
     <!-- END QUICK SIDEBAR -->
 </div>  
+
+
+<!-- start match -->
+<div class="modal fade" id="changeMatchStatus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Change Match Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+           
+           <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Match Id:</label>
+            <input type="text" class="form-control" id="match_id"  name="match_id" required="" >
+          </div>
+           <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Match Status:</label>
+             <select class="form-control" name="status" required="">
+                <option value="">Select Status</option>
+                <option value="1">Upcoming</option>
+                <option value="2">Completed</option>
+                <option value="3">Live</option>
+                <option value="4">Cancelled</option>
+             </select> 
+          </div>
+         <!--  <div class="form-group">
+            <label for="message-text" class="col-form-label">Match Id:</label>
+            <textarea class="form-control" id="message-text" ></textarea>
+          </div> -->
+           <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary"> Save </button>
+      </div>
+        </form>
+      </div>
+     
+    </div>
+  </div>
+</div>
+<!-- End status -->
+
 <div class="modal fade" id="changeDate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -218,11 +271,7 @@
                 <option value="3">Live</option>
                 <option value="4">Cancelled</option>
              </select> 
-          </div>
-         <!--  <div class="form-group">
-            <label for="message-text" class="col-form-label">Match Id:</label>
-            <textarea class="form-control" id="message-text" ></textarea>
-          </div> -->
+          </div> 
            <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary"> Save </button>

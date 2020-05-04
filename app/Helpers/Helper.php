@@ -35,26 +35,54 @@ class Helper {
      * function used to check stock in kit
      *
      * @param = null
-     */
-     
-    
+     */ 
     static public function generateRandomString($length=5) {
         $key = '';
         $keys = array_merge(range('A', 'Z') , range(0, 9) );
 
         for ($i = 0; $i < $length; $i++) {
             $key .= $keys[array_rand($keys)];
-        }
-
+        } 
          return $key;
     } 
-    
+    static public function sendMobileNotification($token, $data){
+     
+        $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+       $extraNotificationData = $data;
+
+       $fcmNotification = [
+           //'registration_ids' => $tokenList, //multple token array
+           'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+       ];
+
+       $headers = [
+           'Authorization: key='.$serverLKey,
+           'Content-Type: application/json'
+       ];
+
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+       $result = curl_exec($ch);
+       //echo "result".$result;
+       //die;
+       curl_close($ch);
+       return true;
+    }
 /* @method : createCompanyGroup
     * @param : email,user_id
     * Response :  string
     * Return : company name
-    */
-    
+    */ 
  
    static public function validateTeam($team_id=null)
     {

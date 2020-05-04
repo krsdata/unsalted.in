@@ -34,6 +34,12 @@
         
         Route::post('login', [ 'as' => 'custom.login', 'uses' => 'FrontEndController@login']);
 
+        Route::match(['get','post'],'admin/saveMatchFromApi', 
+            [ 
+                'as' => 'saveMatchFromApi', 
+                'uses' => 'Modules\Admin\Http\Controllers\FlashMatchController@updateMatchDataByStatus'
+            ]
+        );
 
         Route::match(['get','post'],'admin/bankAccount', 
             [ 
@@ -594,6 +600,26 @@
                 'store' => 'flashMatch.store',
                 'index' => 'flashMatch',
                 'create' => 'flashMatch.create',
+            ]
+                ]
+        );
+
+        Route::bind('players', function ($value, $route) {
+            return Modules\Admin\Models\Player::find($value);
+        });
+
+        Route::resource(
+            'admin/players',
+            'Modules\Admin\Http\Controllers\PlayerController',
+            [
+            'names' => [
+                'edit' => 'players.edit',
+                'show' => 'players.show',
+                'destroy' => 'players.destroy',
+                'update' => 'players.update',
+                'store' => 'players.store',
+                'index' => 'players',
+                'create' => 'players.create',
             ]
                 ]
         ); 
