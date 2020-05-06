@@ -2417,10 +2417,16 @@ class ApiController extends BaseController
 
     public function  joinContest(Request  $request)
     {
+
         $match_id           = $request->match_id;
         $user_id            = $request->user_id;
         $created_team_id    = $request->created_team_id;
         $contest_id         = $request->contest_id;
+
+        $data['match_id'] = $match_id;
+        $data['content'] = json_encode($request->all());
+
+        \DB::table('match_contents')->insert($data);
 
         $validator = Validator::make($request->all(), [
             'match_id' => 'required',
