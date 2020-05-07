@@ -2603,22 +2603,74 @@ class ApiController extends BaseController
                     $cc->filled_spot = CreateTeam::where('match_id',$match_id)
                         ->where('team_join_status',1)->count();
 
-                    $cc->save();
+                   // $cc->save();
                     // payment deduct
+                    $total_team_count   =  count($request->created_team_id);
+                    $total_fee          =  $cc->entry_fees;
+                    $payable_amount     =  $total_fee*$total_team_count;
+                        
+                    $deduct_from_bonus  =  $payable_amount*(0.1);
+                    
+                    $final_paid_amount  =  $payable_amount-$deduct_from_bonus;
 
-                    $total_fee                  =  $cc->entry_fees;
-                    $deduct_from_bonus          =  $total_fee*(0.1);
-                    $deduct_from_usable_amount  =  $total_fee-$deduct_from_bonus;
+                    $item = Wallet::where('user_id',$user_id)->get();
+                    
+                    $bonus_amount = $item->where('payment_type',1)->first();
 
-                    $wallets = Wallet::where('user_id',$user_id)->first();
+                    $refer_amount = $item->where('payment_type',2)->first();
+                    $depos_amount = $item->where('payment_type',3)->first();
+                    $prize_amount = $item->where('payment_type',4)->first();
+                   
+                    $transaction_amt = 0;
+                    if($bonus_amount && $bonus_amount->amount>$deduct_from_bonus){
+                        $bonus_amount->amount = $bonus_amount->amount-$deduct_from_bonus;
+                        $bonus_amount->save();
+                         
+                    }else{
 
-                    $wallets->usable_amount = $wallets->usable_amount-$deduct_from_usable_amount;
+                        $final_paid_amount = $final_paid_amount+($deduct_from_bonus);
+                    } 
+                                                                     
+                    if($depos_amount && $depos_amount->amount > $final_paid_amount){
+                        $depos_amount->amount = $depos_amount->amount-$final_paid_amount;
+                        $depos_amount->save();
+                       
+                    }elseif($prize_amount && $prize_amount->amount > $final_paid_amount){
+                        $prize_amount->amount = $prize_amount->amount-$final_paid_amount;
+                        $prize_amount->save();
+                        
+                    }elseif($refer_amount && $refer_amount->amount > $final_paid_amount){
+                        
+                        $refer_amount->amount = $refer_amount->amount-$final_paid_amount;
+                        $refer_amount->save();
+                         
+                    }else{
+                        return [
+                            'status'=>false,
+                            'code' => 201,
+                            'message' => "You don't have sufficient balance!"
 
-                    $wallets->bonus_amount = $wallets->bonus_amount-$deduct_from_bonus;
-                    $wallets->save();
+                        ]; 
+                    } 
+
+                    $cc->save(); 
+                    // transaction histoory
+                    if($final_paid_amount){
+                        $wt =  new WalletTransaction;
+                        $wt->user_id = $user_id;
+                        $wt->amount  =$final_paid_amount;
+                        $wt->payment_type = 6;
+                        $wt->payment_type_string = 'Join Contest';
+                        $wt->transaction_id = time().'-'.$user_id;
+                        $wt->payment_mode =  'Sportfight';
+                        $wt->payment_status =  'Success';
+                        $wt->debit_credit_status = "-";
+                        $wt->payment_details = json_encode($request->all());
+                       
+                        $wt->save();
+                    }
 
                 }else{
-
                     continue;
                 }
 
