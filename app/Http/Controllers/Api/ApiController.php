@@ -132,7 +132,7 @@ class ApiController extends BaseController
         $ct = $close_team->getdata()->response->myteam;
         if($close_team->getdata()->response->myteam){
         
-             $team_list[] = ['close_team'=>$ct]; 
+          //   $team_list[] = ['close_team'=>$ct]; 
         }
         //  join team id
         $open_team_id = $create_teams->whereNotIn('id',$close_team_id)
