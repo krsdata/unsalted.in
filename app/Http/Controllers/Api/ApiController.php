@@ -2730,9 +2730,9 @@ class ApiController extends BaseController
         }
 
         $join_contests = JoinContest::where('user_id',$request->user_id)
-            ->where('match_id',$match_id)
+            ->where('match_id',$match_id)->groupBy('contest_id')
             ->pluck('contest_id')->toArray();
-
+            
         $validator = Validator::make($request->all(), [
             //  'match_id' => 'required'
         ]);
@@ -2780,7 +2780,7 @@ class ApiController extends BaseController
                 }
                 elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
                 {
-                    continue;
+                  //  continue;
                 }
 
                 $data2['contestTitle'] = $result->contestType->contest_type;
