@@ -975,6 +975,8 @@ class ApiController extends BaseController
      @method : createTeam
     */
     public function createTeam(Request $request){
+        
+        $this->matchInfo($request,'createTeam');
 
         $ct = CreateTeam::firstOrNew(['id'=>$request->create_team_id]);
         Log::channel('before_create_team')->info($request->all());
@@ -2414,6 +2416,75 @@ class ApiController extends BaseController
         echo date('h:i:s');
     }
 
+    public function maxAllowedTeam($request){
+        
+        $created_team = CreateTeam::whereIn('id',$request->created_team_id)->count();
+
+        $contest = CreateContest::find($request->contest_id);
+
+        $total_spots = $contest->total_spots??0;
+        $filled_spot = $contest->filled_spot??0;
+
+        $allowed_team = 0;
+        
+        if($total_spots>0){
+            $allowed_team = $total_spots-$filled_spot;
+        } 
+
+        if($allowed_team<$created_team && $total_spots!=0){
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'Only '.$allowed_team.' spot left!'
+            ];
+
+        }elseif($created_team>$total_spots && $total_spots!=0){
+
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'Max allowed spot exceeded!'
+            ];
+        }
+        elseif($total_spots == $filled_spot && $total_spots!=0){
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'Spot already full!'
+            ];
+        }
+            
+        $check_join_contest = \DB::table('join_contests')
+            ->whereIn('created_team_id',$request->created_team_id)
+            ->where('match_id',$request->match_id)
+            ->where('user_id',$request->user_id)
+            ->where('contest_id',$request->contest_id)
+            ->get();
+        
+        $created_team_id  = $request->created_team_id;
+        $contest_id       = $request->contest_id;  
+
+        if(count($created_team_id)==1 AND  $check_join_contest->count()==1){
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'This team already Joined'
+
+            ];
+        }
+
+        $cc = CreateContest::find($contest_id);
+
+        if($cc && ($cc->total_spots!=0 && $cc->filled_spot>=$cc->total_spots)){
+            return [
+                'status'=>false,
+                'code' => 201,
+                'message' => 'This contest already full'
+
+            ];
+        }        
+        return true;
+    }
 
     public function  joinContest(Request  $request)
     {
@@ -2422,11 +2493,10 @@ class ApiController extends BaseController
         $user_id            = $request->user_id;
         $created_team_id    = $request->created_team_id;
         $contest_id         = $request->contest_id;
+        $max_t = $this->maxAllowedTeam($request);
+        // join team validation 
 
-        $data['match_id'] = $match_id;
-        $data['content'] = json_encode($request->all());
-
-        \DB::table('match_contents')->insert($data);
+        $this->matchInfo($request,'joinContest'); 
 
         $validator = Validator::make($request->all(), [
             'match_id' => 'required',
@@ -2434,9 +2504,7 @@ class ApiController extends BaseController
             'contest_id' => 'required',
             'created_team_id' => 'required'
 
-        ]);
-
-
+        ]); 
         // Return Error Message
         if ($validator->fails() || !isset($created_team_id)) {
             $error_msg  =   [];
@@ -2453,7 +2521,7 @@ class ApiController extends BaseController
             );
         }
 
-        Log::channel('before_join_contest')->info($request->all());
+        //Log::channel('before_join_contest')->info($request->all());
 
         $check_join_contest = \DB::table('join_contests')
             ->whereIn('created_team_id',$created_team_id)
@@ -2481,6 +2549,12 @@ class ApiController extends BaseController
 
             ];
         }
+
+        if($max_t!==true){
+            return $max_t;
+            exit();
+        }
+
         $userVald = User::find($request->user_id);
         $matchVald = Matches::where('match_id',$request->match_id)->count();
 
@@ -2528,6 +2602,7 @@ class ApiController extends BaseController
 
                     $cc->filled_spot = CreateTeam::where('match_id',$match_id)
                         ->where('team_join_status',1)->count();
+
                     $cc->save();
                     // payment deduct
 
@@ -3454,5 +3529,13 @@ class ApiController extends BaseController
     {
          $join_contest =\DB::table('join_contests')->where('user_id',285)
                     ->get();
+    }
+
+    public function matchInfo($request, $method=null){
+        $data['match_id']   = $request->match_id??null;
+        $data['method']     = $method;
+        $data['content']    = json_encode($request->all());
+
+        \DB::table('match_contents')->insert($data);
     }
 }
