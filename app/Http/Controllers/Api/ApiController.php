@@ -2605,10 +2605,10 @@ class ApiController extends BaseController
 
                    // $cc->save();
                     // payment deduct
-                    $total_team_count   =  count($request->created_team_id);
+                   // $total_team_count   =  count($request->created_team_id);
                     $total_fee          =  $cc->entry_fees;
-                    $payable_amount     =  $total_fee*$total_team_count;
-                        
+                   // $payable_amount     =  $total_fee*$total_team_count;
+                    $payable_amount     =  $total_fee;    
                     $deduct_from_bonus  =  $payable_amount*(0.1);
                     
                     $final_paid_amount  =  $payable_amount-$deduct_from_bonus;
