@@ -70,6 +70,7 @@
                                             </div>
                                               <div class="col-md-3">
                                                 <select class="form-control" name="status">
+                                                    <option value="">Select Status</option>
                                                     <option value="1" @if(isset($_REQUEST['status']) && $_REQUEST['status']==1) selected @endif>Upcoming</option>
                                                      <option value="2" <?php if(isset($_REQUEST['status']) && $_REQUEST['status']==2) { echo "selected"; }  ?>> Completed</option>
                                                       <option value="3" @if(isset($_REQUEST['status']) && $_REQUEST['status']==3) selected @endif>Live</option>
@@ -209,6 +210,7 @@
       <div class="modal-body">
         <form>
            
+          <input type="hidden" name="change_status" value="change_status">
            <div class="form-group">
             <label for="recipient-name" class="col-form-label">Match Id:</label>
             <input type="text" class="form-control" id="match_id"  name="match_id" required="" >
@@ -250,32 +252,25 @@
       </div>
       <div class="modal-body">
         <form>
+          <input type="hidden" name="change_date" value="change_date">
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Start Date:</label>
-            <input type="text" class="form-control form_datetime_start form_datetime" id="start_date" value="{{date('Y-m-d h:i')}}" readonly name="date_start">
+            <input type="text" class="form-control form_datetime_start form_datetime" id="start_date" value="{{date('Y-m-d H:i')}}" readonly name="date_start">
           </div>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label" >End Date:</label>
-            <input type="text" class="form-control form_datetime_end form_datetime" id="end_date" value="{{date('Y-m-d h:i')}}" readonly name="date_end">
+            <input type="text" class="form-control form_datetime_end form_datetime" id="end_date" value="{{date('Y-m-d H:i')}}" readonly name="date_end">
           </div>
            <div class="form-group">
             <label for="recipient-name" class="col-form-label">Match Id:</label>
             <input type="text" class="form-control" id="match_id"  name="match_id" >
           </div>
-           <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Match Status:</label>
-             <select class="form-control" name="status">
-                <option value="">Select Status</option>
-                <option value="1">Upcoming</option>
-                <option value="2">Completed</option>
-                <option value="3">Live</option>
-                <option value="4">Cancelled</option>
-             </select> 
-          </div> 
-           <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary"> Save </button>
-      </div>
+            
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary"> Save </button>
+        </div>
+
         </form>
       </div>
      

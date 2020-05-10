@@ -97,17 +97,19 @@ class MatchController extends Controller {
         $sub_page_title = 'View Match';
         $page_action = 'View Match'; 
 
-        if($request->date_start && $request->date_end && $request->match_id){
-            
-            $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
+        if($request->match_id && (($request->date_start && $request->date_end) || $request->status)){
+            if($request->date_end && $request->date_start){
+                $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
                 ->setTimezone('UTC')
                 ->format('Y-m-d H:i');
 
-            $date_end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $request->date_end)
-                ->setTimezone('UTC')
-                ->format('Y-m-d H:i'); 
-            $timestamp_start = strtotime($date_start);
-            $timestamp_end   = strtotime($date_end);
+                $date_end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $request->date_end)
+                    ->setTimezone('UTC')
+                    ->format('Y-m-d H:i'); 
+                $timestamp_start = strtotime($date_start);
+                $timestamp_end   = strtotime($date_end);
+            }
+            
 
             $status = $request->status;
             if($status==1){
@@ -119,7 +121,7 @@ class MatchController extends Controller {
             }else{
                 //$status_str = "Cancelled";
             }
-            if($request->match_id && $request->date_end && $request->date_start){
+            if($request->match_id && $request->date_end && $request->date_start && $request->change_date){
                 $data =   [
                                 'timestamp_start' => $timestamp_start,
                                 'timestamp_end' => $timestamp_end,
@@ -128,7 +130,7 @@ class MatchController extends Controller {
                           ];  
             }
 
-            if($request->match_id && $request->status){
+            if($request->match_id && $request->status && $request->change_status){
                 $data =    [
                             'status'  => $request->status,
                             'status_str' => $status_str
@@ -137,7 +139,10 @@ class MatchController extends Controller {
             
             \DB::table('matches')->where('match_id',$request->match_id)
                         ->update($data);
-            return Redirect::to(route('match'));            
+
+                     
+            return Redirect::to(route('match'))->with('flash_alert_notice', 'Match updated successfully!');  
+
         }
 
         // Search by name ,email and group
