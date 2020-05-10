@@ -92,14 +92,23 @@ class MatchController extends Controller {
      * */
 
     public function index(Match $match, Request $request) 
-    { 
+    {  
         $page_title = 'Match';
         $sub_page_title = 'View Match';
         $page_action = 'View Match'; 
 
         if($request->date_start && $request->date_end && $request->match_id){
-            $timestamp_start = strtotime($request->date_start);
-            $timestamp_end   = strtotime($request->date_end);
+            
+            $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i');
+
+            $date_end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $request->date_end)
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i'); 
+            $timestamp_start = strtotime($date_start);
+            $timestamp_end   = strtotime($date_end);
+
             $status = $request->status;
             if($status==1){
                 $status_str = "Upcoming";
@@ -108,23 +117,28 @@ class MatchController extends Controller {
             }elseif($status==3){
                 $status_str = "Live";
             }else{
-                $status_str = "Cancelled";
+                //$status_str = "Cancelled";
             }
-            \DB::table('matches')->where('match_id',$request->match_id)
-                        ->update(
-                            [
+            if($request->match_id && $request->date_end && $request->date_start){
+                $data =   [
                                 'timestamp_start' => $timestamp_start,
                                 'timestamp_end' => $timestamp_end,
-                                'date_start'  => $request->date_start,
-                                'date_end'  => $request->date_end,
-                                'status'  => $request->status,
-                                'status_str' => $status_str
-                            ]
-                        );
+                                'date_start'  => $date_start,
+                                'date_end'  => $date_end 
+                          ];  
+            }
+
+            if($request->match_id && $request->status){
+                $data =    [
+                            'status'  => $request->status,
+                            'status_str' => $status_str
+                        ];   
+            }
+            
+            \DB::table('matches')->where('match_id',$request->match_id)
+                        ->update($data);
             return Redirect::to(route('match'));            
         }
-
-
 
         // Search by name ,email and group
         $search = Input::get('search');
@@ -152,10 +166,10 @@ class MatchController extends Controller {
                         if (!empty($search)) {
                             $query->orWhere('short_title', 'LIKE', "%$search%");
                         } 
-                    })->orderBy('timestamp_start','DESC')->Paginate($this->record_per_page); 
+                    })->orderBy('updated_at','DESC')->Paginate($this->record_per_page); 
              
         } else {
-            $match = Match::with('teama','teamb')->orderBy('status','ASC')->Paginate($this->record_per_page);
+            $match = Match::with('teama','teamb')->orderBy('updated_at','DESC')->Paginate($this->record_per_page);
         } 
         
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));

@@ -431,7 +431,7 @@ class FlashMatchController extends Controller {
     public function updateContestByMatch($match_id=null){
 
         $default_contest = \DB::table('default_contents')
-            ->where('match_id',$match_id)
+            ->where('match_id',$match_id) 
             ->get();
 
         foreach ($default_contest as $key => $result) {
@@ -441,8 +441,7 @@ class FlashMatchController extends Controller {
                     'contest_type'      =>  $result->contest_type,
                     'entry_fees'        =>  $result->entry_fees,
                     'total_spots'       =>  $result->total_spots,
-                    'first_prize'       =>  $result->first_prize
-
+                    'first_prize'       =>  $result->first_prize        
                 ]
             );
 
@@ -527,21 +526,22 @@ class FlashMatchController extends Controller {
     /*Save player info*/
     public function getSquad($data=null){  
         $match_id = $data->response->match_id;
+
         if(isset($data->response) && isset($data->response->match_id))
-        {
+        {   
             $teama = $data->response->teama;
             foreach ($teama->squads as $key => $squads) {
                 $teama_obj = TeamASquad::firstOrNew(
                     [
-                        'team_id'=>$teama->team_id,
-                        'player_id'=>$squads->player_id,
-                        'match_id'=>$match_id
+                        'team_id'   => $teama->team_id,
+                        'player_id' => $squads->player_id,
+                        'match_id'  => $match_id
                     ]
                 );
 
                 $teama_obj->team_id   =  $teama->team_id;
                 $teama_obj->player_id =  $squads->player_id;
-                $teama_obj->role      =  $squads->role;
+                $teama_obj->role      =  strtolower($squads->role);
                 $teama_obj->role_str  =  $squads->role_str;
                 $teama_obj->playing11 =  $squads->playing11;
                 $teama_obj->name      =  $squads->name;
@@ -549,6 +549,46 @@ class FlashMatchController extends Controller {
 
                 $teama_obj->save();
                 $team_id[$squads->player_id] = $teama->team_id;
+
+                 // player info
+                $player_data =   Player::firstOrNew(
+                    [
+                        'pid'       =>  $squads->player_id,
+                        'team_id'   =>  $teama->team_id,
+                        'match_id'  =>  $match_id
+                    ]
+                );
+                
+                $name = explode(" ", $squads->name);
+                $player_data->match_id  = $match_id;
+                $player_data->pid       = $squads->player_id;
+                $player_data->team_id   = $teama->team_id;
+                $player_data->title     = $squads->name;
+                $player_data->short_name= $squads->name;
+                $player_data->first_name= $name[0]??null;
+                $player_data->last_name = $name[1]??null;
+                $player_data->country   = "in";
+                $player_data->playing_role   =  strtolower($squads->role);
+                
+                $player_data->save();
+
+                // Match points
+                $data_mp =  MatchPoint::firstOrNew(
+                    [
+                        'pid'=>$squads->player_id,
+                        'match_id'=>$match_id
+                    ]
+                ); 
+                if($data_mp->short_name==null){
+                    $data_mp->match_id  =  $match_id;
+                    $data_mp->pid = $squads->player_id; 
+                    $data_mp->role = strtolower($squads->role); 
+                    $data_mp->name = $squads->name; 
+                    $data_mp->rating = 0;
+                
+                    $data_mp->save(); 
+                }
+
             }
             $teamb = $data->response->teamb;
             foreach ($teamb->squads as $key => $squads) {
@@ -557,18 +597,59 @@ class FlashMatchController extends Controller {
 
                 $teamb_obj->team_id   =  $teamb->team_id;
                 $teamb_obj->player_id =  $squads->player_id;
-                $teamb_obj->role      =  $squads->role;
+                $teamb_obj->role      =  strtolower($squads->role);
                 $teamb_obj->role_str  =  $squads->role_str;
                 $teamb_obj->playing11 =  $squads->playing11;
                 $teamb_obj->name      =  $squads->name;
                 $teamb_obj->match_id  =  $match_id;
-                $teamb_obj->save();
+                $teamb_obj->save();     
 
                 $team_id[$squads->player_id] = $teamb->team_id;
-            }
+
+
+                $data_mp =  MatchPoint::firstOrNew(
+                    [
+                        'pid'=>$squads->player_id,
+                        'match_id'=>$match_id
+                    ]
+                ); 
+                if($data_mp->short_name==null){
+                    $data_mp->match_id  =  $match_id;
+                    $data_mp->pid = $squads->player_id; 
+                    $data_mp->role = strtolower($squads->role); 
+                    $data_mp->name = $squads->name; 
+                    $data_mp->rating = 0;
+                
+                    $data_mp->save(); 
+                }
+
+                // player info
+                $player_data =   Player::firstOrNew(
+                    [
+                        'pid'       =>  $squads->player_id,
+                        'team_id'   =>  $teamb->team_id,
+                        'match_id'  =>  $match_id
+                    ]
+                );
+                
+                $name = explode(" ", $squads->name);
+                $player_data->match_id  = $match_id;
+                $player_data->pid       = $squads->player_id;
+                $player_data->team_id   = $teamb->team_id;
+                $player_data->title     = $squads->name;
+                $player_data->short_name= $squads->name;
+                $player_data->first_name= $name[0]??null;
+                $player_data->last_name = $name[1]??null;
+                $player_data->country   = "in";
+                $player_data->playing_role   =  strtolower($squads->role);
+                
+                $player_data->save();
+
+            }                           
             // update all players
-            foreach ($data->response->players as $pkey => $pvalue)
-            {
+            if(isset($data->response->players)){
+                foreach ($data->response->players as $pkey => $pvalue)
+                {                           
 
                 $data_set =   Player::firstOrNew(
                     [
@@ -577,41 +658,41 @@ class FlashMatchController extends Controller {
                         'match_id'=>$match_id
                     ]
                 );
-
                 foreach ($pvalue as $key => $value) {
                     if($key=="primary_team"){
                         continue;
                         $data_set->$key = json_encode($value);
                     }
-                    $data_set->$key  =  $value;
+                    $data_set->$key      =  $value;
                     $data_set->match_id  =  $match_id;
-                    $data_set->pid = $pvalue->pid;
-                    $data_set->team_id = $team_id[$pvalue->pid];
+                    $data_set->pid       = $pvalue->pid;
+                    $data_set->team_id   = $team_id[$pvalue->pid];
                 }
-
                 $data_set->save();
-            }
+                }       
+           
+            
             // update player in updatepoint table
 
-            foreach ($data->response->players as $pkey => $pvalue)
-            {
-                $data_mp =  MatchPoint::firstOrNew(
-                    [
-                        'pid'=>$pvalue->pid,
-                        'match_id'=>$match_id
-                    ]
-                ); 
-                if($data_mp->short_name==null){
-                    $data_mp->match_id  =  $match_id;
-                    $data_mp->pid = $pvalue->pid; 
-                    $data_mp->role = $pvalue->playing_role; 
-                    $data_mp->name = $pvalue->short_name; 
-                    $data_mp->rating = $pvalue->fantasy_player_rating;
-                
-                    $data_mp->save(); 
-                } 
+                foreach ($data->response->players as $pkey => $pvalue)
+                {
+                    $data_mp =  MatchPoint::firstOrNew(
+                        [
+                            'pid'=>$pvalue->pid,
+                            'match_id'=>$match_id
+                        ]
+                    ); 
+                    if($data_mp->short_name==null){
+                        $data_mp->match_id  =  $match_id;
+                        $data_mp->pid = $pvalue->pid; 
+                        $data_mp->role = strtolower($pvalue->playing_role); 
+                        $data_mp->name = $pvalue->short_name; 
+                        $data_mp->rating = $pvalue->fantasy_player_rating;
+                    
+                        $data_mp->save(); 
+                    } 
+                }
             }
-            
             return true;
         }else{
             return false;
@@ -767,7 +848,7 @@ class FlashMatchController extends Controller {
 
                 $teama_obj->team_id   =  $teama->team_id;
                 $teama_obj->player_id =  $squads->player_id;
-                $teama_obj->role      =  $squads->role;
+                $teama_obj->role      =  strtolower($squads->role);
                 $teama_obj->role_str  =  $squads->role_str;
                 $teama_obj->playing11 =  $squads->playing11;
                 $teama_obj->name      =  $squads->name;
@@ -784,7 +865,7 @@ class FlashMatchController extends Controller {
 
                 $teamb_obj->team_id   =  $teamb->team_id;
                 $teamb_obj->player_id =  $squads->player_id;
-                $teamb_obj->role      =  $squads->role;
+                $teamb_obj->role      =  strtolower($squads->role);
                 $teamb_obj->role_str  =  $squads->role_str;
                 $teamb_obj->playing11 =  $squads->playing11;
                 $teamb_obj->name      =  $squads->name;
@@ -819,7 +900,7 @@ class FlashMatchController extends Controller {
                 $data_set->save();
             }
             // update player in updatepoint table
-
+            
             foreach ($data->response->players as $pkey => $pvalue)
             {
                 $data_mp =  MatchPoint::firstOrNew(
@@ -831,7 +912,7 @@ class FlashMatchController extends Controller {
                 if($data_mp->short_name==null){
                     $data_mp->match_id  =  $match_id;
                     $data_mp->pid = $pvalue->pid; 
-                    $data_mp->role = $pvalue->playing_role; 
+                    $data_mp->role = strtolower($pvalue->playing_role); 
                     $data_mp->name = $pvalue->short_name; 
                     $data_mp->rating = $pvalue->fantasy_player_rating;
                 
