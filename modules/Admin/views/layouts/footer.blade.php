@@ -1,7 +1,7 @@
 <!-- END CONTAINER -->
         <!-- BEGIN FOOTER -->
         <div class="page-footer">
-            <div class="page-footer-inner"> 2020 &copy; Sportsfight
+            <div class="page-footer-inner"> 2020 &copy; admin panel
 
             </div>
             <div class="scroll-to-top">
@@ -118,6 +118,28 @@
       <script type="text/javascript">
           $(".form_datetime_start").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
           $(".form_datetime_end").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+
+
+          $(".s_date").datepicker({format: 'yyyy-mm-dd',autoclose: true});
+          $(".e_date").datepicker({format: 'yyyy-mm-dd',autoclose: true});
+
+
+       $(".s_date").datepicker({
+        todayBtn:  1,
+        autoclose: true,
+        format: 'yyyy-mm-dd'
+      }).on('changeDate', function (selected) {
+          var minDate = new Date(selected.date.valueOf());
+          $('.e_date').datepicker('setStartDate', minDate);
+      });
+          
+      $(".e_date").datepicker()
+        .on('changeDate', function (selected) {
+            var maxDate = new Date(selected.date.valueOf());
+            $('.s_date').datepicker('setEndDate', maxDate);
+      });
+
+
 
        $(".form_datetime_start").datetimepicker({
         todayBtn:  1,

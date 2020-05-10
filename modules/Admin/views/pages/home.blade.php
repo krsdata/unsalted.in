@@ -136,7 +136,8 @@
                               <button class="btn btn-danger" onclick="deleteAll('{{url('admin')}}','pages')">Delete All</button>
                          @endif
                          
-                         <div class="center" align="center">  {!! $page->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
+                         <div class="center" align="center">  {!! $page->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}
+                         </div>
                     </div>
                 </div>
                 <!-- END EXAMPLE TABLE PORTLET-->

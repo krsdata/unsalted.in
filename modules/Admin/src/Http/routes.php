@@ -41,6 +41,13 @@
             ]
         );
 
+        Route::match(['get','post'],'admin/oldMatch', 
+            [ 
+                'as' => 'oldMatch', 
+                'uses' => 'Modules\Admin\Http\Controllers\FlashMatchController@oldMatch'
+            ]
+        );
+
         Route::match(['get','post'],'admin/bankAccount', 
             [ 
                 'as' => 'bankAccount', 

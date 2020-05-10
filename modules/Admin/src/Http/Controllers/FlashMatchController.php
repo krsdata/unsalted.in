@@ -34,7 +34,7 @@ use App\Models\MatchPoint;
 use App\Models\MatchStat;
 use App\Models\ReferralCode;
 use File;
-
+use Modules\Admin\Models\TempMatch;
 /**
  * Class MenuController
  */
@@ -58,7 +58,7 @@ class FlashMatchController extends Controller {
         View::share('route_url',route('flashMatch'));
         $this->token =  env('CRIC_API_KEY')??'7f7c1c8df02f5f8c25a405fbbc7d59cf'; 
         
-        $this->record_per_page = Config::get('app.record_per_page');
+        $this->record_per_page = 10;// Config::get('app.record_per_page');
         
     } 
     /*
@@ -699,18 +699,169 @@ class FlashMatchController extends Controller {
         }    
     }
 
+    public function oldMatch(TempMatch $match, Request $request) 
+    {  
+        $page_title = 'TempMatch';
+        $sub_page_title = 'View TempMatch';
+        $page_action = 'View TempMatch'; 
+
+        if($request->match_id && (($request->date_start && $request->date_end) || $request->status)){
+            if($request->date_end && $request->date_start){
+                $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
+                ->setTimezone('UTC')
+                ->format('Y-m-d H:i');
+
+                $date_end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $request->date_end)
+                    ->setTimezone('UTC')
+                    ->format('Y-m-d H:i'); 
+                $timestamp_start = strtotime($date_start);
+                $timestamp_end   = strtotime($date_end);
+            }
+            
+
+            $status = $request->status;
+            if($status==1){
+                $status_str = "Upcoming";
+            }elseif($status==2){
+                $status_str = "Completed";
+            }elseif($status==3){
+                $status_str = "Live";
+            }else{
+                //$status_str = "Cancelled";
+            }
+            if($request->match_id && $request->date_end && $request->date_start && $request->change_date){
+                $data =   [
+                                'timestamp_start' => $timestamp_start,
+                                'timestamp_end' => $timestamp_end,
+                                'date_start'  => $date_start,
+                                'date_end'  => $date_end 
+                          ];  
+            }
+
+            if($request->match_id && $request->status && $request->change_status){
+                $data =    [
+                            'status'  => $request->status,
+                            'status_str' => $status_str
+                        ];   
+            }
+            
+        //    \DB::table('matches')->where('match_id',$request->match_id)
+                //        ->update($data);
+
+                     
+          //  return Redirect::to(route('match'))->with('flash_alert_notice', 'Match updated successfully!');  
+
+        }
+
+        // Search by name ,email and group
+        $search = Input::get('search');
+        $status = Input::get('status');
+        if ((isset($search) || isset($status))) {
+             
+            $search = isset($search) ? Input::get('search') : '';
+               
+            $match = TempMatch::where(function($query) use($search,$status) {    
+                        if (!empty($status)) {
+                            $query->Where('status', '=', $status);
+                            if($status==1){
+                                $query->where('timestamp_start','>=',time());
+                            }
+                             if($status==2){
+                                $query->orderBy('timestamp_start','DESC');
+                            }
+                        }
+                        if (!empty($search)) {
+                            $query->orWhere('title', 'LIKE', "%$search%");
+                        }
+                        if (!empty($search)) {
+                            $query->orWhere('match_id', 'LIKE', "%$search%");
+                        }
+                        if (!empty($search)) {
+                            $query->orWhere('short_title', 'LIKE', "%$search%");
+                        } 
+                    })->orderBy('updated_at','DESC')->Paginate($this->record_per_page); 
+             
+        } else {
+            $match = TempMatch::orderBy('updated_at','DESC')->Paginate($this->record_per_page);
+        } 
+
+        $total_match = TempMatch::count();
+
+        return view('packages::flashMatch.tempMatch', compact('match','page_title', 'page_action','sub_page_title','total_match'));
+
+    }
     //upate match from api 
 
     public function updateMatchDataByStatus(Request  $request)
     {   
         $status     = $request->status??2;
         $token      = $this->token;
-        $per_page   = $request->per_page??10;
-        $date       = $request->date; // 2019-03-23_2019-05-12
+        $per_page   = $request->record_per_page??10;
+        $date       = date('Y-m-d'); // 2019-03-23_2019-05-12 
+
+        if($request->date_start && $request->date_end){
+
+            $date_start = \Carbon\Carbon::parse($request->date_start)->setTimezone('UTC')->format('Y-m-d');
+            $date_end = \Carbon\Carbon::parse($request->date_end)->setTimezone('UTC')->format('Y-m-d');
+
+            $date   = $date_start.'_'.$date_end; 
+        }  
         $paged      = $request->paged??1;
         $format     = $request->format??6;
 
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$token.'&per_page='.$per_page.'&date='.$date.'&format='.$format.'&paged='.$paged);
+        
+     //   echo 'https://rest.entitysport.com/v2/matches/?status='.$status.'&token='.$token.'&per_page='.$per_page.'&date='.$date.'&format='.$format.'&paged='.$paged;
+        $page_title = 'Match';
+        $sub_page_title = 'View Match';
+        $page_action = 'View Match'; 
+        $match = json_decode($data);
+
+        if(!isset($match->response->items)){
+            return Redirect::to('admin/oldMatch');
+        }
+
+        $match = $match->response->items;
+
+        
+
+        foreach ($match as $key => $results) {
+
+            $tm = TempMatch::where(
+                [
+                    'match_id'=>$results->match_id
+                ]
+            )->first();
+
+            if($tm){
+
+            }else{
+              $tm =  new TempMatch;  
+            }
+
+            foreach ($results as $key => $result) {
+                if($key=='competition'){ 
+                    $tm->competition_id = json_encode((array)$result);
+                }elseif($key=='teama'){
+                    $tm->teama_id =json_encode((array)$result);
+                }
+                elseif($key=='teamb'){
+                    $tm->teamb_id = json_encode((array)$result);
+                }
+                elseif($key=='venue'){
+                    $tm->venue_id = json_encode((array)$result);
+                }elseif($key=='toss'){
+                    $tm->toss_id = json_encode((array)$result);
+                }
+                else{
+                    $tm->$key = $result;
+                }
+            } 
+            $tm->save();  
+        }
+       return Redirect::to('admin/oldMatch');
+         
+
         
         $rs = $this->saveMatchDataFromAPI($data);
 
@@ -900,7 +1051,7 @@ class FlashMatchController extends Controller {
                 $data_set->save();
             }
             // update player in updatepoint table
-            
+
             foreach ($data->response->players as $pkey => $pvalue)
             {
                 $data_mp =  MatchPoint::firstOrNew(
