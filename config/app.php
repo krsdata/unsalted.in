@@ -2,7 +2,7 @@
 
 return [
 
-    'record_per_page' => env('record_per_page', 15),
+    'record_per_page' => env('record_per_page', 10),
 
     'cricket_api_key' => env('cricket_api_key', '7f7c1c8df02f5f8c25a405fbbc7d59cf'),
     /*

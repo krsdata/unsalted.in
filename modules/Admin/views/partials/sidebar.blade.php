@@ -4,11 +4,34 @@
     $route  =   Route::currentRouteName();
 
 ?>
+<style type="text/css">
+    
+.scrollbar
+{
+     
+    float: left; 
+    overflow-y: scroll;
+    overflow-x: hidden; 
+}
+#scroll_bar::-webkit-scrollbar-thumb
+{
+    background-color: red;
+    border-radius: 10px;
+    background-image: -webkit-linear-gradient(0deg,
+                                              rgba(255, 255, 255, 0.5) 25%,
+                                              transparent 25%,
+                                              transparent 50%,
+                                              rgba(255, 255, 255, 0.5) 50%,
+                                              rgba(255, 255, 255, 0.5) 75%,
+                                              transparent 75%,
+                                              transparent)
+}
+</style>
 
 <div class="page-container">
  <div class="page-sidebar-wrapper">
                 <!-- BEGIN SIDEBAR -->
-        <div class="page-sidebar navbar-collapse collapse">
+        <div id="scroll_bar" class="page-sidebar scrollbar navbar-collapse collapse" style="overflow-y: scroll !important; max-height: 650px !important ">
 
             <ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
                 <li class="nav-item start active open">

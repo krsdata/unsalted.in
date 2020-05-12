@@ -18,7 +18,7 @@
         <link href="{{ URL::asset('assets/global/plugins/simple-line-icons/simple-line-icons.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ URL::asset('assets/global/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-        
+
         <link href="{{ URL::asset('assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css') }}" rel="stylesheet" type="text/css" />
          <link href="{{ URL::asset('assets/global/plugins/ladda/ladda-themeless.min.css') }}" rel="stylesheet" type="text/css" />
         <!-- END GLOBAL MANDATORY STYLES -->
@@ -50,26 +50,26 @@
         <link href="{{ URL::asset('assets/pages/css/profile.min.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{ URL::asset('assets/css/bootstrap-datetimepicker.min.css')}}" rel="stylesheet" type="text/css" />
         
-        
-
-
-              <!--AngularJS-->
-
-       <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular.min.js"></script> -->
-       <!-- <script src="{{ URL::asset('assets/js/angular.js')}}"></script> -->
-       <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-datepicker/2.1.23/angular-datepicker.css"> -->
-      <!-- <script src="path/to/angular.js"></script> -->
-      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-datepicker/2.1.23/angular-datepicker.js"></script>
-      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
-
-        <!-- <script src="{{ URL::asset('assets/js/app.js')}}"></script> -->
-
-
 
         <style type="text/css">
             span.title{
                 font-weight: 700;
+            }
+            div.page-sidebar {
+                height: 600px !important ;
+                overflow-y: scroll !important;
+            }
+            body{
+                  overflow-y: hidden !important; 
+                    overflow-x: scroll !important;
+                overflow-x: auto !important;
+            }
+            .portlet {
+                 height: 600px !important ;
+                overflow-y: scroll !important;
+                    overflow-x: scroll !important;
+                  overflow-x: auto !important;
+                
             }
         </style>
     </head>
