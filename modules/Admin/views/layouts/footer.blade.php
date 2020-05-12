@@ -1,6 +1,6 @@
 <!-- END CONTAINER -->
         <!-- BEGIN FOOTER -->
-       <!--  <div class="page-footer">
+        <div class="page-footer">
             <div class="page-footer-inner"> 2020 &copy; admin panel
 
             </div>
@@ -8,7 +8,7 @@
                 <i class="icon-arrow-up"></i>
             </div>
         </div>
- -->
+
 
         <!-- END QUICK NAV -->
 

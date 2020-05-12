@@ -15,7 +15,7 @@ use Illuminate\Http\Dispatcher;
 use App\Helpers\Helper;
 use Modules\Admin\Models\Roles;
 use Modules\Admin\Models\Menu;
-use Modules\Admin\Models\EditorPortfolio;
+use App\Models\Matches as Match;
 use Modules\Admin\Models\UpdatePlayerPoints;
 
 /**
@@ -72,16 +72,33 @@ class UpdatePlayerPointsController extends Controller {
 
             $updatePlayerPoints = UpdatePlayerPoints::where(function($query) use($search,$status) {
                         if (!empty($search)) {
-                             $query->Where('match_id', 'LIKE', $search);
+                             $query->Where('match_id', $search);
+                        }
+                        if (!empty($search)) {
+                             $query->orWhere('pid', $search);
                         }
 
                     })->Paginate($this->record_per_page);
+            $updatePlayerPoints->transform(function($item,$key){
+                $match =  Match::where('match_id',$item->match_id)->first();
+
+                $item->match_title = $match->title;
+                return $item; 
+            });
         } else {
             $updatePlayerPoints = UpdatePlayerPoints::Paginate($this->record_per_page);
+            $updatePlayerPoints->transform(function($item,$key){
+                $match =  Match::where('match_id',$item->match_id)->first();
+
+                $item->match_title = $match->title;
+                return $item; 
+            });
         }
+        
         $table_cname = \Schema::getColumnListing('match_player_points');
-        $except = ['id','created_at','updated_at'];
+        $except = ['id','created_at','updated_at','er','thirty','bonus'];
         $data = [];
+        $tables[] = 'match_title';
         foreach ($table_cname as $key => $value) {
 
            if(in_array($value, $except )){

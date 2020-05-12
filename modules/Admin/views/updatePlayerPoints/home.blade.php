@@ -44,7 +44,7 @@
                                             <form action="{{route('updatePlayerPoints')}}" method="get" id="filter_data">
                                              
                                             <div class="col-md-3">
-                                                <input value="{{ (isset($_REQUEST['search']))?$_REQUEST['search']:''}}" placeholder="Search by  Match Id" type="text" name="search" id="search" class="form-control" >
+                                                <input value="{{ (isset($_REQUEST['search']))?$_REQUEST['search']:''}}" placeholder="Search by  Match Id or PID" type="text" name="search" id="search" class="form-control" >
                                             </div>
                                             <div class="col-md-2">
                                                 <input type="submit" value="Search" class="btn btn-primary form-control">
@@ -62,7 +62,11 @@
                                         <thead>
                                             <tr>
                                            @foreach($tables as $col_name)
-                                                <th> {{$col_name}}</th> 
+                                           <th>
+
+                            {{  \Str::replaceFirst('_'," ",ucfirst($col_name)) }}
+                             
+                                                </th> 
                                             @endforeach
                                             <th>Action</th>
                                             </tr>
@@ -70,9 +74,21 @@
                                         <tbody>
             @foreach($updatePlayerPoints as $key => $result)
                 <tr>
+                     
+
                     @foreach($tables as $col_name)
-                           <td>  {{$result->$col_name}} </td>
+                           <td>  {{$result->$col_name}} 
+
+                            @if($col_name=='pid')
+                             <a href="{{ route('updatePlayerPoints.edit',$result->id)}}">
+                        
+                            <i class="fa fa-fw fa-edit" title="edit"></i> 
+                           
+                        </a>
+                            @endif
+                           </td>
                     @endforeach
+                   
                         
                     <td> 
                         <a href="{{ route('updatePlayerPoints.edit',$result->id)}}">
