@@ -4,6 +4,7 @@
              <div class="page-content-wrapper">
                 <!-- BEGIN CONTENT BODY -->
                 <div class="page-content">
+
                     <!-- BEGIN PAGE HEAD-->
                     
                     <!-- END PAGE HEAD-->
@@ -57,10 +58,12 @@
                                        
                                         </div>
                                     </div>
-                                     
-                                    <table class="table table-striped table-hover table-bordered" id="">
+                                     <div class="" id="update_msg"></div>
+                                    <table class="table table-striped table-hover table-bordered" id="editable">
                                         <thead>
                                             <tr>
+                                        <th style="display: none;">#</th>
+
                                            @foreach($tables as $col_name)
                                            <th>
 
@@ -73,17 +76,13 @@
                                         </thead>
                                         <tbody>
             @foreach($updatePlayerPoints as $key => $result)
-                <tr>
-                     
-
+                <tr> 
+                     <td class="tabledit-view-mode" style="display: hidden">{{$result->id}}</td>
                     @foreach($tables as $col_name)
-                           <td>  {{$result->$col_name}} 
-
+                           <td class="tabledit-view-mode">{!!$result->$col_name!!}
                             @if($col_name=='pid')
                              <a href="{{ route('updatePlayerPoints.edit',$result->id)}}">
-                        
-                            <i class="fa fa-fw fa-edit" title="edit"></i> 
-                           
+                            <i class="fa fa-fw fa-edit" title="edit"></i>
                         </a>
                             @endif
                            </td>
@@ -91,13 +90,13 @@
                    
                         
                     <td> 
-                        <a href="{{ route('updatePlayerPoints.edit',$result->id)}}">
+                       <!--  <a href="{{ route('updatePlayerPoints.edit',$result->id)}}">
                             <button class="btn btn-success btn-xs">
                             <i class="fa fa-fw fa-edit" title="edit"></i> 
                             </button>
                         </a>
  
-                        <hr>
+                        <hr> -->
                         {!! Form::open(array('class' => 'form-inline pull-left deletion-form', 'method' => 'DELETE',  'id'=>'deleteForm_'.$result->id, 'route' => array('updatePlayerPoints.destroy', $result->id))) !!}
                         <button class='delbtn btn btn-danger btn-xs' type="submit" name="remove_levels" value="delete" id="{{$result->id}}"><i class="fa fa-fw fa-trash" title="Delete"></i></button>
                         
@@ -125,3 +124,67 @@
             <!-- END QUICK SIDEBAR -->
         </div>
         
+
+
+
+
+<style type="text/css">
+     .mt-100 {
+     margin-top: 100px
+ }
+
+ .container-fluid {
+     margin-top: 50px
+ }
+
+ body {
+     background-color: #f2f7fb
+ }
+
+ .card {
+     border-radius: 5px;
+     -webkit-box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1), 0 11px 6px -7px rgba(43, 43, 43, 0.1);
+     box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1), 0 11px 6px -7px rgba(43, 43, 43, 0.1);
+     border: none;
+     margin-bottom: 30px;
+     -webkit-transition: all 0.3s ease-in-out;
+     transition: all 0.3s ease-in-out
+ }
+
+ .card .card-header {
+     background-color: transparent;
+     border-bottom: none;
+     position: relative
+ }
+
+ .card .card-block {
+ }
+
+ .table-responsive {
+     display: inline-block;
+     width: 100%;
+     overflow-x: auto
+ }
+
+ .card .card-block table tr {
+     padding-bottom: 20px
+ }
+
+ .table>thead>tr>th {
+     border-bottom-color: #ccc
+ }
+
+ .table2 th {
+     padding: 1.25rem 0.75rem
+ }
+
+ td,
+ th {
+     white-space: nowrap
+ }
+
+ .tabledit-input:disabled {
+     display: none
+ }
+
+</style>

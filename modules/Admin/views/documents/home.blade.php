@@ -60,8 +60,9 @@
                                                 <th> Document Numebr</th> 
                                                 <th> Image </th> 
                                                 <th> Status </th> 
+                                                <th>Action</th>
                                                 <th>Created date</th> 
-                                                <th>Action</th> 
+                                               <!--  <th>Action</th>  -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -72,25 +73,94 @@
                                                 <td>  
                                                     @if(isset($result->user))
                                                     {{$result->user->first_name}}
-                                                     | {{
+                                                     <!-- | {{
                                                     $result->user->email
-                                                }} 
+                                                }}  -->
                                                 @endif
                                             </td>  
                                                 <td>  {{$result->doc_type}} </td> 
                                                  <td>  {{$result->doc_number}} </td> 
                                                 <td>
                                                   @if($result->doc_type=='adharcard')
-                                                <a href="{{  $result->doc_url_front }}" target="_blank" >
-                                                <img src="{{ $result->doc_url_front }}" width="100px" height="50px;"> </a>  
+                                                
+                                                <img src="{{ $result->doc_url_front }}" width="100px" height="50px;"  data-toggle="modal" data-target="#doc_url_front_{{$result->id}}">  
 
-                                                  <a href="{{  $result->doc_url_back }}" target="_blank" >
-                                                  <img src="{{ $result->doc_url_back }}" width="100px" height="50px;"> </a>
+
+                                                 <!-- Modal -->
+  <div class="modal fade" id="doc_url_front_{{$result->id}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{$result->doc_type}}</h4>
+        </div>
+        <div class="modal-body">
+          <img src="{{ $result->doc_url_back }}" width="100%" height="500px" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+                                                   
+                                                  <img src="{{ $result->doc_url_back }}" width="100px" height="50px;" data-toggle="modal" data-target="#doc_url_back_{{$result->id}}">  
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="doc_url_back_{{$result->id}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{$result->doc_type}}</h4>
+        </div>
+        <div class="modal-body">
+          <img src="{{ $result->doc_url_back }}" width="100%" height="500px" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
 
                                                 @else
                                                   @if($result->doc_type=='pancard')
-                                                 <a href="{{  $result->doc_url_front }}" target="_blank" >
-                                                <img src="{{ $result->doc_url_front }}" width="100px" height="50px;"> </a> 
+                                                 
+  <img src="{{ $result->doc_url_front }}" width="100px" height="50px;" data-toggle="modal" data-target="#doc_url_front{{$result->id}}">  
+                                                  <!-- Modal -->
+  <div class="modal fade" id="doc_url_front{{$result->id}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">{{$result->doc_type}}</h4>
+        </div>
+        <div class="modal-body">
+          <img src="{{ $result->doc_url_front }}" width="100%" height="500px" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
                                                   @else
                                                     NA
                                                   @endif
@@ -98,21 +168,29 @@
                                                 @endif
 
                                                 </td>
-                                                <td> <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="getCategory('{{$result->id}}')" >Approve</button>
+                                                <td> 
+                                                  @if($result->status==1) Approved
+                                                  @elseif($result->status==2) Rejected
+                                                  @else
+                                                  Pending
+                                                  @endif 
+
+                                                 </td>
+                                                 <td>
+                                                  <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="getCategory('{{$result->id}}','{{$result->status}}')" >Approve</button>
                                                     
-                                                    @if($result->status)
+                                                    @if($result->status==1)
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                     @endif
                                                     <ion-icon name="close-circle-outline"></ion-icon>
-
-                                                 </td>
+                                                  </td>
                                                 <td>
                                                         {!! Carbon\Carbon::parse($result->created_at)->format('d-m-Y'); !!}
                                                 </td>
                                                     
                                                 <td>  
                                                         {!! Form::open(array('class' => 'form-inline pull-left deletion-form', 'method' => 'DELETE',  'id'=>'deleteForm_'.$result->id, 'route' => array('documents.destroy', $result->id))) !!}
-                                                        <button class='delbtn btn btn-danger btn-xs' type="submit" name="remove_levels" value="delete" id="{{$result->id}}"><i class="fa fa-fw fa-trash" title="Delete"></i></button>
+                                                       <!--  <button class='delbtn btn btn-danger btn-xs' type="submit" name="remove_levels" value="delete" id="{{$result->id}}"><i class="fa fa-fw fa-trash" title="Delete"></i></button> -->
                                                         
                                                          {!! Form::close() !!}
 
@@ -148,9 +226,20 @@
         <h4 class="modal-title">Are you sure want to approve?</h4>
       </div>
       <form method="post">
-      <div class="modal-body">
-        <input type="hidden" name="doc_id" value="" id="doc_id"> 
-         <p> Verification Status : <b> Approved </b></p>    
+      <div class="modal-body">   
+        <div class="form-group">
+          <input type="hidden" name="doc_id" id="doc_id">
+            <label for="sel1">Select Status:</label>
+        <select class="form-control" id="document_status" name="document_status">
+          <option value="0">Select Status</option>
+          <option value="1">Approved</option>
+          <option value="2">Rejected</option> 
+        </select>
+      </div>
+      <div class="form-group">
+      <label for="comment">Note:</label>
+      <textarea class="form-control" rows="5" id="notes" name="notes"></textarea>
+    </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -160,11 +249,13 @@
     </div>
   </div>
 </div>
-
+notes
 
 <script type="text/javascript">
     
-    function getCategory(doc_id) {
-        document.getElementById("doc_id").value  = doc_id; 
+    function getCategory(doc_id,status) {
+        document.getElementById("doc_id").value  = doc_id;
+        var doc_id = $("#document_status option[value='"+status+"']").attr("selected","selected");
+
     }
 </script>

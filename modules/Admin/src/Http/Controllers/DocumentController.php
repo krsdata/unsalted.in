@@ -54,7 +54,7 @@ class DocumentController extends Controller
         $page_title     = 'Document';
         $sub_page_title = 'Document';
         $page_action    = 'View Bank Accounts'; 
- 
+
         
         // Search by name ,email and  
         $search = Input::get('search'); 
@@ -65,7 +65,7 @@ class DocumentController extends Controller
         
         if ((isset($search) && !empty($search))) {
 
-            $documents = BankAccounts::with('user')->where(function ($query) use ($search,$user) {
+            $documents = BankAccounts::whereHas('user')->where(function ($query) use ($search,$user) {
                 if (!empty($search) && $user->count()) {
                     
                    $query->whereIn('user_id', $user);
@@ -77,11 +77,11 @@ class DocumentController extends Controller
                 }
             })->orderBy('id','desc')->Paginate($this->record_per_page);
         } else {
-            $documents = BankAccounts::with('user')
+            $documents = BankAccounts::whereHas('user')
                         ->orderBy('id','desc')
                         ->Paginate($this->record_per_page);
         }
-       
+        
         return view('packages::documents.bank', compact('documents', 'page_title', 'page_action', 'sub_page_title'));
     }
 
@@ -126,13 +126,27 @@ class DocumentController extends Controller
      * Save   method
      * */
     public function store(Request $request, Document $documents)
-    {
-        $doc_id = $request->get('doc_id');
-        $documents =  Document::where('id',$doc_id)->first();
-        $documents->status = 1;
-        $documents->save(); 
-        return Redirect::to(route('documents'))
-                            ->with('flash_alert_notice', 'Documents Approved successfully   !');
+    { 
+         
+        if($request->bank_doc_id){
+            $documents = BankAccounts::where('id',$request->bank_doc_id)->first();
+            $return_url = 'admin/bankAccount';
+            $msg = 'Bank Account status  successfully  updated!';
+        }
+        elseif($request->doc_id){
+            $documents =  Document::where('id',$request->doc_id)->first();
+             $return_url = route('documents');
+             $msg = 'Document status  successfully  updated!';
+        }
+
+        if($documents && $request->document_status){
+            $documents->status  = $request->document_status;
+            $documents->notes   = $request->notes;
+            $documents->save(); 
+        }
+
+        return Redirect::to($return_url)
+                            ->with('flash_alert_notice', $msg);
     }
     /*
      * Edit   method

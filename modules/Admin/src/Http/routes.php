@@ -1,5 +1,7 @@
 <?php
 
+    Route::match(['get','post'],'admin/updatePoint', 'Modules\Admin\Http\Controllers\UpdatePlayerPointsController@updatePoint');
+
     Route::get('admin/forgot-password', 'Modules\Admin\Http\Controllers\AuthController@forgetPassword');
     Route::post('password/email', 'Modules\Admin\Http\Controllers\AuthController@sendResetPasswordLink');
     Route::get('admin/password/reset', 'Modules\Admin\Http\Controllers\AuthController@resetPassword');
@@ -75,6 +77,8 @@
                     ]
         );
 
+        
+
         Route::bind('updatePlayerPoints', function ($value, $route) {
             return Modules\Admin\Models\UpdatePlayerPoints::find($value);
         });
@@ -114,7 +118,7 @@
         );
         // Prize distribution
         Route::bind('prizeDistribution', function ($value, $route) {
-            return Modules\Admin\Models\UpdatePlayerPoints::find($value);
+            return Modules\Admin\Models\PrizeDistribution::find($value);
         });
         Route::resource(
             'admin/prizeDistribution',

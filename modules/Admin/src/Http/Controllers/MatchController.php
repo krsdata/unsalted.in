@@ -108,6 +108,12 @@ class MatchController extends Controller {
                     ->format('Y-m-d H:i'); 
                 $timestamp_start = strtotime($date_start);
                 $timestamp_end   = strtotime($date_end);
+
+                if($timestamp_start > $timestamp_end) {
+
+                    return Redirect::to(route('match'))->with('End date should not be greater than start date');  
+                }
+
             }
             
 

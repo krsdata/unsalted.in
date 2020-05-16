@@ -66,7 +66,11 @@ Route::group([
     'prefix' => 'v2'
 ], function()
 {   
-    
+    Route::match(['get','post'], 'verification', [
+        'as' => 'verification',
+        'uses' => 'Api\ApiController@verification'
+    ]);
+
     Route::match(['get','post'], 'playerAnalytics', [
         'as' => 'playerAnalytics',
         'uses' => 'Api\ApiController@playerAnalytics'

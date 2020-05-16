@@ -61,6 +61,7 @@
                                                 <th> Account Number </th>
                                                 <th> IFSC Code </th> 
                                                 <th> Passbook Url </th>
+                                                <th> Status </th>  
                                                 <th> Action </th>  
                                                 <th>Created Date</th>  
                                             </tr>
@@ -74,7 +75,7 @@
                                                    Name: {{$result->user->first_name??''}} </br>
                                                    Email:   {{
                                                     $result->user->email??''
-                                                }},<br>
+                                                }}<br>
                                                 Phone:   {{
                                                     $result->user->phone??''
                                                 }}
@@ -95,15 +96,45 @@
                                                    
                                                   <td>
                                                  @if($result->bank_passbook_url)   
-                                                <a href="{{  $result->bank_passbook_url }}" target="_blank" >
-                                                <img src="{{ $result->bank_passbook_url }}" width="100px" height="50px;"> </a>
+                                               
+                                                <img src="{{ $result->bank_passbook_url }}" width="100px" height="50px;" data-toggle="modal" data-target="#bank_passbook_url{{$result->id}}">   
+
+<div class="modal fade" id="bank_passbook_url{{$result->id}}" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Passbook/Chequebook</h4>
+        </div>
+        <div class="modal-body">
+          <img src="{{ $result->bank_passbook_url }}" width="100%" height="500px" >
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
                                                  @else
                                                  NA
                                                  @endif   
                                                   </td>
-                                                <td> <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="getCategory('{{$result->id}}')" >Approve</button>
-                                                    
-                                                    @if($result->status)
+                                                    <td> 
+                                                  @if($result->status==1) Approved
+                                                  @elseif($result->status==2) Rejected
+                                                  @else
+                                                  Pending
+                                                  @endif 
+
+                                                 </td>
+                                                <td> 
+<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="getCategory('{{$result->id}}','{{$result->status}}')" >Approve</button>
+
+                                                    @if($result->status==1)
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                     @endif
                                                  </td>
@@ -132,7 +163,12 @@
             <!-- END QUICK SIDEBAR -->
         </div>
         
-        <!-- Modal -->
+ 
+
+
+
+
+       <!-- Modal -->
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -141,10 +177,21 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">Are you sure want to approve?</h4>
       </div>
-      <form method="post">
-      <div class="modal-body">
-        <input type="hidden" name="bank_doc_id" value="" id="bank_doc_id"> 
-         <p> Verification Status : <b> Approved </b></p>    
+      <form method="post" action="{{route('documents.store')}}">
+      <div class="modal-body">   
+        <div class="form-group">
+          <input type="hidden" name="bank_doc_id" id="bank_doc_id">
+            <label for="sel1">Select Status:</label>
+        <select class="form-control" id="document_status" name="document_status">
+          <option value="0">Select Status</option>
+          <option value="1">Approved</option>
+          <option value="2">Rejected</option> 
+        </select>
+      </div>
+      <div class="form-group">
+      <label for="comment">Note:</label>
+      <textarea class="form-control" rows="5" id="notes" name="notes"></textarea>
+    </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -153,12 +200,13 @@
       </form>
     </div>
   </div>
-</div>
-
+</div> 
+ 
 
 <script type="text/javascript">
     
-    function getCategory(bank_doc_id) {
+    function getCategory(bank_doc_id,status) {
         document.getElementById("bank_doc_id").value  = bank_doc_id; 
+         var doc_id = $("#document_status option[value='"+status+"']").attr("selected","selected");
     }
 </script>

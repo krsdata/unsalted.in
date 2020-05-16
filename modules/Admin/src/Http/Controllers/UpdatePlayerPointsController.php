@@ -42,6 +42,16 @@ class UpdatePlayerPointsController extends Controller {
         $this->record_per_page = Config::get('app.record_per_page');
     }
 
+    public function updatePoint(Request $request){
+        $data = [];
+        $pp = UpdatePlayerPoints::find($request->id);
+        foreach ($request->except('action','id') as $key => $value) {
+           $pp->$key = $value; 
+           $data[] = $key;
+        }
+        $pp->save();
+        return $data;
+    }
 
     /*
      * Dashboard
@@ -98,16 +108,24 @@ class UpdatePlayerPointsController extends Controller {
         $table_cname = \Schema::getColumnListing('match_player_points');
         $except = ['id','created_at','updated_at','er','thirty','bonus'];
         $data = [];
-        $tables[] = 'match_title';
+        $tables[]  = 'match_title';
+       // $editable[1] = [1,$value];    
+        //$editable[] = [0,'id'];
+         $i=2; 
         foreach ($table_cname as $key => $value) {
 
            if(in_array($value, $except )){
                 continue;
-           }
-             $tables[] = $value;
-        }
-
-        return view('packages::updatePlayerPoints.index', compact('updatePlayerPoints', 'page_title', 'page_action','sub_page_title','tables'));
+           } 
+             
+             $tables[]   = $value;  
+             $editable[] = [$i,$value];
+              $i++;
+              
+        }   
+        $editable = json_encode($editable);
+       // dd( $editable);
+        return view('packages::updatePlayerPoints.index', compact('updatePlayerPoints', 'page_title', 'page_action','sub_page_title','tables','editable'));
     }
 
     /*

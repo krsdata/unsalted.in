@@ -3590,4 +3590,66 @@ class ApiController extends BaseController
 
         \DB::table('match_contents')->insert($data);
     }
+    public function verification(Request $request){    
+        $user = User::find($request->user_id);
+
+      
+        if($user){
+           $verify_documents =  \DB::table('verify_documents')->where('user_id',$user->id)->get();
+           $bank_accounts =  \DB::table('bank_accounts')->where('user_id',$user->id)->first();
+           
+            foreach ($verify_documents as $key => $vd) {
+                $s = "Pending";
+
+                if($vd->status==1){
+                    $s="Approved";
+                }
+                elseif($vd->status==2){
+                    $s="Rejected";
+                } 
+
+                if($vd->doc_type=='paytm'){  
+                    $status['paytm'][] = [
+                    'status' =>  $s, 
+                    'message' => $vd->notes,
+                    'data' => $vd
+               ] ;
+
+                }else{
+                    $status['documents'][] = [
+                    'status' =>  $s,
+                    'message' => $vd->notes??'Upload valid '.$vd->doc_type,
+                    'data' => $vd
+               ] ;
+                } 
+            } 
+            $status['bank_accounts'][] = [
+                'status' =>  ($bank_accounts->status==1)?'Approved':($bank_accounts->status==2)?'Rejected':'Pending',
+
+                'message' => $bank_accounts->notes??'Bank Account Details Incorrect!',
+                 
+                'data' => $bank_accounts
+           ] ;
+
+            return response()->json(
+                [
+                    "status"=>true,
+                    "code"=>200,
+                    "message" => "verification status",
+                    "response" => $status
+                ]
+            );
+
+        }else{
+            return response()->json(
+                [
+                    "status"=>false,
+                    "code"=>201,
+                    "message" => "Verification is pending"
+                ]
+            );
+        }
+    }
+
+    
 }

@@ -75,6 +75,15 @@
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('flashMatch')}}">
                                     <i class="glyphicon glyphicon-th"></i>Flash Matches </a>
                     </div>
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('updatePlayerPoints')}}">
+                                    <i class="glyphicon glyphicon-th"></i>Player Points </a>
+                    </div>
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('wallets')}}">
+                                    <i class="glyphicon glyphicon-th"></i>User Wallets </a>
+                    </div>
                 </div>
                 <!-- END PAGE ACTIONS -->
                 <!-- BEGIN PAGE TOP -->

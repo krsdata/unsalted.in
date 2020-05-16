@@ -190,4 +190,29 @@
   }
 </style>
 
+
+ <script type="text/javascript" src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1567487539/jquery.tabledit.js"></script>
+<script type="text/javascript">
+    
+$(document).ready(function(){
+// example.php will be used to send the data to the sever database
+    
+     
+ $('#editable').Tabledit({
+        url: "{{url('admin/updatePoint')}}",
+        editButton: false,
+        deleteButton: false,
+        hideIdentifier: true,
+        columns: {
+        identifier: [0, 'id'],
+        editable: <?php echo $editable??null; ?>
+        },
+        onSuccess:function(response)  { $('#update_msg').html('<div class="alert alert-success">'+response[0]+ ' updated </div>'); },
+        onFail:function() {alert('something went wrong!'); },
+        onAjax:function() {  }
+
+        });
+    });
+</script>
+
 </html>

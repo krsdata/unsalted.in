@@ -88,7 +88,13 @@ class WalletsController extends Controller {
                     return $item; 
             });
         } else {
-            $wallets = Wallets::orderBy('user_id','DESC')->Paginate($this->record_per_page);
+            $wallets = Wallets::whereHas('user')
+                            ->distinct('user_id') 
+                            ->orderBy('id','DESC')
+                            ->Paginate($this->record_per_page);
+                                                    
+          //  dd($wallets);
+
             $wallets->transform(function($item,$key){
                   
                     $user = User::find($item->user_id);
@@ -105,7 +111,7 @@ class WalletsController extends Controller {
 
         $table_cname = \Schema::getColumnListing('wallets');
         
-        $except = ['validate_user','id','created_at','updated_at','usable_amount_validation','prize_distributed_id','payment_type','bonus_amount','referal_amount','prize_amount','deposit_amount','usable_amount','total_withdrawal_amount'];
+        $except = ['validate_user','id','created_at','updated_at','usable_amount_validation','prize_distributed_id','payment_type','bonus_amount','referal_amount','prize_amount','deposit_amount','usable_amount','total_withdrawal_amount','payment_type_string','user_id'];
         $data = [];
         $tables[] = 'name';
         $tables[] = 'email';
@@ -178,7 +184,7 @@ class WalletsController extends Controller {
      * */
 
     public function edit($id) {
-        $wallets = PrizeDistribution::find($id);
+        $wallets = Wallets::find($id);
         $page_title = 'Wallets';
         $page_action = 'Wallets';
 
