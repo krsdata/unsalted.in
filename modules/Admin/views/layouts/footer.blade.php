@@ -197,22 +197,26 @@
 $(document).ready(function(){
 // example.php will be used to send the data to the sever database
     
-     
- $('#editable').Tabledit({
+ 
+  if($('#editable').length){ 
+
+    $('#editable').Tabledit({
         url: "{{url('admin/updatePoint')}}",
         editButton: false,
         deleteButton: false,
         hideIdentifier: true,
         columns: {
         identifier: [0, 'id'],
-        editable: <?php echo $editable??null; ?>
+        editable:  <?php echo $editable??json_encode([1,'id']); ?>
         },
         onSuccess:function(response)  { $('#update_msg').html('<div class="alert alert-success">'+response[0]+ ' updated </div>'); },
         onFail:function() {alert('something went wrong!'); },
         onAjax:function() {  }
 
         });
-    });
+  }  
+
+});
 </script>
 
 </html>

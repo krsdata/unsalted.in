@@ -107,6 +107,10 @@ Route::group([
     // cron from backedn
     Route::match(['post','get'],'getMatchDataFromApiAdmin', 'Api\CronController@getMatchDataFromApi');
 
+    Route::match(['post','get'],'getPlayingMatchHistory', 'Api\ApiController@getPlayingMatchHistory');
+
+    Route::match(['post','get'],'captureScreenTime', 'Api\ApiController@captureScreenTime');
+
     Route::match(['post','get'],'getMatchHistory', 'Api\ApiController@getMatchHistory');
     Route::match(['post','get'],'updateMatchDataByStatusAdmin/{status}', 'Api\CronController@updateMatchDataByStatus');
     // system API

@@ -3082,10 +3082,26 @@ class ApiController extends BaseController
                                 $item->deposit_amount = $prize_amount->amount;
                             }
                         }
+
+                        $bank_account_verified = \DB::table('bank_accounts')
+                                                ->where('user_id',$item->user_id)
+                                                ->where('status',1)
+                                                ->count();
+                        $document_verified =  \DB::table('verify_documents')
+                                                ->where('user_id',$item->user_id)
+                                                ->where('status',1)
+                                                ->get()->count();
+
+                        $item->bank_account_verified =  $bank_account_verified;
+                        $item->document_verified = ($document_verified==3)?1:0;
+
+
                         $item->wallet_amount = $wallet_amount;
                         return $item;
 
                     });
+
+
 
         return response()->json(
             [
@@ -3590,10 +3606,100 @@ class ApiController extends BaseController
 
         \DB::table('match_contents')->insert($data);
     }
+
+    /*captureScreenTime*/
+    public function captureScreenTime(Request $request){
+        $user_id = $request->user_id;
+        $screen_name = $request->screen_name;
+
+        $start_time = date('Y-m-d h:i:s');
+        $end_time   = date('Y-m-d h:i:s');
+
+        $data['user_id']        =  $user_id;
+        $data['screen_name']    =  $screen_name??null;
+        $data['start_time']     =  $start_time;
+
+        $last_id = \DB::table('capture_screen_times')->insertGetId($data);
+        
+        $id =  \DB::table('capture_screen_times') //->where('id', '<=', $last_id)
+            ->orderBy('id', 'desc')
+            ->skip(1)
+            ->take(1)
+            ->first();
+        if($id){
+            \DB::table('capture_screen_times')
+                    ->where('id',$id->id)
+                    ->update(
+                        [
+                            'end_time'=>$end_time
+                        ]
+                    );    
+        }    
+        return response()->json(
+                [
+                    "status"=>true,
+                    "code"=>200,
+                    "message" => "Screen captured"
+                ]
+            );
+
+    }
+    /*Playing history*/
+    public function getPlayingMatchHistory(Request $request){
+
+        $user_id = $request->user_id;
+
+        $user = User::where('id',$user_id)->get('id as user_id');
+        $user->transform(function($item, $key){
+
+            $join_contest = JoinContest::where('user_id',$item->user_id);
+            $total_contest_joined = $join_contest->count();
+            $total_unique_contest = $join_contest->groupBy('contest_id')->count();
+            
+            $total_match_played = JoinContest::where('user_id',$item->user_id)
+                    ->select(\DB::raw('count(*)'))
+                    ->groupBy('match_id')->get()->count();
+            //->groupBy('created_team_id')
+            $total_team =  JoinContest::where('user_id',$item->user_id)
+                          //  ->select(\DB::raw('count(*)'))
+                            ->get()->count();
+
+            $total_match_win = $prize = \DB::table('prize_distributions')
+                        ->where('user_id',$item->user_id)
+                        ->where('prize_amount','>', 0)
+                        ->groupBy('match_id')    
+                        ->pluck('match_id')->count();
+
+            $item->total_team_joined    = $total_team;   
+            $item->total_match_played   = $total_match_played;
+            $item->total_contest_joined = $total_contest_joined;
+            $item->total_unique_contest = $total_unique_contest;
+            $item->total_match_win = $total_match_win;
+            return $item;  
+        });  
+        if(isset($user) && isset($user[0])){
+             return response()->json(
+                [
+                    "status"=>true,
+                    "code"=>200,
+                    "message" => "Record Found",
+                    "response" => $user[0]
+                ]
+            );
+        } else{
+            return response()->json(
+                [
+                    "status"=>false,
+                    "code"=>201,
+                    "message" => "No record found"
+                ]
+            );
+        } 
+    }
+
     public function verification(Request $request){    
         $user = User::find($request->user_id);
 
-      
         if($user){
            $verify_documents =  \DB::table('verify_documents')->where('user_id',$user->id)->get();
            $bank_accounts =  \DB::table('bank_accounts')->where('user_id',$user->id)->first();
@@ -3610,24 +3716,25 @@ class ApiController extends BaseController
 
                 if($vd->doc_type=='paytm'){  
                     $status['paytm'][] = [
-                    'status' =>  $s, 
-                    'message' => $vd->notes,
+                    'status' =>  $vd->status, 
+                    'message' => $s,
                     'data' => $vd
                ] ;
 
                 }else{
                     $status['documents'][] = [
-                    'status' =>  $s,
-                    'message' => $vd->notes??'Upload valid '.$vd->doc_type,
+                    'status' =>  $vd->status,
+                    'message' => $s,
                     'data' => $vd
                ] ;
                 } 
             } 
-            $status['bank_accounts'][] = [
-                'status' =>  ($bank_accounts->status==1)?'Approved':($bank_accounts->status==2)?'Rejected':'Pending',
 
-                'message' => $bank_accounts->notes??'Bank Account Details Incorrect!',
-                 
+            $s = ($bank_accounts->status==1)?'Approved':($bank_accounts->status==2)?'Rejected':'Pending';
+
+            $status['bank_accounts'][] = [
+                'status' =>  $bank_accounts->status,
+                'message' => $s,
                 'data' => $bank_accounts
            ] ;
 

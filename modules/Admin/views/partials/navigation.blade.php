@@ -49,27 +49,6 @@
                                     <i class="glyphicon glyphicon-th"></i> View Match </a> 
                     </div>
 
-                    <div class="btn-group"> 
-                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('defaultContest')}}">
-                                    <i class="glyphicon glyphicon-th"></i> Default Contest </a>
-                    </div>
-
-                     <div class="btn-group"> 
-                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('banner')}}">
-                                    <i class="glyphicon glyphicon-th"></i> Banner </a>
-                    </div>
-                    <div class="btn-group"> 
-                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('apkUpdate')}}">
-                                    <i class="glyphicon glyphicon-th"></i> Apk Update </a>
-                    </div>
-                     <div class="btn-group"> 
-                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('content')}}">
-                                    <i class="glyphicon glyphicon-th"></i> Static Page </a>
-                    </div>
-                     <div class="btn-group"> 
-                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('errorLog')}}">
-                                    <i class="glyphicon glyphicon-th"></i>Error Logs </a>
-                    </div>
 
                      <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('flashMatch')}}">
