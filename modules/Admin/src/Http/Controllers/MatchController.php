@@ -116,7 +116,6 @@ class MatchController extends Controller {
 
             }
             
-
             $status = $request->status;
             if($status==1){
                 $status_str = "Upcoming";
@@ -124,9 +123,10 @@ class MatchController extends Controller {
                 $status_str = "Completed";
             }elseif($status==3){
                 $status_str = "Live";
-            }else{
-                //$status_str = "Cancelled";
+            }elseif($status==4){
+                $status_str = "Cancelled";
             }
+            
             if($request->match_id && $request->date_end && $request->date_start && $request->change_date){
                 $data =   [
                                 'timestamp_start' => $timestamp_start,
