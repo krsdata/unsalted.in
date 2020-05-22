@@ -302,6 +302,11 @@
                 ]
         );
 
+
+        Route::get(
+            'admin/match/cancelMatch',
+            'Modules\Admin\Http\Controllers\MatchController@cancelMatch')->name('cancelMatch');
+        
         Route::get(
             'admin/match/triggerEmail',
             'Modules\Admin\Http\Controllers\MatchController@triggerEmail')->name('triggerEmail');

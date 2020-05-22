@@ -3,17 +3,11 @@
             <!-- BEGIN CONTENT -->
 <div class="page-content-wrapper">
                 <!-- BEGIN CONTENT BODY -->
-                <div class="page-content">
+  <div class="page-content">
                     <!-- BEGIN PAGE HEAD-->
-                    
-                    <!-- END PAGE HEAD-->
-                    <!-- BEGIN PAGE BREADCRUMB -->
-                   @include('packages::partials.breadcrumb')
+    @include('packages::partials.breadcrumb')
 
-                    <!-- END PAGE BREADCRUMB -->
-                    <!-- BEGIN PAGE BASE CONTENT -->
-
-                        <div class="row">
+    <div class="row">
                             <div class="col-md-12">
                             <!-- BEGIN EXAMPLE TABLE PORTLET-->
                             <div class="portlet light portlet-fit bordered">
@@ -130,7 +124,7 @@
         float: left;
       }
     </style>
-    <div class="btn-group dropleft"> 
+    <div class="btn-group dropright"> 
       <button class="btn btn-danger" type="button" data-toggle="dropdown">Action
       <span class="caret"></span></button>
 
@@ -145,6 +139,8 @@
           @endif  
         <div class="dropdown-divider"></div>
         <a class="dropdown-item btn btn-info" href="{{route('triggerEmail','match_id='.$result->match_id)}}">Prize Email Trigger</a>
+
+         <a class="dropdown-item btn btn-danger" href="{{route('cancelMatch','match_id='.$result->match_id)}}">Cancel This Match</a>
       </div>
     </div>
 

@@ -25,6 +25,9 @@ use Illuminate\Http\Dispatcher;
 use App\Helpers\Helper;
 use Modules\Admin\Models\Users;
 use App\Models\Matches as Match;
+use App\Models\Wallet;
+use App\Models\JoinContest;
+use App\Models\WalletTransaction;
 use Response; 
 /**
  * Class AdminController
@@ -47,6 +50,77 @@ class MatchController extends Controller {
         View::share('heading','Match');
         View::share('route_url',route('match')); 
         $this->record_per_page = Config::get('app.record_per_page'); 
+    }
+
+    /*cancelMatch*/
+    public function cancelMatch(Request $request){
+
+        if($request->match_id){
+            $data['status']         = 4;
+            $data['status_str']     = 'Cancelled';
+            $data['is_cancelled']   = 1;
+           
+            $match = Match::firstOrNew([
+                'match_id' => $request->match_id
+            ]);
+
+            if($match->is_cancelled==0 && $match->status==1){
+
+                $match->status= 4;
+                $match->status_str= 'Cancelled';
+                $match->is_cancelled= 1;
+                $match->save();
+            }else{
+                if($match->status==4){
+                    return Redirect::to(route('match'))->with('flash_alert_notice', 'This Match already Cancelled'); 
+                }
+                if($match->status!=1){
+                    return Redirect::to(route('match'))->with('flash_alert_notice', 'This Match can not be cancelled'); 
+                }
+            }
+        }
+        $JoinContest = JoinContest::whereHas('user')->with('contest')
+                        ->where('match_id',$request->match_id)
+                        ->get()
+                        ->transform(function($item,$key){
+                            if(isset($item->contest) && $item->contest->entry_fees){
+                                
+                            $transaction_id = $item->match_id.$item->contest_id.$item->created_team_id.'-'.$item->user_id;
+
+                            $wt =    WalletTransaction::firstOrNew(
+                                    [
+                                       'user_id' => $item->user_id,
+                                       'transaction_id' => $transaction_id
+                                    ]
+                                );
+                            $wt->user_id            = $item->user_id;   
+                            $wt->amount             = $item->contest->entry_fees;  
+                            $wt->payment_type       = 7;  
+                            $wt->payment_type_string = "Refunded";
+                            $wt->transaction_id     = $transaction_id;
+                            $wt->payment_mode       = 'Sportsfight';    
+                            $wt->payment_status     = "success";
+                            $wt->debit_credit_status = "+";   
+                            $wt->save();
+
+
+                            $wallet = Wallet::firstOrNew(
+                                    [
+                                       'user_id' => $item->user_id,
+                                       'payment_type' => 4
+                                    ]
+                                );
+
+                            $wallet->user_id        =  $item->user_id;
+                            $wallet->amount = $wallet->amount+$item->contest->entry_fees;
+                            $wallet->deposit_amount = $wallet->amount+$item->contest->entry_fees;
+                            $wallet->save();
+
+                            }
+                        });               
+        
+        return Redirect::to(route('match'))->with('flash_alert_notice', 'Match Cancelled successfully');
+
     }
   /**
     * @var $pd = prize distribution
@@ -125,6 +199,7 @@ class MatchController extends Controller {
                 $status_str = "Live";
             }elseif($status==4){
                 $status_str = "Cancelled";
+                $data['is_cancelled'] = 1;
             }
             
             if($request->match_id && $request->date_end && $request->date_start && $request->change_date){
@@ -137,10 +212,8 @@ class MatchController extends Controller {
             }
 
             if($request->match_id && $request->status && $request->change_status){
-                $data =    [
-                            'status'  => $request->status,
-                            'status_str' => $status_str
-                        ];   
+                $data['status'] =   $request->status;
+                $data['status_str'] =   $status_str;
             }
             
             \DB::table('matches')->where('match_id',$request->match_id)
@@ -177,10 +250,10 @@ class MatchController extends Controller {
                         if (!empty($search)) {
                             $query->orWhere('short_title', 'LIKE', "%$search%");
                         } 
-                    })->orderBy('updated_at','DESC')->Paginate($this->record_per_page); 
+                    })->orderBy('created_at','DESC')->Paginate($this->record_per_page); 
              
         } else {
-            $match = Match::with('teama','teamb')->orderBy('updated_at','DESC')->Paginate($this->record_per_page);
+            $match = Match::with('teama','teamb')->orderBy('created_at','DESC')->Paginate($this->record_per_page);
         } 
         
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));

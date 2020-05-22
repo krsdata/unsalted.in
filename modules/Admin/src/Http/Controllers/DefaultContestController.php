@@ -133,9 +133,8 @@ class DefaultContestController extends Controller {
         foreach ($match as $key => $result) {
             $request->merge(['match_id' => $result->match_id]);
             $request->merge(['default_contest_id' => $default_contest_id]);
+            \DB::table('create_contests')->insert($request->except('_token'));
         }
-
-        \DB::table('create_contests')->insert($request->except('_token'));
          
         return Redirect::to(route('defaultContest'))
                             ->with('flash_alert_notice', 'New Contest successfully created!');

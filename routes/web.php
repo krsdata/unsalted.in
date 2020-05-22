@@ -10,6 +10,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('chart-line', 'ChartController@chartLine');
+Route::get('chart-line-ajax', 'ChartController@chartLineAjax');
+Route::get('charts', 'ChartController@index');
+
 if (App::environment('prod')) {
     \URL::forceScheme('https');
 }

@@ -1252,7 +1252,7 @@ class ApiController extends BaseController
 
                 $data2['winnerPercentage'] = $result->winner_percentage;
                 $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
-                $data2['cancellation'] = $result->contestType->cancellable;
+                $data2['cancellation'] = $result->cancellation;
                 $matchcontests[$result->contest_type][] = [
                     'contestTitle'=>$result->contestType->contest_type,
                     'contestSubTitle'=>$result->contestType->description,
@@ -1514,7 +1514,11 @@ class ApiController extends BaseController
             }
             $remove_data = ['toss','venue','teama','teamb','competition'];
 
-            $matches = Matches::firstOrNew(['match_id' => $data_set['match_id']]);
+            $matches = Matches::firstOrNew(
+                [
+                    'match_id' => $data_set['match_id']
+                ]
+            );
 
             foreach ($data_set as $key => $value) {
 
@@ -1605,8 +1609,11 @@ class ApiController extends BaseController
             $remove_data = ['toss','venue','teama','teamb','competition'];
 
 
-            $matches = Matches::firstOrNew(['match_id' => $data_set['match_id']]);
-
+            $matches = Matches::firstOrNew(
+                [
+                    'match_id' => $data_set['match_id']
+                ]
+            );
             foreach ($data_set as $key => $value) {
 
                 if(in_array($key, $remove_data)){
@@ -1711,7 +1718,15 @@ class ApiController extends BaseController
                 $remove_data = ['toss','venue','teama','teamb','competition'];
 
 
-                $matches = Matches::firstOrNew(['match_id' => $data_set['match_id']]);
+                $matches = Matches::firstOrNew(
+                    [
+                        'match_id' => $data_set['match_id']
+                    ]
+                );
+                
+                if(isset($matches->is_cancelled) && $matches->is_cancelled){
+                    continue;
+                }
 
                 foreach ($data_set as $key => $value) {
 
