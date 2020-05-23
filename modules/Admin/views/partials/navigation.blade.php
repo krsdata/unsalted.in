@@ -63,7 +63,18 @@
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('wallets')}}">
                                     <i class="glyphicon glyphicon-th"></i>User Wallets </a>
                     </div>
-                </div>
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('matchContest')}}">
+                                    <i class="glyphicon glyphicon-th"></i>Match Contest </a>
+                    </div>
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('matchTeams')}}">
+                                    <i class="glyphicon glyphicon-th"></i>Match Teams </a>
+                    </div>
+
+                    </div>
                 <!-- END PAGE ACTIONS -->
                 <!-- BEGIN PAGE TOP -->
                 <div class="page-top">

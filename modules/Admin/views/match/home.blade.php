@@ -54,7 +54,7 @@
                                          {{ Session::get('flash_alert_notice') }} 
                                          </div>
                                     @endif
-                                <div class="portlet-body table-responsive">
+                                <div class="portlet-body table-responsive" style="min-height: 480px">
                                     <div class="table-toolbar">
                                         <div class="row">
                                             <form action="{{route('match')}}" method="get" id="filter_data">
@@ -126,7 +126,7 @@
         float: left;
       }
     </style>
-    <div class="btn-group dropright"> 
+    <div class="btn-group dropleft"> 
       <button class="btn btn-danger" type="button" data-toggle="dropdown">Action
       <span class="caret"></span></button>
 
@@ -145,6 +145,10 @@
           <a class="dropdown-item btn btn-danger" data-toggle="modal" data-target="#cancelContest_{{$result->id}}" href="#">Cancel Match Contest</a>
 
          <a class="dropdown-item btn btn-primary" href="{{route('cancelMatch','match_id='.$result->match_id)}}">Cancel This Match</a>
+
+
+         <a class="dropdown-item btn btn-primary" href="{{route('matchContest','search='.$result->match_id)}}">View All Contests</a>
+         
       </div>
     </div>
 

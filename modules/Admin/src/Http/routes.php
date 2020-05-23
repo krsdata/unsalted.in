@@ -346,29 +346,47 @@
             ]
                 ]
         );
-        // complain details
-        Route::get('admin/complainDetail', 'Modules\Admin\Http\Controllers\CompaintController@complainDetail');
+        
+       Route::get(
+            'admin/matchTeams',
+            'Modules\Admin\Http\Controllers\MatchContestController@matchTeams')->name('matchTeams');
 
-        Route::post('admin/supportReply', 'Modules\Admin\Http\Controllers\CompaintController@supportReply');
-
-
-
-        Route::bind('postTask', function ($value, $route) {
-            return Modules\Admin\Models\PostTask::find($value);
+        Route::bind('matchTeams', function ($value, $route) {
+            return Modules\Admin\Models\MatchTeams::find($value);
         });
 
         Route::resource(
-            'admin/postTask',
-            'Modules\Admin\Http\Controllers\PostTaskController',
+            'admin/matchTeam',
+            'Modules\Admin\Http\Controllers\MatchContestController',
             [
             'names' => [
-                'edit' => 'postTask.edit',
-                'show' => 'postTask.show',
-                'destroy' => 'postTask.destroy',
-                'update' => 'postTask.update',
-                'store' => 'postTask.store',
-                'index' => 'postTask',
-                'create' => 'postTask.create',
+                'edit' => 'matchTeams.edit',
+                'show' => 'matchTeams.show',
+                'destroy' => 'matchTeams.destroy',
+                'update' => 'matchTeams.update',
+                'store' => 'matchTeams.store',
+                'index' => 'matchTeams.matchTeam',
+                'create' => 'matchTeams.create',
+            ]
+                ]
+        );
+
+        Route::bind('matchContest', function ($value, $route) {
+            return Modules\Admin\Models\MatchContest::find($value);
+        });
+
+        Route::resource(
+            'admin/matchContest',
+            'Modules\Admin\Http\Controllers\MatchContestController',
+            [
+            'names' => [
+                'edit' => 'matchContest.edit',
+                'show' => 'matchContest.show',
+                'destroy' => 'matchContest.destroy',
+                'update' => 'matchContest.update',
+                'store' => 'matchContest.store',
+                'index' => 'matchContest',
+                'create' => 'matchContest.create',
             ]
                 ]
         );
