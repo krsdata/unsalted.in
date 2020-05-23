@@ -89,6 +89,7 @@
                                                  <th>Sno.</th>
                                                 <th> Match Id </th>
                                                 <th> Match Between </th> 
+                                                <th> Short title </th> 
                                                 <th> Add Contest</th> 
                                                 <th> Player List </th>  
                                                 <th> Action</th> 
@@ -107,6 +108,7 @@
                                                {{ (($match->currentpage()-1)*15)+(++$key) }}</td>
                                                 <td> {{$result->match_id}} </td>
                                                  <td> {{$result->title}} </td>
+                                                 <td> {{$result->short_title}} </td>
                                                  <td> <a class="btn btn-success" href="{{route('defaultContest.create')}}?match_id={{$result->match_id}}">
                                                     Add Contest
                                                  </a>

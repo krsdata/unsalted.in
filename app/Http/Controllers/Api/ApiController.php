@@ -1873,6 +1873,8 @@ class ApiController extends BaseController
                         ELSE
                         "Scheduled" end) as status_str';
 
+
+
         $upcomingMatches = Matches::with('teama','teamb')
             ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str',\DB::raw($status))
             ->whereIn('match_id',
@@ -1881,8 +1883,10 @@ class ApiController extends BaseController
                     ->pluck('match_id')->toArray()
             )
             ->where('status',1)
-            ->get()
-            ->transform(function($items,$key)use($user_id){
+            ->where('timestamp_start','>=' , time())
+            ->get();
+            
+            $upcomingMatches->transform(function($items,$key)use($user_id){
                 //  dd($items);
                 $total_joined_team = \DB::table('join_contests')
                     ->where('match_id' ,$items->match_id)
@@ -1920,6 +1924,8 @@ class ApiController extends BaseController
 
                 return $items;
             });
+
+
 
         $completedMatches = Matches::with('teama','teamb')
             ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
