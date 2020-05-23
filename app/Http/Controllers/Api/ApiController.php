@@ -1219,6 +1219,7 @@ class ApiController extends BaseController
 
         $contest = CreateContest::with('contestType')
             ->where('match_id',$match_id)
+            ->where('is_cancelled',0)
             ->orderBy('contest_type','ASC')
             ->get();
         if($contest){
@@ -1227,7 +1228,7 @@ class ApiController extends BaseController
                 if($result->total_spots <= $result->filled_spot && $result->total_spots!=0){
                     continue;
                 }
-
+                $data2['isCancelled'] =   $result->is_cancelled?true:false;
                 $data2['totalSpots'] =   $result->total_spots;
                 $data2['firstPrice'] =   $result->first_prize;
                 $data2['totalWinningPrize'] =    $result->total_winning_prize;
@@ -2771,6 +2772,7 @@ class ApiController extends BaseController
         $contest = CreateContest::with('contestType')
             ->where('match_id',$match_id)
             ->whereIn('id',$join_contests)
+
             ->orderBy('contest_type','ASC')
             ->get();
 

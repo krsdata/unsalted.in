@@ -166,6 +166,7 @@
                   <th> Total Spot </th>  
                   <th> Filled Spot</th> 
                   <th> Remaining Spot</th>
+                  <th> Entry Fees</th>
                   <th> Status</th> 
                   <th> Action </th> 
               </tr>
@@ -188,6 +189,7 @@
                     echo $count; 
                   }
                ?> </td>
+               <td>{{$contest->entry_fess??'0'}}</td>
               <td>{{ ($contest->is_cancelled==0)?'Active':'Cancelled' }}  </td>
               <td>
                  <div class="mt-checkbox-list">
