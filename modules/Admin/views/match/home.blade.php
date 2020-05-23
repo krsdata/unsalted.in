@@ -191,7 +191,7 @@
                     echo $count; 
                   }
                ?> </td>
-               <td>{{$contest->entry_fess??'0'}}</td>
+               <td>{{$contest->entry_fees??'0'}}</td>
               <td>{{ ($contest->is_cancelled==0)?'Active':'Cancelled' }}  </td>
               <td>
                  <div class="mt-checkbox-list">
