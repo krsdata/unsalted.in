@@ -28,6 +28,8 @@ use App\Models\Matches as Match;
 use App\Models\Wallet;
 use App\Models\JoinContest;
 use App\Models\WalletTransaction;
+use App\Models\CreateContest;
+use App\Models\CreateTeam;
 use Response; 
 /**
  * Class AdminController
@@ -52,6 +54,85 @@ class MatchController extends Controller {
         $this->record_per_page = Config::get('app.record_per_page'); 
     }
 
+    
+    /*cancelMatch*/
+    public function cancelContest(Request $request){
+        
+        if($request->cancel_contest){
+            $JoinContest = JoinContest::whereHas('user')->with('contest')
+                        ->where('match_id',$request->match_id)
+                        ->whereIn('contest_id',$request->cancel_contest)
+                        ->get()
+                        ->transform(function($item,$key){
+                        
+                        $cancel_contest = CreateContest::find($item->contest_id);
+                        if($cancel_contest->is_cancelled==0){
+                            
+                            $cancel_contest->is_cancelled = 1;
+                            $cancel_contest->save();
+
+                            if(isset($item->contest) && $item->contest->entry_fees){
+                                
+                                $transaction_id = $item->match_id.$item->contest_id.$item->created_team_id.'-'.$item->user_id;
+
+                                $wt =    WalletTransaction::firstOrNew(
+                                        [
+                                           'user_id' => $item->user_id,
+                                           'transaction_id' => $transaction_id
+                                        ]
+                                    );
+                                $wt->user_id            = $item->user_id;   
+                                $wt->amount             = $item->contest->entry_fees;  
+                                $wt->payment_type       = 7;  
+                                $wt->payment_type_string = "Refunded";
+                                $wt->transaction_id     = $transaction_id;
+                                $wt->payment_mode       = 'Sportsfight';    
+                                $wt->payment_status     = "success";
+                                $wt->debit_credit_status = "+";   
+                                $wt->save();
+
+
+                                $wallet = Wallet::firstOrNew(
+                                        [
+                                           'user_id' => $item->user_id,
+                                           'payment_type' => 4
+                                        ]
+                                    );
+
+                                $wallet->user_id        =  $item->user_id;
+                                $wallet->amount = $wallet->amount+$item->contest->entry_fees;
+                                $wallet->deposit_amount = $wallet->amount+$item->contest->entry_fees;
+                                $wallet->save();
+                            }
+
+                            \DB::commit();
+                            
+                            $item->cancel_message = 'Contest Cancelled' ;
+                            return $item;
+                        }else{
+                            $item->cancel_message = 'Already Cancelled' ; 
+                            return $item; 
+                        }
+                    });               
+        
+        if($JoinContest->count()==0 and count($request->cancel_contest)){
+           
+            foreach ($request->cancel_contest as $key => $value) {
+                $cancel_contest = CreateContest::find($value);
+                $cancel_contest->is_cancelled = 1;
+                $cancel_contest->save();
+            }
+
+           return Redirect::to(route('match'))->with('flash_alert_notice', 'Selected contest is cancelled');
+
+        }
+        return Redirect::to(route('match'))->with('flash_alert_notice', 'Match Contest Cancelled successfully');
+        }else{
+            return Redirect::to(route('match'))->with('flash_alert_notice', 'No Contest selected for cancellation'); 
+        }
+        
+
+    }
     /*cancelMatch*/
     public function cancelMatch(Request $request){
 
@@ -250,10 +331,36 @@ class MatchController extends Controller {
                         if (!empty($search)) {
                             $query->orWhere('short_title', 'LIKE', "%$search%");
                         } 
-                    })->orderBy('created_at','DESC')->Paginate($this->record_per_page); 
+                    })->orderBy('created_at','DESC')->Paginate($this->record_per_page);
+
+                $match->transform(function($item,$key){
+                $contests = CreateContest::where('match_id',$item->match_id)->get()
+                            ->transform(function($item,$key){
+                                $contest_name = \DB::table('contest_types')
+                                        ->where('id',$item->contest_type)->first();
+                                $item->contest_name = $contest_name->contest_type;
+                                return $item;
+                            });
+                $item->contests = $contests;
+                return $item;            
+
+            }); 
              
         } else {
             $match = Match::with('teama','teamb')->orderBy('created_at','DESC')->Paginate($this->record_per_page);
+            $match->transform(function($item,$key){
+                $contests = CreateContest::where('match_id',$item->match_id)->get()
+                            ->transform(function($item,$key){
+                                $contest_name = \DB::table('contest_types')
+                                        ->where('id',$item->contest_type)->first();
+                                $item->contest_name = $contest_name->contest_type;
+                                return $item;
+                            });
+                $item->contests = $contests;
+                return $item;            
+
+            });
+
         } 
         
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));

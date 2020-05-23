@@ -139,10 +139,82 @@
           @endif  
         <div class="dropdown-divider"></div>
         <a class="dropdown-item btn btn-info" href="{{route('triggerEmail','match_id='.$result->match_id)}}">Prize Email Trigger</a>
+           
+          <a class="dropdown-item btn btn-danger" data-toggle="modal" data-target="#cancelContest_{{$result->id}}" href="#">Cancel Match Contest</a>
 
-         <a class="dropdown-item btn btn-danger" href="{{route('cancelMatch','match_id='.$result->match_id)}}">Cancel This Match</a>
+         <a class="dropdown-item btn btn-primary" href="{{route('cancelMatch','match_id='.$result->match_id)}}">Cancel This Match</a>
       </div>
     </div>
+
+<div class="modal fade" id="cancelContest_{{$result->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg  " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Cancel Match Contest</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> 
+      <form action="{{route('cancelContest','match_id='.$result->match_id)}}"> 
+      <div class="modal-body">
+
+         <table class="table table-striped table-hover table-bordered" id="contact">
+          <thead>
+              <tr>
+                  <th>Sno.</th>
+                  <th> Contest Name</th> 
+                  <th> Total Spot </th>  
+                  <th> Filled Spot</th> 
+                  <th> Remaining Spot</th>
+                  <th> Status</th> 
+                  <th> Action </th> 
+              </tr>
+
+          </thead>
+          <tbody>
+            @foreach($result->contests as $key => $contest)
+            <tr>
+              <td>{{$key+1}} </td>
+              <td>{{$contest->contest_name}}</td>
+              <td>{{$contest->total_spots}}</td>
+              <td>{{$contest->filled_spot??'0'}}</td>
+              <td>
+                <?php  
+
+                  $count = ($contest->total_spots-$contest->filled_spot);
+                  if($count<1){
+                    echo "Unlimited Spot";
+                  }else{
+                    echo $count; 
+                  }
+               ?> </td>
+              <td>{{ ($contest->is_cancelled==0)?'Active':'Cancelled' }}  </td>
+              <td>
+                 <div class="mt-checkbox-list">
+                  <input type="hidden" name="match_id" value="{{$result->match_id}}">
+                  @if(($contest->is_cancelled==0))
+                    <label class="mt-checkbox mt-checkbox-outline">
+                        <input type="checkbox" name="cancel_contest[]" id="cancel_contest_{{$result->match_id}}" value="{{$contest->id}}">  
+                        <span></span>
+                    </label>
+                    </div>
+                    @endif
+              </td>
+            </tr>
+            @endforeach
+ 
+          </tbody>
+      </table>  
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success"> Cancel Selected Contest </button>
+        </div>
+      </div>
+    </form>
+</div>
+</div>
+</div>
 
 
                                               </td> 
@@ -305,3 +377,5 @@
   </div>
 </div>
 </div>
+
+
