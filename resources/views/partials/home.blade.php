@@ -1,11 +1,11 @@
-     <?php $bgUrl = URL::asset("webmedia/images/bg_2.jpg"); ?>
+     <?php $bgUrl = URL::asset("webmedia/images/sportsfight_bg.jpg"); ?>
       <section class="hero-wrap js-fullheight" style="background-image: url('<?php echo $bgUrl; ?>')" data-section="home" data-stellar-background-ratio="0.5" id="home-section">
         <img src="">
       <div class="overlay"></div>
       <div class="container">
         <div class="row no-gutters slider-text js-fullheight align-items-center justify-content-start" data-scrollax-parent="true">
           <div class="col-md-5 ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-            <h1 class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Sportsfight Fantasy League</h1>
+            <h1 class="mb-5" data-scrollax="properties: { translateY: '60%', opacity: 1.6 }">Sportsfight Fantasy League</h1>
             <p class="mb-5" data-scrollax="properties: { translateY: '30%', opacity: 1.6 }">Fantasy League</p>
             <form action="#" class="search-location">
                     <div class="row">
