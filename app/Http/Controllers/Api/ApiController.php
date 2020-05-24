@@ -1331,11 +1331,14 @@ class ApiController extends BaseController
     {
         //upcoming
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+
+        $json = json_decode($data);
+        $title = $json->response->title??null;
         // store match info    
         $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
         $this->saveMatchDataFromAPI2DB($data);
 
-        return [$match_id.' : match id updated successfully'];
+        return "<p style='padding:10px' class='alert alert-success'> Match $title saved successfully<p>";
     }
 
     public function updateMatchDataById($match_id=null)
