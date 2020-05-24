@@ -2140,12 +2140,15 @@ class ApiController extends BaseController
         }
         $match = Matches::with('teama','teamb')
             ->whereIn('status',[1,3])
-            ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str')
+            ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str','is_free')
+            ->orderBy('is_free','DESC')
             ->orderBy('timestamp_start','ASC')
+
             ->where('timestamp_start','>=' , time())
             ->limit(10)
             ->get();
 
+            return $match;
 
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];

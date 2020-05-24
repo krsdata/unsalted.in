@@ -256,11 +256,12 @@ class MatchController extends Controller {
             if($request->date_end && $request->date_start){
                 $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
                 ->setTimezone('UTC')
-                ->format('Y-m-d H:i');
+                ->format('Y-m-d H:i:s');
 
                 $date_end = \Carbon\Carbon::createFromFormat('Y-m-d H:i', $request->date_end)
                     ->setTimezone('UTC')
-                    ->format('Y-m-d H:i'); 
+                    ->format('Y-m-d H:i:s');
+
                 $timestamp_start = strtotime($date_start);
                 $timestamp_end   = strtotime($date_end);
 

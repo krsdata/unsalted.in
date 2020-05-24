@@ -50,7 +50,8 @@ class DefaultContest extends Model {
             'cancellation',
             'total_winning_prize',
             'match_id',
-            'prize_percentage'
+            'prize_percentage',
+            'is_free'
         ];  // All field of user table here
 
 

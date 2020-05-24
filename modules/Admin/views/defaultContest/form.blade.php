@@ -6,7 +6,20 @@
   <!--   <div class="alert alert-success display-hide">
         <button class="close" data-close="alert"></button> Your form validation is successful! </div>
 -->
-        @if($match)   
+        @if($match)  
+
+        <div class="form-group {{ $errors->first('is_free', ' has-error') }}">
+            <label class="control-label col-md-3">Free Contest Type</label>
+            <div class="col-md-4"> 
+                <select name="is_free" class="form-control">
+                    <option value="0">False</option>
+                    <option value="1">True</option>
+                </select>
+                
+                <span class="help-block">{{ $errors->first('is_free', ':message') }}</span>
+            </div>
+        </div>
+
          <div class="form-group {{ $errors->first('match_id', ' has-error') }}">
             <label class="control-label col-md-3">Match ID </label>
             <div class="col-md-4"> 
