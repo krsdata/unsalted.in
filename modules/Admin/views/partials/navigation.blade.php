@@ -52,26 +52,36 @@
 
                      <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('flashMatch')}}">
-                                    <i class="glyphicon glyphicon-th"></i>Flash Matches </a>
+                                    <i class="glyphicon glyphicon-th"></i> Flash Matches </a>
                     </div>
 
                     <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('updatePlayerPoints')}}">
-                                    <i class="glyphicon glyphicon-th"></i>Player Points </a>
+                                    <i class="glyphicon glyphicon-th"></i> Player Points </a>
                     </div>
                     <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('wallets')}}">
-                                    <i class="glyphicon glyphicon-th"></i>User Wallets </a>
+                                    <i class="glyphicon glyphicon-th"></i> User Wallets </a>
                     </div>
 
                     <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('matchContest')}}">
-                                    <i class="glyphicon glyphicon-th"></i>Match Contest </a>
+                                    <i class="glyphicon glyphicon-th"></i> Match Contest </a>
                     </div>
 
                     <div class="btn-group"> 
                              <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('matchTeams')}}">
-                                    <i class="glyphicon glyphicon-th"></i>Match Teams </a>
+                                    <i class="glyphicon glyphicon-th"></i> Match Teams </a>
+                    </div>
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('updatePlayerPoints')}}">
+                                    <i class="glyphicon glyphicon-th"></i> Update Player Points </a>
+                    </div>
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('prizeDistribution')}}">
+                                    <i class="glyphicon glyphicon-th"></i> View Prize </a>
                     </div>
 
                     </div>

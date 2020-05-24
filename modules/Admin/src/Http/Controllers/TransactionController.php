@@ -61,7 +61,6 @@ class TransactionController extends Controller {
 
     public function index(Transaction $transaction, Request $request) 
     { 
-        
         $page_title = 'Payment';
         $page_action = 'View Transaction'; 
         $msg = null;
@@ -166,7 +165,7 @@ class TransactionController extends Controller {
                         END) AS status')
                         )
                         ->Paginate($this->record_per_page); 
-
+                       
             $transaction->transform(function($item, $Key){
                             $item->paid_balance = Transaction::where('request_status',2)
                                 ->where('user_id',$item->user_id)

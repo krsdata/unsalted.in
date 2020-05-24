@@ -63,7 +63,9 @@
                                             <tr>
                                                 <th>Sno.</th>
                                            @foreach($tables as $col_name)
-                                                <th> {{ ucfirst($col_name) }}</th> 
+                                                <th> 
+                                                    {{  \Str::replaceFirst('_'," ",ucfirst($col_name)) }}
+                                                </th> 
                                             @endforeach
                                             <th>Action</th>
                                             </tr>
