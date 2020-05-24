@@ -94,6 +94,11 @@
                 
             </tbody>
         </table>
+<span>
+  Showing {{($prizeDistribution->currentpage()-1)*$prizeDistribution->perpage()+1}} to {{$prizeDistribution->currentpage()*$prizeDistribution->perpage()}}
+  of  {{$prizeDistribution->total()}} entries 
+</span>
+
          <div class="center" align="center">  {!! $prizeDistribution->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
     </div>
                             </div>

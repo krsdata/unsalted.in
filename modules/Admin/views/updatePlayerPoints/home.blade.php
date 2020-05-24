@@ -109,6 +109,11 @@
                 
             </tbody>
         </table>
+<span>
+  Showing {{($updatePlayerPoints->currentpage()-1)*$updatePlayerPoints->perpage()+1}} to {{$updatePlayerPoints->currentpage()*$updatePlayerPoints->perpage()}}
+  of  {{$updatePlayerPoints->total()}} entries 
+</span>
+
          <div class="center" align="center">  {!! $updatePlayerPoints->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
     </div>
                             </div>

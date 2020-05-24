@@ -106,6 +106,9 @@
                 
             </tbody>
         </table>
+        <span>
+        Showing {{($matchContest->currentpage()-1)*$matchContest->perpage()+1}} to {{$matchContest->currentpage()*$matchContest->perpage()}}
+                            of  {{$matchContest->total()}} entries </span>
          <div class="center" align="center">  {!! $matchContest->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
     </div>
                             </div>

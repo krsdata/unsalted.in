@@ -148,6 +148,10 @@
                                             
                                         </tbody>
                                     </table>
+                                    <span>
+  Showing {{($documents->currentpage()-1)*$documents->perpage()+1}} to {{$documents->currentpage()*$documents->perpage()}}
+  of  {{$documents->total()}} entries 
+</span>
                                      <div class="center" align="center">  {!! $documents->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
                                 </div>
                             </div>

@@ -102,6 +102,10 @@
                 
             </tbody>
         </table>
+<span>
+  Showing {{($wallets->currentpage()-1)*$wallets->perpage()+1}} to {{$wallets->currentpage()*$wallets->perpage()}}
+  of  {{$wallets->total()}} entries 
+</span>
          <div class="center" align="center">  {!! $wallets->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
     </div>
                             </div>

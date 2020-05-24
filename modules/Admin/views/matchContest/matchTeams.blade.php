@@ -163,6 +163,10 @@
         
     </tbody>
 </table>
+<span>
+        Showing {{($matchTeams->currentpage()-1)*$matchTeams->perpage()+1}} to {{$matchTeams->currentpage()*$matchTeams->perpage()}}
+                            of  {{$matchTeams->total()}} entries </span>
+                            
  <div class="center" align="center">  {!! $matchTeams->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
 </div>
                     </div>

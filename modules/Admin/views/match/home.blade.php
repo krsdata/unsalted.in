@@ -256,7 +256,7 @@
                             </table>
                             <span>
                               Showing {{($match->currentpage()-1)*$match->perpage()+1}} to {{$match->currentpage()*$match->perpage()}}
-                            of  {{$match->total()}} entries
+                            of  {{$match->total()}} entries </span>
                              <div class="center" align="center">  {!! $match->appends(['search' => isset($_GET['search'])?$_GET['search']:'','status' => isset($_GET['status'])?$_GET['status']:''])->render() !!}</div>
                         </div>
                     </div>

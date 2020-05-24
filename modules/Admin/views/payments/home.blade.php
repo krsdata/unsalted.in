@@ -113,6 +113,11 @@
                                             
                                         </tbody>
                                     </table>
+<span>
+  Showing {{($transaction->currentpage()-1)*$transaction->perpage()+1}} to {{$transaction->currentpage()*$transaction->perpage()}}
+  of  {{$transaction->total()}} entries 
+</span>
+
                                      <div class="center" align="center">  {!! $transaction->appends(['search' => isset($_GET['search'])?$_GET['search']:''])->render() !!}</div>
                                 </div>
                             </div>
