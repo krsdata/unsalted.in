@@ -174,7 +174,7 @@ class MatchContestController extends Controller {
                     return $item; 
             });
         } else {
-            $matchContest = MatchContest::orderBy('created_at','desc')->Paginate($this->record_per_page);
+            $matchContest = MatchContest::orderBy('created_at','desc')->Paginate(8);
                                                     
             $matchContest->transform(function($item,$key){ 
                     $contest_name = \DB::table('contest_types')->where('id',$item->contest_type)->first();

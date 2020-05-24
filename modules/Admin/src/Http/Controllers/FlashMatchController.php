@@ -756,11 +756,24 @@ class FlashMatchController extends Controller {
         // Search by name ,email and group
         $search = Input::get('search');
         $status = Input::get('status');
-        if ((isset($search) || isset($status))) {
+
+        $date_start = $request->get('start_date');
+        $end_date = $request->get('end_date');
+        if ($search || $status || $date_start || $end_date) {
              
             $search = isset($search) ? Input::get('search') : '';
                
-            $match = TempMatch::where(function($query) use($search,$status) {    
+            $match = TempMatch::where(function($query) use($search,$status,$date_start,$end_date) {    
+                        if($date_start && $end_date){
+                           $query->Where('date_start', '>=', $date_start); 
+                           $query->Where('date_end', '<=', $end_date);
+                        }
+                        if($date_start){
+                          // $query->orWhere('date_start', '=', $date_start);
+                        }
+                        if($end_date){
+                          // $query->orWhere('date_end', '=', $end_date);
+                        }
                         if (!empty($status)) {
                             $query->Where('status', '=', $status);
                             if($status==1){
@@ -816,9 +829,9 @@ class FlashMatchController extends Controller {
         $sub_page_title = 'View Match';
         $page_action = 'View Match'; 
         $match = json_decode($data);
-
-        if(!isset($match->response->items)){
-            return Redirect::to('admin/oldMatch');
+        $total_match = count($match->response->items);
+        if(!isset($match->response->items) || count($match->response->items)==0){
+            return Redirect::to('admin/oldMatch')->with('flash_alert_notice', 'No Match Found');  
         }
 
         $match = $match->response->items;
@@ -859,7 +872,7 @@ class FlashMatchController extends Controller {
             } 
             $tm->save();  
         }
-       return Redirect::to('admin/oldMatch');
+       return Redirect::to('admin/oldMatch')->with('flash_alert_notice', $total_match.' Match updated');
          
 
         

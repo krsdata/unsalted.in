@@ -56,12 +56,12 @@
                                             <form action="{{route('oldMatch')}}" method="get" id="filter_data">
                                             
                                             <div class="col-md-2">
-                                              <input id="" class="form-control   valid s_date" data-required="1" size="16" data-date-format="yyyy-mm-dd"   name="start_date" type="text" aria-invalid="false" placeholder="Start Date"> 
+                                              <input id="" class="form-control   valid s_date" data-required="1" size="16" data-date-format="yyyy-mm-dd"   name="start_date" type="text" aria-invalid="false" placeholder="Start Date" value="{{ (isset($_REQUEST['start_date']))?$_REQUEST['start_date']:''}}"> 
 
                                             </div>
 
                                              <div class="col-md-2">
-                                              <input id="" class="form-control end_date e_date" data-required="1" size="16" data-date-format="dd-mm-yyyy" name="end_date" type="text" placeholder="End Date">
+                                              <input id="" class="form-control end_date e_date" data-required="1" size="16" data-date-format="dd-mm-yyyy" name="end_date" type="text" placeholder="End Date" value="{{ (isset($_REQUEST['end_date']))?$_REQUEST['end_date']:''}}">
 
                                             </div>
 
@@ -83,7 +83,7 @@
                                            
                                         </form>
                                          <div class="col-md-2">
-                                             <a href="{{ route('match') }}">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
+                                             <a href="{{ route('oldMatch') }}">   <input type="submit" value="Reset" class="btn btn-default form-control"> </a>
                                         </div>
                                        
                                         </div>
@@ -114,7 +114,7 @@
                                             </td>
                                                 <td> {{$result->match_id}} </td>
                                                  <td> {{$result->title}} </td>
-                                                 <td> <a class="btn btn-success" href="{{route('defaultContest.create')}}?match_id={{$result->match_id}}">
+                                                 <td> <a class="btn btn-success" href="{{url('api/v2/saveMatchDataByMatchId/'.$result->match_id)}}"  data-target="#saveMatch" data-toggle="modal" >
                                                   Save This Match
                                                  </a>
                                                 </td>
@@ -266,6 +266,26 @@
 </div>
 </div>
 
+<div class="modal fade" id="saveMatch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Save Match information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <p> Please wait while match information is getting saved </p>
+      </div> 
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
 <div class="modal fade" id="getOldMatch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -303,7 +323,12 @@
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Match Format:</label>
              <select class="form-control" name="format" required=""> 
-                <option value="6">T20</option> 
+              <option value="1">ODI</option>
+                <option value="3">T20(International)</option> 
+                <option value="6">T20(Domestic)</option> 
+                <option value="7">Women ODI</option> 
+                <option value="8">Women T20</option> 
+                <option value="17">T10</option> 
              </select> 
           </div>
           <div class="form-group">
