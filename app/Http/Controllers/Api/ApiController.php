@@ -149,7 +149,7 @@ class ApiController extends BaseController
       
         $join_contests_count = $join_contests->count();
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
-            //$this->automateCreateContest();
+            $this->automateCreateContest();
             return [
                 'status'=>true,
                 'code' => 200,
