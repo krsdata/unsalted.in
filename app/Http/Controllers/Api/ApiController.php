@@ -2628,21 +2628,6 @@ class ApiController extends BaseController
 
                 $is_full = CreateContest::find($contest_id);
                 
-                if($is_full->total_spots==$is_full->filled_spot && $is_full->total_spots!=0){
-                    return [
-                        'status' => false,
-                        'code' => 201,
-                        'Message' => 'Contest is already full'
-                    ];
-                }    
-
-                if($is_full->total_spots==$is_full->is_full){
-                    return [
-                        'status' => false,
-                        'code' => 201,
-                        'Message' => 'Contest is already full'
-                    ];
-                }
                 if($check_join_contest){
                     continue;
                 }
