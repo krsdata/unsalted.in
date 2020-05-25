@@ -3815,6 +3815,7 @@ class ApiController extends BaseController
             $contest_copy = $contest_copy->toArray();
             $contest_copy['filled_spot'] = 0;
             $contest_copy['is_cloned'] = 0;
+            $contest_copy['is_full'] = 0;
             \DB::table('create_contests')->insert($contest_copy);
             $item->contest = $contest_copy;
             return $item;
