@@ -2147,9 +2147,7 @@ class ApiController extends BaseController
             ->where('timestamp_start','>=' , time())
             ->limit(10)
             ->get();
-
-            return $match;
-
+            
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 
