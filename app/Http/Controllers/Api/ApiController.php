@@ -2610,9 +2610,10 @@ class ApiController extends BaseController
 
         if($ct)
         {
+            \DB::beginTransaction();
+                
             foreach ($created_team_id as $key => $ct_id) {
 
-                \DB::beginTransaction();
                 
                 $check_join_contest = \DB::table('join_contests')
                     ->where('created_team_id',$ct_id)
@@ -2737,8 +2738,9 @@ class ApiController extends BaseController
                     ->where('team_join_status',1)->count();
 
                 $cc->save();
-                \DB::commit();
             }
+
+            \DB::commit();
             
 
         }else{
