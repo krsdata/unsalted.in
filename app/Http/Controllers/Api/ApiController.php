@@ -2459,7 +2459,7 @@ class ApiController extends BaseController
                 return [
                 'status'=>false,
                 'code' => 201,
-                'message' => 'This contests already full'
+                'message' => 'This contests is already full'
                 ];
             }
         } 
@@ -2611,11 +2611,6 @@ class ApiController extends BaseController
         if($ct)
         {
             foreach ($created_team_id as $key => $ct_id) {
-                $max_t = $this->maxAllowedTeam($request);
-                if($max_t!==true){
-                    return $max_t;
-                    exit();
-                }
 
                 \DB::beginTransaction();
                 
@@ -2627,6 +2622,14 @@ class ApiController extends BaseController
                     ->first();
 
                 $is_full = CreateContest::find($contest_id);
+
+                if($is_full->total_spots!=0 && ($is_full->total_spots==$is_full->filled_spot)){
+                    return [
+                        'status'=>false,
+                        'code' => 201,
+                        'message' => 'This Contest is already full'
+                    ];
+                }
                 
                 if($check_join_contest){
                     continue;
