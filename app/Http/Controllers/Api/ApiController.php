@@ -149,6 +149,7 @@ class ApiController extends BaseController
       
         $join_contests_count = $join_contests->count();
         if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
+            $this->automateCreateContest();
             return [
                 'status'=>true,
                 'code' => 200,
@@ -2147,7 +2148,7 @@ class ApiController extends BaseController
             ->where('timestamp_start','>=' , time())
             ->limit(10)
             ->get();
-            
+
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
 
@@ -3784,6 +3785,30 @@ class ApiController extends BaseController
             );
         }
     }
+    /*
+    Automate Create Contest
+    contest will create as its full
+    */
+    public function automateCreateContest(){
 
+        $contest = CreateContest::whereColumn('total_spots','filled_spot')->where('total_spots','!=',0)->where('is_cloned','!=',1)->where('total_spots','<',100)->get();
+        
+        $match_id = $contest->pluck('match_id')->toArray();
+        $match = Matches::whereIn('match_id',$match_id)->where('status',1)->get(['match_id']);
+        $match->transform(function($item,$key)use($contest){
+            $contest_copy = $contest->where('match_id',$item->match_id)->first();
+
+            $contest_copy->is_cloned = 1;
+            $contest_copy->save();
+            $contest_copy = $contest_copy->toArray();
+            $contest_copy['filled_spot'] = 0;
+            $contest_copy['is_cloned'] = 0;
+            \DB::table('create_contests')->insert($contest_copy);
+            $item->contest = $contest_copy;
+            return $item;
+        });
+        return "Contest cloned";          
+
+    }
     
 }

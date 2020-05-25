@@ -66,6 +66,11 @@ Route::group([
     'prefix' => 'v2'
 ], function()
 {   
+    Route::match(['get','post'], 'automateCreateContest', [
+        'as' => 'automateCreateContest',
+        'uses' => 'Api\ApiController@automateCreateContest'
+    ]);
+
     Route::match(['get','post'], 'verification', [
         'as' => 'verification',
         'uses' => 'Api\ApiController@verification'
