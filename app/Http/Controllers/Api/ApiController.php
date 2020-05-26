@@ -3129,18 +3129,49 @@ class ApiController extends BaseController
 
                         $bank_account_verified = \DB::table('bank_accounts')
                                                 ->where('user_id',$item->user_id)
-                                                ->where('status',1)
-                                                ->count();
-                        $document_verified =  \DB::table('verify_documents')
+                                                ->first();
+
+                        $pancard =  \DB::table('verify_documents')
                                                 ->where('user_id',$item->user_id)
-                                                ->where('status',1)
-                                                ->get()->count();
+                                                ->whereIn('doc_type',['pancard'])
+                                                ->first();
+                        $adharcard =  \DB::table('verify_documents')
+                                                ->where('user_id',$item->user_id)
+                                                ->whereIn('doc_type',['adharcard'])
+                                                ->first();
+                        $payment_status =   \DB::table('verify_documents')
+                                                ->where('user_id',$item->user_id)
+                                                ->where('doc_type','paytm')
+                                                ->first(); 
+                        if($payment_status){
+                            $payment_status = $payment_status->status;
+                        }else{
+                            $payment_status = 0;
+                        }                     
 
-                        $item->bank_account_verified =  $bank_account_verified;
-                        $item->document_verified = ($document_verified==3)?1:0;
+                        $doc_status = 0;                        
+                        if($pancard && $adharcard){
+                            if($pancard->status=2 || $adharcard->status==2){
+                                $doc_status =2;
+                            }
+                        }elseif ($pancard) {
+                           $doc_status =$pancard->status;
+                        }
+                        elseif ($adharcard) {
+                           $doc_status =$adharcard->status;
+                        }
+                        if(isset($bank_account_verified) && $bank_account_verified->status)
+                        {
+                            $item->bank_account_verified = $bank_account_verified->status;
 
-
+                        }else{
+                            $item->bank_account_verified = 0;
+                        }
+                        
+                        $item->document_verified = $doc_status;
+                        $item->paytm_verified = $payment_status;
                         $item->wallet_amount = $wallet_amount;
+                        
                         return $item;
 
                     });
@@ -3186,10 +3217,15 @@ class ApiController extends BaseController
                 // die;
                 $docType = $value->doc_type;
                 if($docType == 'adharcard' OR $docType == 'pancard'){
-                    if($value->status ==1){
+                    if($value->status ==2){
                         $documentsStatus = 2;
-                    }else {
+                    }elseif($value->status ==1){
                         $documentsStatus = 1;
+                    }elseif($value->status ==3){
+                        $documentsStatus = 3;
+                    }
+                    else {
+                        $documentsStatus = 0;
                     }
                 }
                 if($docType == 'paytm'){

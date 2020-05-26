@@ -169,8 +169,8 @@
 
                                                 </td>
                                                 <td> 
-                                                  @if($result->status==1) Approved
-                                                  @elseif($result->status==2) Rejected
+                                                  @if($result->status==2) Approved
+                                                  @elseif($result->status==3) Rejected
                                                   @else
                                                   Pending
                                                   @endif 
@@ -179,7 +179,7 @@
                                                  <td>
                                                   <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" onclick="getCategory('{{$result->id}}','{{$result->status}}')" >Approve</button>
                                                     
-                                                    @if($result->status==1)
+                                                    @if($result->status==2)
                                                     <span class="glyphicon glyphicon-ok"></span>
                                                     @endif
                                                     <ion-icon name="close-circle-outline"></ion-icon>
@@ -237,8 +237,8 @@
             <label for="sel1">Select Status:</label>
         <select class="form-control" id="document_status" name="document_status">
           <option value="0">Select Status</option>
-          <option value="1">Approved</option>
-          <option value="2">Rejected</option> 
+          <option value="2">Approved</option>
+          <option value="3">Rejected</option> 
         </select>
       </div>
       <div class="form-group">
