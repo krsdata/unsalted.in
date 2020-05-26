@@ -252,6 +252,10 @@ class MatchController extends Controller {
         $sub_page_title = 'View Match';
         $page_action = 'View Match'; 
 
+
+
+
+
         if($request->match_id && (($request->date_start && $request->date_end) || $request->status)){
             if($request->date_end && $request->date_start){
                 $date_start = \Carbon\Carbon::createFromFormat('Y-m-d H:i',$request->date_start)
@@ -335,6 +339,18 @@ class MatchController extends Controller {
                     })->orderBy('created_at','DESC')->Paginate($this->record_per_page);
 
                 $match->transform(function($item,$key){
+                    $playing11_teamA= \DB::table('team_a_squads')
+                                ->where('playing11',"true")
+                                ->where('match_id',$item->match_id)
+                                ->get();
+                    $playing11_teamB= \DB::table('team_b_squads')
+                                    ->where('match_id',$item->match_id)
+                                    ->where('playing11',"true")
+                                    ->get();
+                                    //dd($playing11_teamA);
+                    $item->playing11_teamA = $playing11_teamA;
+                    $item->playing11_teamB = $playing11_teamB;
+                                   
                 $contests = CreateContest::where('match_id',$item->match_id)->get()
                             ->transform(function($item,$key){
                                 $contest_name = \DB::table('contest_types')
@@ -350,6 +366,18 @@ class MatchController extends Controller {
         } else {
             $match = Match::with('teama','teamb')->orderBy('created_at','DESC')->Paginate($this->record_per_page);
             $match->transform(function($item,$key){
+
+                $playing11_teamA= \DB::table('team_a_squads')
+                            ->where('playing11',"true")
+                            ->where('match_id',$item->match_id)
+                            ->get();
+                $playing11_teamB= \DB::table('team_b_squads')
+                                ->where('match_id',$item->match_id)
+                                ->where('playing11',"true")
+                                ->get();
+
+                $item->playing11_teamA = $playing11_teamA;
+                $item->playing11_teamB = $playing11_teamB;
                 $contests = CreateContest::where('match_id',$item->match_id)->get()
                             ->transform(function($item,$key){
                                 $contest_name = \DB::table('contest_types')
@@ -361,9 +389,7 @@ class MatchController extends Controller {
                 return $item;            
 
             });
-
-        } 
-        
+        }    
         return view('packages::match.index', compact('match','page_title', 'page_action','sub_page_title'));
     }
 

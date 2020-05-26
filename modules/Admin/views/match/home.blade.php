@@ -144,6 +144,8 @@
            
           <a class="dropdown-item btn btn-danger" data-toggle="modal" data-target="#cancelContest_{{$result->id}}" href="#">Cancel Match Contest</a>
 
+          <a class="dropdown-item btn btn-danger" data-toggle="modal" data-target="#playing11_{{$result->id}}" href="#">Playing 11 Squad</a>
+
          <a class="dropdown-item btn btn-primary" href="{{route('cancelMatch','match_id='.$result->match_id)}}">Cancel This Match</a>
 
 
@@ -225,6 +227,58 @@
 </div>
 
 
+<div class="modal fade" id="playing11_{{$result->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg  " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Playing 11</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div> 
+      <div class="modal-body">
+
+         <table class="table table-striped table-hover table-bordered" id="contact">
+          <thead>
+              <tr>
+                  <th>Sno.</th>
+                  <th> Player Name</th> 
+              </tr>
+
+          </thead>
+          <tbody>
+            <tr>
+              <td>Team A</td>
+              <td>{{(count($result->playing11_teamA)==0)?'Not announced':''}}</td>
+            </tr>
+            @foreach($result->playing11_teamA as $key => $playing11)
+            <tr>
+              <td>{{$key+1}} </td>
+              <td>{{$playing11->name}}</td>
+            </tr>
+            @endforeach
+            <tr>
+              <td>Team B</td>
+              <td>{{(count($result->playing11_teamB)==0)?'Not announced':''}}</td>
+            </tr>
+             @foreach($result->playing11_teamB as $key => $playing11)
+            <tr>
+              <td>{{$key+1}} </td>
+              <td>{{$playing11->name}}</td>
+            </tr>
+            @endforeach
+          </tbody>
+      </table>  
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+</div>
+</div>
+</div>
+
+
                                               </td> 
                                              
 
@@ -250,6 +304,13 @@
                         </a>
  </td>
                                     </tr>
+
+
+
+
+
+
+
                                    @endforeach
                                     
                                 </tbody>
