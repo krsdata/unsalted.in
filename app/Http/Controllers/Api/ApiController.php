@@ -2613,8 +2613,7 @@ class ApiController extends BaseController
                 \DB::beginTransaction();
                 
                 $is_full = CreateContest::find($contest_id);
-
-                if($is_full->total_spots  && ($is_full->total_spots==$is_full->filled_spot)){
+                if($is_full->total_spots>=0  && ($is_full->total_spots==$is_full->filled_spot)){
                     return [
                         'status'=>false,
                         'code' => 201,
@@ -2712,14 +2711,11 @@ class ApiController extends BaseController
                 $jcc = \DB::table('join_contests')
                     ->where('match_id',$match_id)
                     ->where('contest_id',$contest_id)
+                    ->where('user_id',$user_id)
                     ->count();
                // if($jcc<=$cc->total_spots || $cc->total_spots==0){
                 // join contest    
                 $t =   JoinContest::updateOrCreate($data,$data);
-
-                $is_full->is_full = $is_full->is_full+1;
-                $is_full->filled_spot =  $is_full->is_full; 
-                $is_full->save();
 
                // }
                 // End spot count
@@ -2731,12 +2727,20 @@ class ApiController extends BaseController
                 $cc->filled_spot = CreateTeam::where('match_id',$match_id)
                     ->where('team_join_status',1)->count();
                 $cc->save();
+
+                $is_full = CreateContest::find($contest_id);
+                $c_count = (int)$is_full->is_full+1;
+                $is_full->is_full = $c_count;
+                $is_full->filled_spot =  $c_count;
+                $is_full->save();
+
             \DB::commit();
 
             }
-
+            $message = "Team created successfully!";
         }else{
             $cont = ["error"=>"contest id not found"];
+            $message = "Something went wrong!";
         }
         Log::channel('after_join_contest')->info($cont);
 
@@ -2744,7 +2748,7 @@ class ApiController extends BaseController
             [
                 "status"=>true,
                 "code"=>200,
-                "message"=>"success",
+                "message"=>$message,
                 "response"=>["joinedcontest"=>$cont]
             ]
         );
