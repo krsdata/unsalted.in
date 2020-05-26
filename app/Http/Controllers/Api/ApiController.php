@@ -2090,8 +2090,7 @@ class ApiController extends BaseController
 
         $created_team = CreateTeam::where('user_id',$user)
             ->where('team_join_status',1)
-            ->orderBy('updated_at','DESC')
-            ->select(\DB::raw('distinct match_id'),'user_id','id')
+            ->orderBy('updated_at','desc')
             ->limit(1)
             ->get()
             ->groupBy('match_id');
