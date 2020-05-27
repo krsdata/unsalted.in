@@ -698,33 +698,29 @@ class ApiController extends BaseController
             ->pluck('created_team_id')->toArray();
         $user_id = $request->user_id;
 
-        $leader_board1 = CreateTeam::with('user')
+        $leader_board1 = JoinContest::with('user')
             ->where('match_id',$request->match_id)
-            ->whereIn('id',$join_contests)
-            ->select('match_id','id as team_id','user_id','team_count as team','points as point','rank')
+            ->where('contest_id',$request->get('contest_id'))
             ->where(function($q) use($user_id){
                 $q->where('user_id',$user_id);
             })
-            ->orderBy('rank','ASC')
+            ->orderBy('ranks','ASC')
             ->get();
+        $point = (int)($leader_board1[0]->points??null);
 
-        $point = (int)($leader_board1[0]->point??null);
-
-        $leader_board2 = CreateTeam::with('user')
+        $leader_board2 = JoinContest::with('user')
             ->where('match_id',$request->match_id)
-            ->whereIn('id',$join_contests)
-            ->select('match_id','id as team_id','user_id','team_count as team','points as point','rank')
+            ->where('contest_id',$request->get('contest_id'))
             ->where(function($q) use($user_id,$point){
                 $q->where('user_id','!=',$user_id);
                 if($point){
-                    $q->orderBy('rank','ASC');
+                    $q->orderBy('ranks','ASC');
                 }else{
-                    $q->orderBy('rank','ASC');
+                    $q->orderBy('ranks','ASC');
                 }
             })
-            ->orderBy('rank','ASC')
+            ->orderBy('ranks','ASC')
             ->get();
-
         $lb=[];    
         foreach ($leader_board1 as $key => $value) {
 
@@ -733,11 +729,11 @@ class ApiController extends BaseController
             }
 
             $data['match_id'] = $value->match_id;
-            $data['team_id'] = $value->team_id;
+            $data['team_id'] = $value->created_team_id;
             $data['user_id'] = $value->user_id;
-            $data['team'] = $value->team;
-            $data['point'] = $value->point;
-            $data['rank'] = $value->rank;
+            $data['team'] = $value->team_count;
+            $data['point'] = $value->points;
+            $data['rank'] = $value->ranks;
 
 
             $data['user'] = [
@@ -756,11 +752,11 @@ class ApiController extends BaseController
             }
 
             $data['match_id'] = $value->match_id;
-            $data['team_id'] = $value->team_id;
+            $data['team_id'] = $value->created_team_id;
             $data['user_id'] = $value->user_id;
-            $data['team'] = $value->team;
-            $data['point'] = $value->point;
-            $data['rank'] = $value->rank;
+            $data['team'] = $value->team_count;
+            $data['point'] = $value->points;
+            $data['rank'] = $value->ranks;
 
             $user_data =  $value->user->first_name;
             $fn = explode(" ",$user_data);
