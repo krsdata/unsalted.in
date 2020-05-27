@@ -231,7 +231,7 @@ class ApiController extends BaseController
 
     public function updateUserMatchPoints(Request $request){
 
-        $matches = Matches::where('match_id',41913)
+        $matches = Matches::where('status',3)
             ->get()
             ->transform(function($item,$key)use($request){
                 
