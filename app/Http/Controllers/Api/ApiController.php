@@ -494,7 +494,7 @@ class ApiController extends BaseController
                                     'join_contest_id' => $join_contest_id,
                                 ]
                             );
-                            $match_stat->points = $total_points;
+                            $match_stat->points = (float)$total_points;
                             $match_stat->save();
                             $ct->points = $total_points;
                             $ct->save();
@@ -2464,11 +2464,11 @@ class ApiController extends BaseController
 
         $cc = CreateContest::find($contest_id);
 
-        if($cc && ($cc->total_spots!=0 && $cc->filled_spot>=$cc->total_spots)){
+        if($cc && ($cc->total_spots!==0 && $cc->filled_spot>=$cc->total_spots)){
             return [
                 'status'=>false,
                 'code' => 201,
-                'message' => 'This contest already full'
+                'message' => 'This contest already full!'
 
             ];
         }        
