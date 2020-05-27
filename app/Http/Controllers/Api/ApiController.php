@@ -2411,7 +2411,7 @@ class ApiController extends BaseController
         
         if($total_spots>0){
             $allowed_team = $total_spots-$filled_spot;
-            if($allowed_team<=0){
+            if($allowed_team<0){
                  return [
                     'status'=>false,
                     'code' => 201,
