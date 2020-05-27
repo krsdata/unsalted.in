@@ -148,7 +148,7 @@ class ApiController extends BaseController
         
       
         $join_contests_count = $join_contests->count();
-        if($cc && ($cc->filled_spot!=0 && $cc->total_spots==$cc->filled_spot)){
+        if($cc && ($cc->filled_spot>0 && $cc->total_spots==$cc->filled_spot)){
            // $this->automateCreateContest();
             return [
                 'status'=>true,
@@ -2411,7 +2411,7 @@ class ApiController extends BaseController
         
         if($total_spots>0){
             $allowed_team = $total_spots-$filled_spot;
-            if($allowed_team<=0){
+            if($allowed_team<0){
                  return [
                     'status'=>false,
                     'code' => 201,
@@ -2464,7 +2464,7 @@ class ApiController extends BaseController
 
         $cc = CreateContest::find($contest_id);
 
-        if($cc && ($cc->total_spots!==0 && $cc->filled_spot>=$cc->total_spots)){
+        if($cc && ($cc->total_spots>0 && $cc->filled_spot>=$cc->total_spots)){
             return [
                 'status'=>false,
                 'code' => 201,
