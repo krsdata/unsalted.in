@@ -2411,11 +2411,11 @@ class ApiController extends BaseController
         
         if($total_spots>0){
             $allowed_team = $total_spots-$filled_spot;
-            if($allowed_team<0){
+            if($allowed_team<=0){
                  return [
                     'status'=>false,
                     'code' => 201,
-                    'message' => 'Contest is already full'
+                    'message' => 'This Contest is already full'
                 ];
             }
         } 
@@ -2468,7 +2468,7 @@ class ApiController extends BaseController
             return [
                 'status'=>false,
                 'code' => 201,
-                'message' => 'This contest already full!'
+                'message' => 'This contest is already full!'
 
             ];
         }        
@@ -2569,7 +2569,7 @@ class ApiController extends BaseController
                 \DB::beginTransaction();
                 
                 $is_full = CreateContest::find($contest_id);
-                if($is_full->total_spots>=0  && ($is_full->total_spots==$is_full->filled_spot)){
+                if($is_full->total_spots>0  && ($is_full->total_spots==$is_full->filled_spot)){
                     return [
                         'status'=>false,
                         'code' => 201,
