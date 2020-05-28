@@ -3486,6 +3486,7 @@ class ApiController extends BaseController
                 $data['doc_url_front'] = $request->pancardDocumentUrl;
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
+                $data['status']  =1;
                 \DB::table('verify_documents')->insert($data);
             }else if($documentType=='adharcard'){
                 $data = array();
@@ -3497,6 +3498,7 @@ class ApiController extends BaseController
                 $data['doc_url_back'] = $request->aadharCardDocumentUrlBack;
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
+                $data['status']  =1;
                 \DB::table('verify_documents')->insert($data);
             }else if($documentType=='paytm'){
                 $data = array();
@@ -3505,6 +3507,7 @@ class ApiController extends BaseController
                 $data['doc_number'] = $request->paytmNumber;
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
+                $data['status']  =1;
                 \DB::table('verify_documents')->insert($data);
             }else
                 if($documentType=='passbook'){
@@ -3518,6 +3521,7 @@ class ApiController extends BaseController
                     $data['bank_passbook_url'] = $request->bankPassbookUrl;
                     $data['created_at'] = date('Y-m-d H:i:s');
                     $data['updated_at'] = date('Y-m-d H:i:s');
+                    $data['status']  =1;
                     \DB::table('bank_accounts')->insert($data);
                 }
 
