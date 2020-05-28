@@ -257,7 +257,7 @@ class PaymentController extends BaseController
                         'rank' => $item->rank
                         ];
                 $helper = new Helper;
-                //  $m = $helper->sendNotificationMail($email_content,'prize');
+                $m = $helper->sendNotificationMail($email_content,'prize');
                 $item->user_id = $item->user_id;
                 $item->email = $item->email;
             }   

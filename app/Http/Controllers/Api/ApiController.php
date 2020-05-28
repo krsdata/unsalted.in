@@ -3444,7 +3444,21 @@ class ApiController extends BaseController
 
     }
 
+    public function notifyToAdmin(){
 
+        $user_email = [env('admin1_email','manoj.i.prasad@gmail.com'),env('admin2_email','kroy.aws@gmail.com'),env('admin3_email','saxena.sweekar@gmail.com')];
+
+        $user = User::whereIn('email',$user_email)->get();
+        foreach ($user as $key => $result) {
+            $data = [
+                'action' => 'notify' ,
+                'title' => 'New documents uploaded' ,
+                'message' => 'New Document recieved to verify'
+            ];
+            Helper::sendMobileNotification($result->device_id,$data);
+        }
+        
+    }
     // Add Money
     public function saveDocuments(Request $request){
 
@@ -3487,7 +3501,8 @@ class ApiController extends BaseController
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
-                \DB::table('verify_documents')->insert($data);
+                \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
+                $this->notifyToAdmin();
             }else if($documentType=='adharcard'){
                 $data = array();
                 $data['user_id'] = $request->user_id;
@@ -3499,7 +3514,9 @@ class ApiController extends BaseController
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
-                \DB::table('verify_documents')->insert($data);
+
+                \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
+                $this->notifyToAdmin();
             }else if($documentType=='paytm'){
                 $data = array();
                 $data['user_id'] = $request->user_id;
@@ -3508,7 +3525,8 @@ class ApiController extends BaseController
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
-                \DB::table('verify_documents')->insert($data);
+                \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
+                $this->notifyToAdmin();
             }else
                 if($documentType=='passbook'){
                     $data = array();
@@ -3522,7 +3540,8 @@ class ApiController extends BaseController
                     $data['created_at'] = date('Y-m-d H:i:s');
                     $data['updated_at'] = date('Y-m-d H:i:s');
                     $data['status']  =1;
-                    \DB::table('bank_accounts')->insert($data);
+                    \DB::table('bank_accounts')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
+                    $this->notifyToAdmin();
                 }
 
             return response()->json(
