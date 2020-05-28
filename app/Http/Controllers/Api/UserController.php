@@ -612,14 +612,14 @@ class UserController extends BaseController
             );
         }
 
-        $user = User::find($request->user_id);
-        if($user){
+	        $user = User::find($request->user_id);
+	 if($user){
             $user->city = $request->city;
             $user->dateOfBirth = $request->dateOfBirth;
             $user->gender = $request->gender;
             $user->pinCode = $request->pinCode;
             $user->state = $request->state;
-            
+
             $user->save();
 
             return response()->json(
