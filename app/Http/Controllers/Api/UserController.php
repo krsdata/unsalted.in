@@ -615,16 +615,15 @@ class UserController extends BaseController
         }
 
         if($user){
-            $data = array();
-            $data['city'] = $request->city;
-            $data['dateOfBirth'] = $request->dateOfBirth;
-            $data['gender'] = $request->gender;
-            $data['pinCode'] = $request->pinCode;
-            $data['state'] = $request->state;
 
-            \DB::table('users')
-                ->update($data)
-                ->where('user_id',$request->user_id);
+            
+            $user = User::find($request->user_id);
+            $user->city = $request->city;
+            $user->dateOfBirth = $request->dateOfBirth;
+            $user->gender = $request->gender;
+            $user->pinCode = $request->pinCode;
+            $user->state = $request->state;
+            $request->save();
 
             return response()->json(
                 [
