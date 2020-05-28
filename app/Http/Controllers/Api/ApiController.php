@@ -3765,11 +3765,14 @@ class ApiController extends BaseController
            
             foreach ($verify_documents as $key => $vd) {
                 $s = "Pending";
-
+                
                 if($vd->status==1){
-                    $s="Approved";
+                    $s="Pending";
                 }
                 elseif($vd->status==2){
+                    $s="Approved";
+                }
+                elseif($vd->status==3){
                     $s="Rejected";
                 } 
 
@@ -3789,8 +3792,8 @@ class ApiController extends BaseController
                 } 
             } 
 
-            $s = ($bank_accounts->status==1)?'Approved':($bank_accounts->status==2)?'Rejected':'Pending';
-
+            $s = ($bank_accounts->status==1)?'Pending':($bank_accounts->status==2)?'Approved':'Pending';
+            
             $status['bank_accounts'][] = [
                 'status' =>  $bank_accounts->status,
                 'message' => $s,
