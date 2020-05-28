@@ -583,66 +583,76 @@ class UserController extends BaseController
 
     public function updateProfile(Request $request)
     {
-        $user = User::find($request->user_id);
-        if(!$request->user_id && (User::find($request->user_id))==null)
-        {
-            return Response::json(array(
-                    'status' => false,
-                    'code' => 201,
-                    'message' => 'Invalid user Id!',
-                    'data'  =>  $request->all()
-                )
-            );
-        }
+        echo "Heloo i am in update Prfoile";
+        // $user = User::find($request->user_id);
+        // if(!$request->user_id && (User::find($request->user_id))==null)
+        // {
+        //     return Response::json(array(
+        //             'status' => false,
+        //             'code' => 201,
+        //             'message' => 'Invalid user Id!',
+        //             'data'  =>  $request->all()
+        //         )
+        //     );
+        // }
 
-        $table_cname = \Schema::getColumnListing('users');
-        $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
-        $user_data = [];
-        foreach ($table_cname as $key => $value) {
+        // $table_cname = \Schema::getColumnListing('users');
+        // $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
+        // $user_data = [];
+        // foreach ($table_cname as $key => $value) {
 
-            if(in_array($value, $except )){
-                continue;
-            }
+        //     if(in_array($value, $except )){
+        //         continue;
+        //     }
 
-            $udata = $request->get($value);
-            if($request->get($value) && $udata!=""){
-                $user->$value = $request->get($value);
-                $user_data[$value] = $request->get($value);
-            }
-        }
+        //     $udata = $request->get($value);
+        //     if($request->get($value) && $udata!=""){
+        //         $user->$value = $request->get($value);
+        //         $user_data[$value] = $request->get($value);
+        //     }
+        // }
 
-        if($request->get('profile_image')){
-            $profile_image = $this->createImage($request);
-            if($profile_image==false){
-                return Response::json(array(
-                        'status' => false,
-                        'code' => 201,
-                        'message' => 'Invalid Image format!'
-                    )
-                );
-            }
-            $user->profile_image  = $profile_image;
-        }
+        // if($request->get('profile_image')){
+        //     $profile_image = $this->createImage($request);
+        //     if($profile_image==false){
+        //         return Response::json(array(
+        //                 'status' => false,
+        //                 'code' => 201,
+        //                 'message' => 'Invalid Image format!'
+        //             )
+        //         );
+        //     }
+        //     $user->profile_image  = $profile_image;
+        // }
 
-        try{
-            $user->save();
-            $status = true;
-            $code  = 200;
-            $message ="Profile updated successfully";
-        }catch(\Exception $e){
-            $status = false;
-            $code  = 201;
-            $message =$e->getMessage();
-        }
 
-        return response()->json(
-            [
-                "status" =>$status,
-                'code'   => $code,
-                "message"=> $message,
-                'data'=>isset($user_data)?$user_data:null
-            ]
-        );
+        // try{
+        //     $user->city  = $request->city;
+        //     $user->dateOfBirth  = $request->dateOfBirth;
+        //     $user->gender  = $request->gender;
+        //     $user->mobile_number  = $request->mobile_number;
+        //     $user->name  = $request->name;
+        //     $user->pinCode  = $request->pinCode;
+        //     $user->state  = $request->state;
+
+        //     $user->save();
+        //     $status = true;
+        //     $code  = 200;
+        //     $message ="Profile updated successfully";
+        // }catch(\Exception $e){
+        //     $status = false;
+        //     $code  = 201;
+        //     $message =$e->getMessage();
+        // }
+
+        // return response()->json(
+        //     [
+        //         "status" =>$status,
+        //         'code'   => $code,
+        //         "message"=> $message,
+        //         'data'=>isset($user_data)?$user_data:null
+        //     ]
+        // );
 
     }
 
@@ -932,6 +942,7 @@ class UserController extends BaseController
                 $data['referal_code']  = $usermodel->user_name;
                 $data['name'] = $usermodel->name;
                 $data['email'] = $usermodel->email;
+                $data['profile_image'] = isset($usermodel->profile_image)?$usermodel->profile_image:"https://image";
                 $data['user_id'] = $usermodel->id;
                 $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
