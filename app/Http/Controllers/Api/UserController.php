@@ -591,7 +591,6 @@ class UserController extends BaseController
             'user_id' => 'required',
             'city' => 'required',
             'dateOfBirth' => 'required',
-            'email' => 'required',
             'gender' => 'required',
             'mobile_number' => 'required',
             'name' => 'required',
@@ -601,7 +600,7 @@ class UserController extends BaseController
 
 
         // Return Error Message
-        if ($validator->fails()==1) {
+        if ($validator->fails()) {
             $error_msg  =   [];
             foreach ( $validator->messages()->all() as $key => $value) {
                 array_push($error_msg, $value);
