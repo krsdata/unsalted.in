@@ -66,6 +66,13 @@ Route::group([
     'prefix' => 'v2'
 ], function()
 {   
+    
+
+    Route::match(['get','post'], 'getPlayerPoints', [
+        'as' => 'getPlayerPoints',
+        'uses' => 'Api\ApiController@getPlayerPoints'
+    ]);
+    
     Route::match(['get','post'], 'automateCreateContest', [
         'as' => 'automateCreateContest',
         'uses' => 'Api\ApiController@automateCreateContest'
@@ -174,7 +181,7 @@ Route::group([
     //added by manoj
     Route::match(['post','get'],'uploadbase64Image', 'Api\ApiController@uploadbase64Image');
     Route::match(['post','get'],'member/uploadImages', 'Api\ApiController@uploadImages');
-    Route::match(['post','get'],'member/updateProfile', 'Api\ApiController@updateProfile');
+    Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
 }
 );
 

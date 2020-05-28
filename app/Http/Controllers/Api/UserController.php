@@ -581,79 +581,69 @@ class UserController extends BaseController
         );
     }
 
-    public function updateProfile(Request $request)
-    {
-        echo "Heloo i am in update Prfoile";
-        // $user = User::find($request->user_id);
-        // if(!$request->user_id && (User::find($request->user_id))==null)
-        // {
-        //     return Response::json(array(
-        //             'status' => false,
-        //             'code' => 201,
-        //             'message' => 'Invalid user Id!',
-        //             'data'  =>  $request->all()
-        //         )
-        //     );
-        // }
+    public function updateProfile(Request $request){
 
-        // $table_cname = \Schema::getColumnListing('users');
-        // $except = ['id','created_at','updated_at','profile_image','referral_code','user_name','password','device_id','user_type','email'];
-        // $user_data = [];
-        // foreach ($table_cname as $key => $value) {
-
-        //     if(in_array($value, $except )){
-        //         continue;
-        //     }
-
-        //     $udata = $request->get($value);
-        //     if($request->get($value) && $udata!=""){
-        //         $user->$value = $request->get($value);
-        //         $user_data[$value] = $request->get($value);
-        //     }
-        // }
-
-        // if($request->get('profile_image')){
-        //     $profile_image = $this->createImage($request);
-        //     if($profile_image==false){
-        //         return Response::json(array(
-        //                 'status' => false,
-        //                 'code' => 201,
-        //                 'message' => 'Invalid Image format!'
-        //             )
-        //         );
-        //     }
-        //     $user->profile_image  = $profile_image;
-        // }
+        $myArr = [];
+        $user = User::find($request->user_id);
 
 
-        // try{
-        //     $user->city  = $request->city;
-        //     $user->dateOfBirth  = $request->dateOfBirth;
-        //     $user->gender  = $request->gender;
-        //     $user->mobile_number  = $request->mobile_number;
-        //     $user->name  = $request->name;
-        //     $user->pinCode  = $request->pinCode;
-        //     $user->state  = $request->state;
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'city' => 'required',
+            'dateOfBirth' => 'required',
+            'email' => 'required',
+            'gender' => 'required',
+            'mobile_number' => 'required',
+            'name' => 'required',
+            'pinCode' => 'required',
+            'state' => 'required'
+        ]);
 
-        //     $user->save();
-        //     $status = true;
-        //     $code  = 200;
-        //     $message ="Profile updated successfully";
-        // }catch(\Exception $e){
-        //     $status = false;
-        //     $code  = 201;
-        //     $message =$e->getMessage();
-        // }
 
-        // return response()->json(
-        //     [
-        //         "status" =>$status,
-        //         'code'   => $code,
-        //         "message"=> $message,
-        //         'data'=>isset($user_data)?$user_data:null
-        //     ]
-        // );
+        // Return Error Message
+        if ($validator->fails()==1) {
+            $error_msg  =   [];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                array_push($error_msg, $value);
+            }
 
+            return Response::json(array(
+                    'code' => 201,
+                    'status' => false,
+                    'message' => $error_msg[0]
+                )
+            );
+        }
+
+        if($user){
+            $data = array();
+            $data['user_id'] = $request->user_id;
+            $data['city'] = $request->city;
+            $data['dateOfBirth'] = $request->dateOfBirth;
+            $data['gender'] = $request->gender;
+            $data['pinCode'] = $request->pinCode;
+            $data['state'] = $request->state;
+
+            \DB::table('users')
+                ->update($data)
+                ->where('user_id',$request->user_id);
+
+            return response()->json(
+                [
+                    "status"=>true,
+                    "code"=>200,
+                    "message" => "Profile updated successfully"
+                ]
+            );
+        }else{
+            return response()->json(
+                [
+                    "status"=>false,
+                    "code"=>201,
+                    "message" => "User is invalid"
+                ]
+            );
+        }
     }
 
     // Image upload
