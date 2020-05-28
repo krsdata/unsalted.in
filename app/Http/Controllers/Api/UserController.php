@@ -617,7 +617,6 @@ class UserController extends BaseController
 
         if($user){
             $data = array();
-            $data['user_id'] = $request->user_id;
             $data['city'] = $request->city;
             $data['dateOfBirth'] = $request->dateOfBirth;
             $data['gender'] = $request->gender;
