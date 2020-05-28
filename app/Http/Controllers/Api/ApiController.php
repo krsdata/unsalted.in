@@ -3455,8 +3455,14 @@ class ApiController extends BaseController
                 'title' => 'New documents uploaded' ,
                 'message' => ''
             ];
-            $helpr = new Helper; 
-            $helpr->sendNotification($result->device_id,$data);
+            
+            try{
+                $helpr = new Helper; 
+                $helpr->sendNotification($result->device_id,$data);
+            }catch(\ErrorException $e){
+               // return false;
+            }
+            
         }
     }
     // Add Money
