@@ -3457,7 +3457,6 @@ class ApiController extends BaseController
             ];
             Helper::sendMobileNotification($result->device_id,$data);
         }
-        
     }
     // Add Money
     public function saveDocuments(Request $request){
@@ -3503,7 +3502,7 @@ class ApiController extends BaseController
                 $data['status']  =1;
                 \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
                 $this->notifyToAdmin();
-            }else if($documentType=='adharcard'){
+            }elseif($documentType=='adharcard'){
                 $data = array();
                 $data['user_id'] = $request->user_id;
                 $data['doc_type'] = $documentType;
@@ -3517,7 +3516,7 @@ class ApiController extends BaseController
 
                 \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
                 $this->notifyToAdmin();
-            }else if($documentType=='paytm'){
+            }elseif($documentType=='paytm'){
                 $data = array();
                 $data['user_id'] = $request->user_id;
                 $data['doc_type'] = $documentType;
@@ -3793,7 +3792,7 @@ class ApiController extends BaseController
             } 
 
             $s = ($bank_accounts->status==1)?'Pending':($bank_accounts->status==2)?'Approved':'Pending';
-            
+
             $status['bank_accounts'][] = [
                 'status' =>  $bank_accounts->status,
                 'message' => $s,
