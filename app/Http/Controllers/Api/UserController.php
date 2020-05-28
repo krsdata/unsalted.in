@@ -931,6 +931,11 @@ class UserController extends BaseController
                 $data['mobile_number'] = $usermodel->mobile_number??$usermodel->phone;
                 $data['bonus_amount']     =  (float)$wallet->bonus_amount;
                 $data['usable_amount']    = (float)$wallet->usable_amount;
+                $data['city'] = $usermodel->city;
+                $data['dateOfBirth'] = $usermodel->dateOfBirth;
+                $data['gender'] = $usermodel->gender;
+                $data['pinCode'] = $usermodel->pinCode;
+                $data['state'] = $usermodel->state;
                 $status = true;
             }
             $devD = \DB::table('hardware_infos')->where('user_id',$usermodel->id)->first();
