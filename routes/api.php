@@ -182,6 +182,7 @@ Route::group([
     Route::match(['post','get'],'uploadbase64Image', 'Api\ApiController@uploadbase64Image');
     Route::match(['post','get'],'member/uploadImages', 'Api\ApiController@uploadImages');
     Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
+    Route::match(['post','get'],'updateProfile', 'Api\UserController@updateProfile');
 }
 );
 
