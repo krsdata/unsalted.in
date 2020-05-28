@@ -34,14 +34,7 @@ class User extends Authenticatable {
      *
      * @var array
      */
-    protected $fillable = [
-                            'name',
-                            'phone',
-                            'mobile',
-                            'email', 
-                            'role_type',
-                            'remember_token'
-                        ];  // All field of user table here    
+    
 
 
     /**
