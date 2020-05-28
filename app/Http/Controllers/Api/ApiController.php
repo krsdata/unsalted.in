@@ -3453,9 +3453,10 @@ class ApiController extends BaseController
             $data = [
                 'action' => 'notify' ,
                 'title' => 'New documents uploaded' ,
-                'message' => 'New Document recieved to verify'
+                'message' => ''
             ];
-            Helper::sendMobileNotification($result->device_id,$data);
+            $helpr = new Helper; 
+            $helpr->sendNotification($result->device_id,$data);
         }
     }
     // Add Money
@@ -3496,8 +3497,6 @@ class ApiController extends BaseController
                 $data['doc_number'] = $request->panCardNumber;
                 $data['doc_name'] = $request->panCardName;
                 $data['doc_url_front'] = $request->pancardDocumentUrl;
-                $data['created_at'] = date('Y-m-d H:i:s');
-                $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
                 \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
                 $this->notifyToAdmin();
@@ -3509,8 +3508,6 @@ class ApiController extends BaseController
                 $data['doc_name'] = $request->panCardName;
                 $data['doc_url_front'] = $request->aadharCardDocumentUrlFront;
                 $data['doc_url_back'] = $request->aadharCardDocumentUrlBack;
-                $data['created_at'] = date('Y-m-d H:i:s');
-                $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
 
                 \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
@@ -3520,8 +3517,6 @@ class ApiController extends BaseController
                 $data['user_id'] = $request->user_id;
                 $data['doc_type'] = $documentType;
                 $data['doc_number'] = $request->paytmNumber;
-                $data['created_at'] = date('Y-m-d H:i:s');
-                $data['updated_at'] = date('Y-m-d H:i:s');
                 $data['status']  =1;
                 \DB::table('verify_documents')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
                 $this->notifyToAdmin();
