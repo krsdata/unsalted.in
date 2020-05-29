@@ -21,6 +21,13 @@
                                         <i class="icon-settings font-red"></i>
                                         <span class="caption-subject font-red sbold uppercase">{{ $heading }}s</span>
                                     </div>
+                                    <div class="col-md-2 pull-right">
+                                            <div style="width: 150px;" class="input-group"> 
+                                                <a href="{{ route('bankAccount')}}">
+                                                    <button  class="btn btn-success"><i class="fa fa-plus-circle"></i> Verify bank details </button> 
+                                                </a>
+                                            </div>
+                                        </div> 
                                      
                                 </div>
                                   
