@@ -1147,6 +1147,63 @@ class UserController extends BaseController
     }
 
 
+    
+    public function mChangePassword(Request $request){
+
+        $user_id =  $request->user_id;
+        $current_password =  $request->current_password;
+        $new_password = $request->new_password;
+
+        $messages = [
+            'user_id.required' => 'User id is required',
+            'new_password.required' => 'New password is required',
+            'current_password.required' => 'current password is required'
+
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'current_password' => 'required',
+            'new_password' => 'required|min:6'
+        ],$messages);
+
+        $user = User::where('id',$user_id)->first();
+
+        // Return Error Message
+        if ($validator->fails() || $user ==null) {
+            $error_msg =[];
+            foreach ( $validator->messages()->all() as $key => $value) {
+                array_push($error_msg, $value);
+            }
+            return Response::json(array(
+                    'status' => false,
+                    "code"=> 201,
+                    'message' => $error_msg[0]??'Opps! This user is not available'
+                )
+            );
+        }
+
+        $credentials = [
+            'email'=>$user->email,
+            'password'=>$current_password
+        ];
+
+        $auth = Auth::attempt($credentials);
+        if($auth){
+            $user->password = Hash::make($new_password);
+            $user->save();
+            return response()->json(
+                [
+                    "status"=>true,
+                    'code'=>200,
+                    "message"=>"Password changed successfully"
+                ]);
+
+        }else{
+            return response()->json([ "status"=>false,'code'=>201,"message"=>"Old password do not match. Try again!"]);
+
+        }
+    }
     public function resetPassword(Request $request){
 
         $user_id =  $request->user_id;
