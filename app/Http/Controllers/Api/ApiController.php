@@ -3444,6 +3444,40 @@ class ApiController extends BaseController
 
     }
 
+    public function sendNotification($token, $data){
+     
+        $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+       $extraNotificationData = $data;
+
+       $fcmNotification = [
+           //'registration_ids' => $tokenList, //multple token array
+           'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+       ];
+
+       $headers = [
+           'Authorization: key='.$serverLKey,
+           'Content-Type: application/json'
+       ];
+
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+       $result = curl_exec($ch);
+       //echo "result".$result;
+       //die;
+       curl_close($ch);
+       return true;
+    }
+    
     public function notifyToAdmin(){
 
         $user_email = [env('admin1_email','manoj.i.prasad@gmail.com'),env('admin2_email','kroy.aws@gmail.com'),env('admin3_email','saxena.sweekar@gmail.com')];
@@ -3457,8 +3491,8 @@ class ApiController extends BaseController
             ];
             
             try{
-                $helpr = new Helper; 
-                $helpr->sendNotification($result->device_id,$data);
+               // $helpr = new Helper; 
+                $this->sendNotification($result->device_id,$data);
             }catch(\ErrorException $e){
                // return false;
             }
