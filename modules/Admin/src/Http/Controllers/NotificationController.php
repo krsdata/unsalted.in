@@ -114,11 +114,11 @@ class NotificationController extends Controller {
             ];
 
 
-                $device_id = 'eMcz-rAVHzo:APA91bHnJgU3Ara71GWzxi0yrMcANinwM4n9IgzdpWdT5emq62tAHhXpfr7ZWZpv4IGxE2GPCNaXl9QwTpmuP8On4HTbCuzq97aAq8_Td_d7UaRmQQe3wwGf23gbBnc0r6L2G9THMjTo'; // $result->device_id;
+                $device_id =  $item->device_id;
                 $this->sendNotification($device_id,$data);
 
         });
-        
+
         return Redirect::to(route('notification'))
                             ->with('flash_alert_notice', 'New Notification  successfully created!');
     }
@@ -186,7 +186,7 @@ class NotificationController extends Controller {
             ];
 
 
-                $device_id = 'eMcz-rAVHzo:APA91bHnJgU3Ara71GWzxi0yrMcANinwM4n9IgzdpWdT5emq62tAHhXpfr7ZWZpv4IGxE2GPCNaXl9QwTpmuP8On4HTbCuzq97aAq8_Td_d7UaRmQQe3wwGf23gbBnc0r6L2G9THMjTo'; // $result->device_id;
+                $device_id =  $item->device_id;
                 $this->sendNotification($device_id,$data);
 
         });

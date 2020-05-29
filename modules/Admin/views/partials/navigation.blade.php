@@ -84,6 +84,12 @@
                                     <i class="glyphicon glyphicon-th"></i> View Prize </a>
                     </div>
 
+
+                    <div class="btn-group"> 
+                             <a class="btn red-haze btn-sm dropdown-toggle"  href="{{ route('notification')}}">
+                                    <i class="glyphicon glyphicon-th"></i> Notify </a>
+                    </div>
+
                     </div>
                 <!-- END PAGE ACTIONS -->
                 <!-- BEGIN PAGE TOP -->
