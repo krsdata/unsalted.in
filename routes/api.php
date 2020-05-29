@@ -21,6 +21,8 @@ Route::group(['prefix' => 'v2'], function () {
     Route::match(['post','get'], 'forgotPassword', 'Api\UserController@forgotPassword');
     Route::match(['post','get'], 'password/reset', 'Api\UserController@resetPassword');
     Route::match(['post','get'], 'changePassword', 'Api\UserController@changePassword');
+    Route::match(['post','get'], 'mChangePassword', 'Api\UserController@mChangePassword');
+    
 });
 
 Route::middleware('auth:api')->group( function () {
