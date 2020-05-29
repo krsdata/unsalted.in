@@ -3477,7 +3477,7 @@ class ApiController extends BaseController
        curl_close($ch);
        return true;
     }
-    
+
     public function notifyToAdmin(){
 
         $user_email = [env('admin1_email','manoj.i.prasad@gmail.com'),env('admin2_email','kroy.aws@gmail.com'),env('admin3_email','saxena.sweekar@gmail.com')];
@@ -3570,10 +3570,8 @@ class ApiController extends BaseController
                     $data['ifsc_code'] = $request->ifscCode;
                     $data['account_type'] = $request->accountType;
                     $data['bank_passbook_url'] = $request->bankPassbookUrl;
-                    $data['created_at'] = date('Y-m-d H:i:s');
-                    $data['updated_at'] = date('Y-m-d H:i:s');
                     $data['status']  =1;
-                    \DB::table('bank_accounts')->updateOrInsert($data,['user_id' => $request->user_id,'doc_type'=>$documentType]);
+                    \DB::table('bank_accounts')->updateOrInsert($data,['user_id' => $request->user_id]);
                     $this->notifyToAdmin();
                 }
 
