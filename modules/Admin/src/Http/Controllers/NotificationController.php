@@ -105,25 +105,20 @@ class NotificationController extends Controller {
         $notification->notified_user=1;
         $notification->save();   
 
-        $user = User::all();
-        foreach ($user as $key => $result) {
-            $data = [
+        $user = User::get()->transform(function($item,$key)use($notification){
+
+                $data = [
                 'action' => 'notify' ,
                 'title' => $notification->title,
                 'message' => $notification->message
             ];
-            
-            try{
-               // $helpr = new Helper; 
-                $device_id = 'eMcz-rAVHzo:APA91bHnJgU3Ara71GWzxi0yrMcANinwM4n9IgzdpWdT5emq62tAHhXpfr7ZWZpv4IGxE2GPCNaXl9QwTpmuP8On4HTbCuzq97aAq8_Td_d7UaRmQQe3wwGf23gbBnc0r6L2G9THMjTo'; // $result->device_id;
-                Helper::sendMobileNotification($device_id,$data);
-            }catch(\ErrorException $e){
-               // return false;
-            }
-            
-        }
 
-         
+
+                $device_id = 'eMcz-rAVHzo:APA91bHnJgU3Ara71GWzxi0yrMcANinwM4n9IgzdpWdT5emq62tAHhXpfr7ZWZpv4IGxE2GPCNaXl9QwTpmuP8On4HTbCuzq97aAq8_Td_d7UaRmQQe3wwGf23gbBnc0r6L2G9THMjTo'; // $result->device_id;
+                $this->sendNotification($device_id,$data);
+
+        });
+        
         return Redirect::to(route('notification'))
                             ->with('flash_alert_notice', 'New Notification  successfully created!');
     }
@@ -142,6 +137,40 @@ class NotificationController extends Controller {
         return view('packages::notification.edit', compact('notification', 'page_title', 'page_action'));
     }
 
+    public function sendNotification($token, $data){
+     
+        $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+       $extraNotificationData = $data;
+
+       $fcmNotification = [
+           //'registration_ids' => $tokenList, //multple token array
+           'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+       ];
+
+       $headers = [
+           'Authorization: key='.$serverLKey,
+           'Content-Type: application/json'
+       ];
+
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+       $result = curl_exec($ch);
+       //echo "result".$result;
+       //die;
+       curl_close($ch);
+       return true;
+    }
+
     public function update(Request $request, $id) {
         $notification = Notification::find($id);
         $notification->fill(Input::all()); 
@@ -156,9 +185,9 @@ class NotificationController extends Controller {
                 'message' => $notification->message
             ];
 
-            
+
                 $device_id = 'eMcz-rAVHzo:APA91bHnJgU3Ara71GWzxi0yrMcANinwM4n9IgzdpWdT5emq62tAHhXpfr7ZWZpv4IGxE2GPCNaXl9QwTpmuP8On4HTbCuzq97aAq8_Td_d7UaRmQQe3wwGf23gbBnc0r6L2G9THMjTo'; // $result->device_id;
-                Helper::sendMobileNotification($device_id,$data);
+                $this->sendNotification($device_id,$data);
 
         });
 
