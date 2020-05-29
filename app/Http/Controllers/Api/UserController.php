@@ -612,8 +612,35 @@ class UserController extends BaseController
             );
         }
 
-	        $user = User::find($request->user_id);
-	 if($user){
+    $new_password  = $request->new_password;
+    $password      = $request->password;
+    $user = User::find($request->user_id);
+     
+    if($new_password && $password){
+
+        $credentials = [
+                    'email'     =>$request->get('email'),
+                    'password'  =>$request->get('password'),
+                    'status'    => 1
+                ];
+
+        $auth = Auth::attempt($credentials);
+        if($auth){
+                $user->password = Hash::make($new_password);
+                $user->save();
+        }else{
+             return Response::json(array(
+                    'code' => 201,
+                    'status' => false,
+                    'message' => 'Old password does not match!'
+                )
+            );
+        }
+    }
+
+    $user = User::find($request->user_id);
+    
+    if($user){
             $user->city = $request->city;
             $user->dateOfBirth = $request->dateOfBirth;
             $user->gender = $request->gender;
