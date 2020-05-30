@@ -2070,8 +2070,16 @@ class ApiController extends BaseController
                 $join_match_count   =   $join_contest->count();
                 $join_match = $jmatches;
                 $league_title = \DB::table('competitions')->where('id',$jmatches->competition_id)->first()->title??null;
-                $jmatches->league_title = $league_title;
+
+                $prize = \DB::table('prize_distributions')
+                        ->where('match_id' ,$jmatches->match_id)
+                        ->where('user_id',$request->user_id)
+                        ->sum('prize_amount');
                 
+                $jmatches->prize_amount = $prize;
+
+                $jmatches->league_title = $league_title;
+
                 if($jmatches->is_free==0){
                     $jmatches->has_free_contest= false;
                 }else{
@@ -2927,7 +2935,19 @@ class ApiController extends BaseController
             ->where('match_id',$match_id)
             ->where('user_id',$user_id)
             ->where('contest_id',$contest_id)
-            ->get();
+            ->get()
+            ->transform(function($item,$key){
+                 $prize = \DB::table('prize_distributions')
+                        ->where('match_id' ,$item->match_id)
+                        ->where('user_id',$item->user_id)
+                        ->where('contest_id',$item->contest_id)
+                        ->where('created_team_id',$item->created_team_id)
+                        ->sum('prize_amount');
+                
+                $item->prize_amount = $prize;
+                return $item;
+            });
+
         $userVald = User::find($user_id);
         if($joinMyContest){
             $matchcontests = [];
@@ -2941,6 +2961,9 @@ class ApiController extends BaseController
                 $data2['isWinning'] =   false;
                 $data2['rank']      = $result->ranks;
                 $data2['points']    = $result->points;
+                if(isset($result->prize_amount)){
+                    $data2['prize_amount']    = $result->prize_amount; 
+                }
                 $matchcontests[] =  $data2 ;
                 $data2 = [];
             }
