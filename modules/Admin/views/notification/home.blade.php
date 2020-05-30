@@ -132,14 +132,11 @@
       </div> 
       <div class="modal-body">
 
-
+{!! Form::model($notification, ['route' => ['notification.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
 
 <div class="form-body">
     <div class="alert alert-danger display-hide">
         <button class="close" data-close="alert"></button> Please fill the required field! </div>
-  <!--   <div class="alert alert-success display-hide">
-        <button class="close" data-close="alert"></button> Your form validation is successful! </div>
---> 
         <div class="form-group {{ $errors->first('message_type', ' has-error') }}">
             <label class="control-label col-md-3">Message Type <span class="required"> * </span></label>
             <div class="col-md-7"> 
@@ -170,19 +167,19 @@
         </div>
 
     
-    
-</div>
-<div class="form-actions">
-    <div class="row" style="padding-right:12px">
-        <div class="col-md-10">
-          {!! Form::submit(' Send Notification ', ['class'=>'btn  btn-success pull-right','id'=>'saveBtn']) !!}
+        
+    <div class="form-actions">
+        <div class="row" style="padding-right:12px">
+            <div class="col-md-10">
+              {!! Form::submit(' Send Notification ', ['class'=>'btn  btn-success pull-right','id'=>'saveBtn']) !!}
+            </div>
         </div>
     </div>
 </div>
+{!! Form::close() !!}   
 
 
-
-       </div>
+   </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
     </div>

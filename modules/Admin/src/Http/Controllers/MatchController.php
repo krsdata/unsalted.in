@@ -156,7 +156,7 @@ class MatchController extends Controller {
                 $match->status_str= 'Cancelled';
                 $match->is_cancelled= 1;
                 $match->save();
-                
+
                 if($match->status==4){
                     return Redirect::to(route('match','search='.$match_id))->with('flash_alert_notice', 'This Match already Cancelled'); 
                 }
@@ -323,29 +323,35 @@ class MatchController extends Controller {
                
             $match = Match::with('teama','teamb')->where(function($query) use($search,$status) {    
                         if (!empty($status) && empty($search)) {
-                            $query->Where('status', '=', $status);
+                           // $query->Where('status', '=', $status);
                             if($status==1){
                                 $query->where('timestamp_start','>=',time());
+                                $query->where('status','=',1);
                             }
-                             if($status==2){
+                            if($status==2){
                                 $query->orderBy('timestamp_start','DESC');
+                                $query->where('status','=',2);
+                            }
+                            if($status==3){ 
+                                $query->where('status',3);
                             }
                         }else{
-                            $query->orWhere('match_id',$search);
+                            if (!empty($status) && !empty($search)) {
+                                $query->Where('match_id',$search);
+                                $query->where('status', $status);
+                            }elseif(!empty($search)){
+                                $query->orWhere('match_id',$search);
+                                $query->orWhere('title', 'LIKE', "$search%");
+                                $query->orWhere('short_title', 'LIKE', "$search%"); 
+                                $query->orWhere('title', 'LIKE', "%$search");
+                                $query->orWhere('short_title', 'LIKE', "%$search"); 
+                               // $query->orWhere('title', 'LIKE', "%$search%"); 
+                            }    
                         }
                         
-                        if (!empty($status) && !empty($search)) {
-                            $query->Where('match_id',$search);
-                            $query->where('status', $status);
-                        }else{
-                            $query->orWhere('title', 'LIKE', "$search%");
-                            $query->orWhere('short_title', 'LIKE', "$search%"); 
-                            $query->orWhere('title', 'LIKE', "%$search");
-                            $query->orWhere('short_title', 'LIKE', "%$search"); 
-                           // $query->orWhere('title', 'LIKE', "%$search%"); 
-                        } 
+                         
                         
-                    })->orderBy('created_at','DESC')->Paginate($this->record_per_page);
+                    })->orderBy('updated_at','DESC')->Paginate($this->record_per_page);
 
                 $match->transform(function($item,$key){
                     $playing11_teamA= \DB::table('team_a_squads')
