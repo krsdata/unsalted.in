@@ -2071,6 +2071,13 @@ class ApiController extends BaseController
                 $join_match = $jmatches;
                 $league_title = \DB::table('competitions')->where('id',$jmatches->competition_id)->first()->title??null;
                 $jmatches->league_title = $league_title;
+                
+                if($jmatches->is_free==0){
+                    $jmatches->has_free_contest= false;
+                }else{
+                    $jmatches->has_free_contest= true;
+                }
+
                 $join_contests_count =  \DB::table('join_contests')
                     ->where('user_id',$user)
                     ->where('match_id',$match_id)
@@ -2116,6 +2123,12 @@ class ApiController extends BaseController
             ->limit(10)
             ->get()->transform(function($item,$key){
                     $league_title = \DB::table('competitions')->where('id',$item->competition_id)->first()->title??null;
+
+                    if($item->is_free==0){
+                        $item->has_free_contest= false;
+                    }else{
+                        $item->has_free_contest= true;
+                    }
 
                     $item->league_title = $league_title;
                     return $item;
