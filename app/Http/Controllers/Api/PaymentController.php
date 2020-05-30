@@ -102,8 +102,10 @@ class PaymentController extends BaseController
     {  
         $match_id = $request->match_id;  
         $get_join_contest = JoinContest::where('match_id',  $match_id)
-          ->get()
-          ->transform(function ($item, $key)   {
+          ->where('ranks','!=',0)  
+          ->get();
+        $get_join_contest->transform(function ($item, $key)   {
+            
             $ct = CreateTeam::where('match_id',$item->match_id)
                             ->where('user_id',$item->user_id)
                             ->where('id',$item->created_team_id)
@@ -111,13 +113,13 @@ class PaymentController extends BaseController
             
             $user = User::where('id',$item->user_id)->select('id','first_name','last_name','user_name','email','profile_image','validate_user','phone','device_id','name')->first();
              
-            $team_id    =   $ct->id;
-            $match_id   =   $ct->match_id;
-            $user_id    =   $ct->user_id;
-            $rank       =   $ct->rank; 
-            $team_name  =   $ct->team_count;
-            $points     =   $ct->points;
-          
+            $team_id    =   $item->created_team_id;
+            $match_id   =   $item->match_id;
+            $user_id    =   $item->user_id;
+            $rank       =   $item->ranks; 
+            $team_name  =   $item->team_count;
+            $points     =   $item->points;
+            
             $contest    =  CreateContest::with('contestType','defaultContest')
                           ->with(['prizeBreakup'=>function($q) use($rank,$points  )
                             {
@@ -129,6 +131,7 @@ class PaymentController extends BaseController
                         )
                           ->where('match_id',$item->match_id)
                           ->where('id',$item->contest_id) 
+                          ->where('is_cancelled',0) 
                           ->get() 
                           ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points )  {
                             // check wether rank is repeated
@@ -145,7 +148,6 @@ class PaymentController extends BaseController
                              return $contestItem;
                            });
 
-           
            // $item->createdTeam = $ct;
             $item->user = $user;
             $item->team_id = $team_id;
@@ -257,7 +259,7 @@ class PaymentController extends BaseController
                         'rank' => $item->rank
                         ];
                 $helper = new Helper;
-                $m = $helper->sendNotificationMail($email_content,'prize');
+              //  $m = $helper->sendNotificationMail($email_content,'prize');
                 $item->user_id = $item->user_id;
                 $item->email = $item->email;
             }   

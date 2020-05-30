@@ -282,6 +282,25 @@
 
         /*---------Contact Route ---------*/
 
+         Route::bind('notification', function ($value, $route) {
+            return Modules\Admin\Models\Notification::find($value);
+        });
+
+        Route::resource(
+            'admin/notification',
+            'Modules\Admin\Http\Controllers\NotificationController',
+            [
+            'names' => [
+                'edit' => 'notification.edit',
+                'show' => 'notification.show',
+                'destroy' => 'notification.destroy',
+                'update' => 'notification.update',
+                'store' => 'notification.store',
+                'index' => 'notification',
+                'create' => 'notification.create',
+            ]
+                ]
+        );
         Route::bind('contestType', function ($value, $route) {
             return Modules\Admin\Models\ContestType::find($value);
         });
