@@ -1841,6 +1841,7 @@ class ApiController extends BaseController
             )
             ->where('status',1)
             ->where('timestamp_start','>=' , time())
+            ->orderBy('created_at','desc')
             ->get();
             
             $upcomingMatches->transform(function($items,$key)use($user_id){
@@ -1893,6 +1894,7 @@ class ApiController extends BaseController
                     ->toArray()
             )
             ->where('status',2)
+            ->orderBy('updated_at','desc')
             ->get()
             ->transform(function($items,$key)use($user_id){
                 //  dd($items);
@@ -1948,7 +1950,9 @@ class ApiController extends BaseController
                     ->toArray()
             )
             ->where('status',3)
+            ->orderBy('updated_at','desc')
             ->get()
+
             ->transform(function($items,$key)use($user_id){
 
                 $total_joined_team = \DB::table('join_contests')
