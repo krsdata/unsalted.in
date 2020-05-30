@@ -105,20 +105,15 @@ class NotificationController extends Controller {
         $notification->notified_user=1;
         $notification->save();   
 
-        $user = User::get()->transform(function($item,$key)use($notification){
-
-                $data = [
+        $device_id = User::where('device_id','!=','null')->pluck('device_id')->toArray();
+        
+        $data = [
                 'action' => 'notify' ,
                 'title' => $notification->title,
                 'message' => $notification->message
             ];
 
-
-                $device_id =  $item->device_id;
-                $this->sendNotification($device_id,$data);
-
-        });
-
+        $this->sendNotification($device_id,$data);
         return Redirect::to(route('notification'))
                             ->with('flash_alert_notice', 'New Notification  successfully created!');
     }
@@ -137,19 +132,30 @@ class NotificationController extends Controller {
         return view('packages::notification.edit', compact('notification', 'page_title', 'page_action'));
     }
 
-    public function sendNotification($token, $data){
+    public function sendNotification($tokenList, $data){
      
         $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
         $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
 
        $extraNotificationData = $data;
 
-       $fcmNotification = [
-           //'registration_ids' => $tokenList, //multple token array
-           'to' => $token, //single token
+       if(is_array($tokenList)){
+            $fcmNotification = [
+           'registration_ids' => $tokenList, //multple token array
+         //  'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+        ];
+       }else{
+            $fcmNotification = [
+          // 'registration_ids' => $tokenList, //multple token array
+            'to' => $tokenList, //single token
            //'notification' => $notification,
            'data' => $extraNotificationData
        ];
+       }
+
+       
 
        $headers = [
            'Authorization: key='.$serverLKey,
@@ -179,14 +185,14 @@ class NotificationController extends Controller {
 
         $user = User::get()->transform(function($item,$key)use($notification){
 
-                $data = [
+                $data[] = [
                 'action' => 'notify' ,
                 'title' => $notification->title,
                 'message' => $notification->message
             ];
 
 
-                $device_id =  $item->device_id;
+                $device_id[] =  $item->device_id;
                 $this->sendNotification($device_id,$data);
 
         });

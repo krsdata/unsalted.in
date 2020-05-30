@@ -202,11 +202,34 @@ class PaymentController extends BaseController
                         ); 
         });
         
+        /*$data = [
+                'action' => 'notify' ,
+                'title' => $notification->title,
+                'message' => $notification->message
+            ];
+
+            $this->sendNotification($device_id,$data);*/
 
 
         $prize_distributions = PrizeDistribution::where('match_id',$match_id)
-            ->get()
-            ->transform(function($item,$key) use($match_id){
+            ->get();
+        $cid = \DB::table('matches')
+                    ->where('match_id',$match_id)
+                    ->select('match_id','title')
+                    ->first();
+
+        $puser = PrizeDistribution::where('match_id',$match_id)->pluck('user_id')->toArray();
+        $device_id = User::whereIn('id',$puser)->pluck('device_id')->toArray();
+        if(count($device_id)){
+            $data = [
+                'action' => 'notify' ,
+                'title' => 'Prize is distributed for '.$cid->title,
+                'message' => 'Check your wallets.Prize is available for you respected team'
+            ];
+
+            $this->sendNotification($device_id,$data);
+        }    
+        $prize_distributions->transform(function($item,$key) use($match_id){
               $cid = \DB::table('matches')
                     ->where('match_id',$match_id)
                     ->first();
@@ -251,7 +274,7 @@ class PaymentController extends BaseController
                             ]
                         );
 
-
+                $device_id = $item->device_id;
                 $email_content = [ //$item->email
                         'receipent_email'=> $item->email,
                         'subject'=>$subject,
@@ -260,6 +283,9 @@ class PaymentController extends BaseController
                         'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$cid->title.'</b> match.',
                         'rank' => $item->rank
                         ];
+
+            
+
                 $helper = new Helper;
               //  $m = $helper->sendNotificationMail($email_content,'prize');
                 $item->user_id = $item->user_id;
@@ -274,6 +300,50 @@ class PaymentController extends BaseController
         return  Redirect::to(route('match','prize=true'));
     }
     
+    public function sendNotification($tokenList, $data){
+     
+        $serverLKey = 'AIzaSyAFIO8uE_q7vdcmymsxwmXf-olotQmOCgE';
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
+       $extraNotificationData = $data;
+
+       if(is_array($tokenList)){  
+            $fcmNotification = [
+           'registration_ids' => $tokenList, //multple token array
+         //  'to' => $token, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+        ];
+       }else{
+            $fcmNotification = [
+          // 'registration_ids' => $tokenList, //multple token array
+            'to' => $tokenList, //single token
+           //'notification' => $notification,
+           'data' => $extraNotificationData
+       ];
+       }
+
+       
+
+       $headers = [
+           'Authorization: key='.$serverLKey,
+           'Content-Type: application/json'
+       ];
+
+
+       $ch = curl_init();
+       curl_setopt($ch, CURLOPT_URL, $fcmUrl);
+       curl_setopt($ch, CURLOPT_POST, true);
+       curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+       $result = curl_exec($ch);
+       //echo "result".$result;
+       //die;
+       curl_close($ch);
+       return true;
+    }
     // Add Money
     public function addMoney(Request $request){
         
