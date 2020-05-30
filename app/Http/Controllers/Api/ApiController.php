@@ -1187,6 +1187,7 @@ class ApiController extends BaseController
                 if($result->total_spots <= $result->filled_spot && $result->total_spots!=0){
                     continue;
                 }
+
                 $data2['isCancelled'] =   $result->is_cancelled?true:false;
                 $data2['totalSpots'] =   $result->total_spots;
                 $data2['firstPrice'] =   $result->first_prize;
@@ -1246,7 +1247,9 @@ class ApiController extends BaseController
                 ->select('id as team_id')
                 ->get();
 
-            $myjoinedContest = $this->myJoinedContest($request->match_id,$request->user_id);
+
+            $myjoinedContest = $this->getMyContest2($request);
+
             return response()->json(
                 [
                     'system_time'=>time(),
@@ -2831,111 +2834,66 @@ class ApiController extends BaseController
     }
 
 
-    public function getMyContest2(Request $request)
-    {
-        $match_id =  $request->match_id;
-        $user_id  = $request->user_id;
+    public function getMyContest2(Request $request){
 
-        $userVald = User::find($request->user_id);
+        $match_id =  $request->match_id;
+
         $matchVald = Matches::where('match_id',$request->match_id)->count();
 
-        if(!$userVald || !$matchVald){
-            return [
-                'status'=>false,
-                'code' => 201,
-                'message' => 'user_id or match_id is invalid'
-            ];
-        }
+        
+        $join_contests = JoinContest::where('user_id',$request->user_id)
+            ->where('match_id',$match_id)->groupBy('contest_id')
+            ->pluck('contest_id')->toArray();
 
-        $check_my_contest = \DB::table('join_contests')
+        $contest = CreateContest::with('contestType')
             ->where('match_id',$match_id)
-            ->where('user_id',$user_id);
+            ->whereIn('id',$join_contests)
 
-
-        $contest_id = $check_my_contest->pluck('contest_id');
-
-        $myContest  =     $check_my_contest->first();
-
-        if(!$myContest){
-            return response()->json(
-                [
-                    "status"=>false,
-                    "code"=>201,
-                    "message"=>"Contest details not found"
-                ]
-            );
-        }
-
-        $joinMyContest =  JoinContest::with('createTeam','contest')
-            ->where('match_id',$match_id)
-            ->where('user_id',$user_id)
-            //  ->whereIn('created_team_id',$contest_id)
-            ->whereIn('contest_id',$contest_id)
+            ->orderBy('contest_type','ASC')
             ->get();
 
-        if($joinMyContest){
+        if($contest){
             $matchcontests = [];
 
-            foreach ($joinMyContest as $key => $result) {
-                $t_c = $result->createTeam->team_count;
-                $data2['teamName'] = ($userVald->first_name??$userVald->name).'('.$t_c.')';
-                // $data2['team'] = $result->createTeam->team_count;
-                $data2['createdTeamId'] =    $result->created_team_id;
-                $data2['contestId'] =    $result->contest_id;
-                $data2['totalWinningPrize'] =    $result->contest->total_winning_prize;
-                $data2['entryFees'] =    $result->contest->entry_fees;
-                $data2['totalSpots'] =   $result->contest->total_spots;
-                $data2['filledSpots'] =  $result->contest->filled_spot;
-                $data2['firstPrice'] =   $result->contest->first_prize;
-                $data2['winnerPercentage'] = $result->contest->winner_percentage;
-                $data2['cancellation'] = $result->contest->cancellable;
-                $contest_type_id = $result->contest->contest_type;
+            foreach ($contest as $key => $result) {
+                $myjoinedContest = $this->myJoinedTeam($request->match_id,$request->user_id,$result->id);
 
-                $contestType = \DB::table('contest_types')
-                    ->where('id',$contest_type_id)
-                    ->first();
+                // dd($result);
+                $data2['totalSpots'] =   $result->total_spots;
+                $data2['firstPrice'] =   $result->first_prize;
+                $data2['totalWinningPrize'] =    $result->total_winning_prize;
+                if($result->total_spots==0)
+                {
+                    $data2['totalSpots'] =   0;
 
-                $data2['maxEntries'] = $contestType->max_entries;
+                    $twp = round(($result->filled_spot)*($result->entry_fees)*(0.5));
+                    $data2['totalWinningPrize'] = round(($result->filled_spot)*($result->entry_fees)*(0.5));
 
-                $matchcontests[$result->contest_type][] = [
-                    'contestTitle'=>$contestType->contest_type,
-                    'contestSubTitle'=>$contestType->description,
-                    'contests'=>$data2
-                ];
-            }
-
-            $data = [];
-            foreach ($matchcontests as $key => $value) {
-
-                foreach ($value as $key2 => $value2) {
-                    $k['contestTitle'] = $value2['contestTitle'];
-                    $k['contestSubTitle'] = $value2['contestSubTitle'];
-                    $k['contests'][] = $value2['contests'];
+                    $data2['firstPrice'] =   round($twp*(0.2));
                 }
-                $data[] = $k;
-                $k= [];
-            }
-            if($data){
-                return response()->json(
-                    [
-                        'system_time'=>time(),
-                        "status"=>true,
-                        "code"=>200,
-                        "message"=>"Success",
-                        "response"=>['my_joined_contest'=>$data]
-                    ]
-                );
-            }else{
-                return response()->json(
-                    [
-                        'system_time'=>time(),
-                        "status"=>false,
-                        "code"=>404,
-                        "message"=>"record not found"
-                    ]
-                );
-            }
+                elseif($result->total_spots!=0 && $result->filled_spot==$result->total_spots)
+                {
+                  //  continue;
+                }
 
+                $data2['contestTitle'] = $result->contestType->contest_type;
+                $data2['contestSubTitle'] =$result->contestType->description;
+                $data2['contestId'] =    $result->id;
+                //  $data2['totalWinningPrize'] =    $result->total_winning_prize;
+                $data2['entryFees'] =    $result->entry_fees;
+                // $data2['totalSpots'] =   $result->total_spots;
+                $data2['filledSpots'] =  $result->filled_spot;
+                //  $data2['firstPrice'] =   $result->first_prize;
+                $data2['winnerPercentage'] = $result->winner_percentage;
+                $data2['maxAllowedTeam'] =   $result->contestType->max_entries;
+                $data2['cancellation'] = $result->cancellable;
+                $data2['maxEntries'] =  $result->contestType->max_entries;
+                $data2['joinedTeams'] = $myjoinedContest;
+
+
+                $matchcontests[] = $data2;
+            }
+            return $matchcontests;
         }
     }
 
