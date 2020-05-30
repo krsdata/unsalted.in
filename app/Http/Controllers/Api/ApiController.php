@@ -237,7 +237,7 @@ class ApiController extends BaseController
             $matches = Matches::where('status',3)
             ->get();
         }
-        
+
         $matches->transform(function($item,$key)use($request){
                 
                 $request->merge(['match_id'=>$item->match_id]);  
@@ -282,7 +282,7 @@ class ApiController extends BaseController
         if ($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_object($result)) {
 
-                if($result->points>0)
+                if($row->points>0)
                 {
                     MatchStat::updateOrCreate(
                     [
@@ -559,7 +559,6 @@ class ApiController extends BaseController
     public function updatePointsAndPlayerByMatchId(Request $request){
         $matches = Matches::where('status',3)
             ->get();
-
 
         foreach ($matches as $key => $match) {   # code...
 
