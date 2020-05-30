@@ -711,6 +711,19 @@ class ApiController extends BaseController
             })
             ->orderBy('ranks','ASC')
             ->get();
+            
+            $leader_board1->transform(function($item,$key){
+                $prize = \DB::table('prize_distributions')
+                        ->where('match_id' ,$item->match_id)
+                        ->where('user_id',$item->user_id)
+                        ->where('contest_id',$item->contest_id)
+                        ->where('created_team_id',$item->created_team_id)
+                        ->sum('prize_amount');
+                $item->prize_amount = $prize;
+                return $item;
+                
+            });
+
         $point = (int)($leader_board1[0]->points??null);
 
         $leader_board2 = JoinContest::with('user')
@@ -725,8 +738,18 @@ class ApiController extends BaseController
                 }
             })
             ->orderBy('ranks','ASC')
-            ->get();
-        $lb=[];    
+            ->get()
+            ->transform(function($item,$key){
+                $prize = \DB::table('prize_distributions')
+                        ->where('match_id' ,$item->match_id)
+                        ->where('user_id',$item->user_id)
+                        ->where('contest_id',$item->contest_id)
+                        ->where('created_team_id',$item->created_team_id)
+                        ->sum('prize_amount');
+                $item->prize_amount = $prize;
+                return $item;
+            });
+        $lb = [];    
         foreach ($leader_board1 as $key => $value) {
 
             if(!isset($value->user)){
@@ -739,7 +762,7 @@ class ApiController extends BaseController
             $data['team'] = $value->team_count;
             $data['point'] = $value->points;
             $data['rank'] = $value->ranks;
-
+            $data['prize_amount'] = $value->prize_amount??0;
 
             $data['user'] = [
                 'first_name'    => $value->user->first_name,
@@ -762,6 +785,7 @@ class ApiController extends BaseController
             $data['team'] = $value->team_count;
             $data['point'] = $value->points;
             $data['rank'] = $value->ranks;
+            $data['prize_amount'] = $value->prize_amount??0;
 
             $user_data =  $value->user->first_name;
             $fn = explode(" ",$user_data);
