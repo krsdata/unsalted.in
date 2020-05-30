@@ -180,7 +180,7 @@ class ApiController extends BaseController
 
         $match_id   = $request->match_id;
         $contest_id = $request->contest_id;
-
+        
         $contest =  CreateContest::where('match_id',$match_id)
             ->where('id',$contest_id)
             ->get();

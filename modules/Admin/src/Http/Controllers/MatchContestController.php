@@ -120,7 +120,7 @@ class MatchContestController extends Controller {
         } 
         $table_cname = \Schema::getColumnListing('create_teams');
         
-        $except = ['id','created_at','updated_at','contest_id','user_id','isWinning','edit_team_count','team_id','teams','captain','vice_captain','trump','team_join_status'];
+        $except = ['id','created_at','updated_at','contest_id','user_id','isWinning','edit_team_count','team_id','teams','captain','vice_captain','trump','team_join_status','points','rank','prize_amount'];
         $data = [];
 
         $tables[] = 'match_name';
@@ -189,7 +189,7 @@ class MatchContestController extends Controller {
         
         $table_cname = \Schema::getColumnListing('create_contests');
         
-        $except = ['id','created_at','updated_at','winner_percentage','prize_percentage','is_cancelled','contest_type','default_contest_id','cancellation'];
+        $except = ['id','created_at','updated_at','winner_percentage','prize_percentage','is_cancelled','contest_type','default_contest_id','cancellation','is_free','is_cloned','is_full'];
         $data = [];
 
         $tables[] = 'contest_name';
