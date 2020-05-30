@@ -135,7 +135,7 @@ class MatchController extends Controller {
     }
     /*cancelMatch*/
     public function cancelMatch(Request $request){
-
+        $match_id = $request->match_id;
         if($request->match_id){
             $data['status']         = 4;
             $data['status_str']     = 'Cancelled';
@@ -152,14 +152,23 @@ class MatchController extends Controller {
                 $match->is_cancelled= 1;
                 $match->save();
             }else{
+                $match->status= 4;
+                $match->status_str= 'Cancelled';
+                $match->is_cancelled= 1;
+                $match->save();
+                
                 if($match->status==4){
-                    return Redirect::to(route('match'))->with('flash_alert_notice', 'This Match already Cancelled'); 
+                    return Redirect::to(route('match','search='.$match_id))->with('flash_alert_notice', 'This Match already Cancelled'); 
                 }
                 if($match->status!=1){
-                    return Redirect::to(route('match'))->with('flash_alert_notice', 'This Match can not be cancelled'); 
+                    return Redirect::to(route('match','search='.$match_id))->with('flash_alert_notice', 'This Match can not be cancelled'); 
                 }
             }
         }
+
+        return Redirect::to(route('match','search='.$match_id))->with('flash_alert_notice', 'Match Cancelled successfully'); 
+
+
         $JoinContest = JoinContest::whereHas('user')->with('contest')
                         ->where('match_id',$request->match_id)
                         ->get()
@@ -200,7 +209,7 @@ class MatchController extends Controller {
                             }
                         });               
         
-        return Redirect::to(route('match'))->with('flash_alert_notice', 'Match Cancelled successfully');
+        return Redirect::to(route('match','search='.$match_id))->with('flash_alert_notice', 'Match Cancelled successfully'); 
 
     }
   /**
@@ -215,7 +224,6 @@ class MatchController extends Controller {
                 ->where('email_trigger',0)  
                 ->get()  
                 ->transform(function($item,$key)use($match_id){
-
                     $match = Match::where('match_id',$match_id)
                             ->select('match_id','title','short_title','status_note','format_str')->first();
                     $pd_user = \DB::table('prize_distributions')
@@ -233,14 +241,14 @@ class MatchController extends Controller {
                         'content' => 'You have won the prize of Rs.<b>'.$item->prize_amount.'</b> for the <b>'.$match->title.'</b> match.',
                         'rank' => $item->rank
                         ];
-                if($item->prize_amount){
+                if($item->prize_amount>0){
                     $helper = new Helper;
-                   // $m = $helper->sendNotificationMail($email_content,'prize'); 
+                    $m = $helper->sendNotificationMail($email_content,'prize'); 
                 }
                  
                 \DB::table('prize_distributions')->where('id',$item->id)->update(['email_trigger'=>1]);  
                 }); 
-        return  Redirect::to(route('match','email=true'));
+        return  Redirect::to(route('match','search='.$match_id.'&email=true'));
     }
     /*
      * Dashboard

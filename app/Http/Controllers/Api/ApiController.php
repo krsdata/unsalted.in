@@ -180,7 +180,7 @@ class ApiController extends BaseController
 
         $match_id   = $request->match_id;
         $contest_id = $request->contest_id;
-        
+
         $contest =  CreateContest::where('match_id',$match_id)
             ->where('id',$contest_id)
             ->get();
@@ -230,10 +230,15 @@ class ApiController extends BaseController
     }
 
     public function updateUserMatchPoints(Request $request){
-
-        $matches = Matches::where('status',3)
-            ->get()
-            ->transform(function($item,$key)use($request){
+        if($request->match_id){
+            $matches = Matches::where('match_id',$request->match_id)
+            ->get();
+        }else{
+            $matches = Matches::where('status',3)
+            ->get();
+        }
+        
+        $matches->transform(function($item,$key)use($request){
                 
                 $request->merge(['match_id'=>$item->match_id]);  
 
@@ -250,12 +255,10 @@ class ApiController extends BaseController
                             ->where('contest_id',$item->id)
                             ->get() // get team based on join contest
                             ->transform(function($item,$key){
-                                
                                 $this->updateMatchRankByMatchId($item->match_id,$item->contest_id);      
                             });
                 });
             });
-            
 
         return [
             'status'=>true,
@@ -279,7 +282,9 @@ class ApiController extends BaseController
         if ($result && mysqli_num_rows($result) > 0) {
             while($row = mysqli_fetch_object($result)) {
 
-                MatchStat::updateOrCreate(
+                if($result->points>0)
+                {
+                    MatchStat::updateOrCreate(
                     [
                         'match_id'  => $row->match_id,
                         'user_id'   => $row->user_id,
@@ -289,11 +294,12 @@ class ApiController extends BaseController
                     ],
                     ['ranking'=>$row->rank]);
 
-                $jc = JoinContest::find($row->join_contest_id);
-                    
-                if($jc){
-                    $jc->ranks = $row->rank;
-                    $jc->save();
+                    $jc = JoinContest::find($row->join_contest_id);
+                        
+                    if($jc){
+                        $jc->ranks = $row->rank;
+                        $jc->save();
+                    }
                 }
             }
         }
