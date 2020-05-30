@@ -54,9 +54,10 @@ class PaymentController extends BaseController
     * Check Repeat Rank;
     *
     */
-    public function checkReaptedRank($rank, $match_id){
-        $rank = CreateTeam::where('match_id',$match_id)
-                            ->where('rank',$rank)
+    public function checkReaptedRank($rank, $match_id,$contest_id){
+        $rank = JoinContest::where('match_id',$match_id)
+                            ->where('contest_id',$contest_id)
+                            ->where('ranks',$rank)
                             ->count();
         return $rank; 
     }
@@ -68,7 +69,6 @@ class PaymentController extends BaseController
     */
     public function getAmountPerRank($rank,$match_id=null,$contest_id=null,$repeat_rank=1)
     {
-
         $rank_from = $rank; //$rank;
         $rank_to   = $rank+($repeat_rank-1);
       
@@ -119,9 +119,10 @@ class PaymentController extends BaseController
             $rank       =   $item->ranks; 
             $team_name  =   $item->team_count;
             $points     =   $item->points;
-            
+            $contest_id =   $item->contest_id;
+
             $contest    =  CreateContest::with('contestType','defaultContest')
-                          ->with(['prizeBreakup'=>function($q) use($rank,$points  )
+                          ->with(['prizeBreakup'=>function($q) use($rank,$points,$contest_id  )
                             {
                               $q->where('rank_from','>=',$rank);
                               $q->orwhere('rank_upto','<=',$rank)
@@ -133,9 +134,10 @@ class PaymentController extends BaseController
                           ->where('id',$item->contest_id) 
                           ->where('is_cancelled',0) 
                           ->get() 
-                          ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points )  {
+                          ->transform(function ($contestItem, $ckey) use($team_id,$match_id,$user_id,$rank,$team_name,$points, $contest_id)  {
                             // check wether rank is repeated
-                            $rank_repeat = $this->checkReaptedRank($rank, $match_id);
+                            
+                            $rank_repeat = $this->checkReaptedRank($rank, $match_id,$contest_id);
                             //get average amount in case of repeated rank
                             $rank_amount = $this->getAmountPerRank($rank,$match_id,$contestItem->default_contest_id,$rank_repeat);
                               
