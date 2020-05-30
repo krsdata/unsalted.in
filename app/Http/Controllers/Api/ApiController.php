@@ -2053,12 +2053,12 @@ class ApiController extends BaseController
             foreach ($created_team as $match_id => $join_contest) {
 
                 # code...
-                $jmatches = Matches::with('teama','teamb')->where('match_id',$match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str','current_status');
-
-
+                $jmatches = Matches::with('teama','teamb')->where('match_id',$match_id)->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','game_state','game_state_str','current_status','competition_id')->first();
+                //dd($jmatches);
                 $join_match_count   =   $join_contest->count();
-                $join_match = $jmatches->first();
-               // dd($join_match);
+                $join_match = $jmatches;
+                $league_title = \DB::table('competitions')->where('id',$jmatches->competition_id)->first()->title??null;
+                $jmatches->league_title = $league_title;
                 $join_contests_count =  \DB::table('join_contests')
                     ->where('user_id',$user)
                     ->where('match_id',$match_id)
@@ -2096,13 +2096,18 @@ class ApiController extends BaseController
         }
         $match = Matches::with('teama','teamb')
             ->whereIn('status',[1,3])
-            ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str','is_free')
+            ->select('match_id','title','short_title','status','status_str','timestamp_start','timestamp_end','date_start','date_end','game_state','game_state_str','is_free','competition_id')
             ->orderBy('is_free','DESC')
             ->orderBy('timestamp_start','ASC')
 
             ->where('timestamp_start','>=' , time())
             ->limit(10)
-            ->get();
+            ->get()->transform(function($item,$key){
+                    $league_title = \DB::table('competitions')->where('id',$item->competition_id)->first()->title??null;
+
+                    $item->league_title = $league_title;
+                    return $item;
+            });
 
         $data['matchdata'][] = ['viewType'=>2,'banners'=>$banner];
         $data['matchdata'][] = ['viewType'=>3,'upcomingmatches'=>$match];
@@ -3574,7 +3579,6 @@ class ApiController extends BaseController
                     \DB::table('bank_accounts')->updateOrInsert($data,['user_id' => $request->user_id]);
                     $this->notifyToAdmin();
                 }
-
             return response()->json(
                 [
                     "status"=>true,
