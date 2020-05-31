@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CreateContest extends Eloquent
 {
-
+    use SoftDeletes;
+     
+    protected $dates = ['deleted_at'];
    
     /**
      * The database table used by the model.

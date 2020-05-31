@@ -221,16 +221,16 @@ class DefaultContestController extends Controller {
 
         $match  = Matches::where('status',1)->get('match_id');
         foreach ($match as $key => $result) {
-          
+
             $request->merge(['match_id' => $result->match_id]);
             $request->merge(['default_contest_id' => $default_contest_id]);
-           
+
             \DB::table('create_contests')
                     ->where('default_contest_id',$default_contest_id)
                     ->where('match_id',$result->match_id)
                     ->update($request->except(['_token','_method']));
         }
-        
+
         return Redirect::to(route('defaultContest'))
                         ->with('flash_alert_notice', 'Default Contest  successfully updated.');
     }
@@ -245,7 +245,7 @@ class DefaultContestController extends Controller {
         
         $contest = \DB::table('create_contests')
                     ->where('default_contest_id',$id)
-                    ->where('filled_spot',0)->delete();
+                    ->where('filled_spot',0)->update(['deleted_at'=>date('Y-m-d h:i:s')]);
 
         return Redirect::to(route('defaultContest'))
                         ->with('flash_alert_notice', 'Contest successfully deleted.');
