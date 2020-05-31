@@ -1207,6 +1207,7 @@ class ApiController extends BaseController
             ->where('match_id',$match_id)
             ->where('is_cancelled',0)
             ->orderBy('contest_type','ASC')
+            ->orderBy('total_winning_prize','Desc')
             ->get();
         if($contest){
             $matchcontests = [];
