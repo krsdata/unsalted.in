@@ -130,8 +130,6 @@ class MatchController extends Controller {
         }else{
             return Redirect::to(route('match'))->with('flash_alert_notice', 'No Contest selected for cancellation'); 
         }
-        
-
     }
     /*cancelMatch*/
     public function cancelMatch(Request $request){

@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v2'], function () {
     Route::match(['post','get'], 'password/reset', 'Api\UserController@resetPassword');
     Route::match(['post','get'], 'changePassword', 'Api\UserController@changePassword');
     Route::match(['post','get'], 'mChangePassword', 'Api\UserController@mChangePassword');
-    
+
 });
 
 Route::middleware('auth:api')->group( function () {
@@ -69,6 +69,12 @@ Route::group([
 ], function()
 {   
     
+    
+
+    Route::match(['get','post'], 'updateLiveMatchStatus', [
+        'as' => 'updateLiveMatchStatus',
+        'uses' => 'Api\ApiController@updateMatchDataByStatus'
+    ]);
 
     Route::match(['get','post'], 'getPlayerPoints', [
         'as' => 'getPlayerPoints',
@@ -137,6 +143,9 @@ Route::group([
     Route::match(['post','get'],'updateAllSquad', 'Api\ApiController@updateAllSquad');
     Route::match(['post','get'],'createContest/{match_id}', 'Api\ApiController@createContest');
     Route::match(['post','get'],'updateMatchDataById/{match_id}', 'Api\ApiController@updateMatchDataById');
+
+    Route::match(['post','get'],'updateMatchStatus', 'Api\ApiController@updateMatchStatus');
+
     Route::match(['post','get'],'saveMatchDataByMatchId/{match_id}', 'Api\ApiController@saveMatchDataByMatchId');
     Route::match(['post','get'],'updateMatchInfo', 'Api\ApiController@updateMatchInfo');
     Route::match(['post','get'],'updateSquad/{match_id}', 'Api\ApiController@updateSquad');
@@ -177,8 +186,9 @@ Route::group([
     Route::match(['post','get'],'getPrizeBreakup', 'Api\ApiController@prizeBreakup');
     Route::match(['post','get'],'getContestStat', 'Api\ApiController@getContestStat');
     Route::match(['post','get'],'getPoints', 'Api\ApiController@getPoints');
-    Route::match(['post','get'],'saveDocuments', 'Api\ApiController@saveDocuments');
-
+    Route::match(['post','get'],'saveDocuments', 'Api\ApiController@saveDocuments');    
+    Route::match(['post','get'],'isLineUp', 'Api\ApiController@isLineUp');
+    Route::match(['post','get'],'matchAutoCancel', 'Api\ApiController@matchAutoCancel');
 
     //added by manoj
     Route::match(['post','get'],'uploadbase64Image', 'Api\ApiController@uploadbase64Image');

@@ -232,9 +232,11 @@ class ApiController extends BaseController
     public function updateUserMatchPoints(Request $request){
         if($request->match_id){
             $matches = Matches::where('match_id',$request->match_id)
-            ->get();
+                        ->whereDate('date_start',\Carbon\Carbon::today())
+                        ->get();
         }else{
             $matches = Matches::where('status',3)
+            ->whereDate('date_start',\Carbon\Carbon::today())
             ->get();
         }
 
@@ -557,16 +559,18 @@ class ApiController extends BaseController
 
     // update points by LIVE Match
     public function updatePointsAndPlayerByMatchId(Request $request){
-        $matches = Matches::where('status',3)
-            ->get();
+        $matches = Matches::where('match_id',$request->match_id)
+                ->whereDate('date_start',\Carbon\Carbon::today())
+                ->where('status',2)
+                ->select('match_id','updated_at')
+                ->get();
 
         foreach ($matches as $key => $match) {   # code...
 
             $points = file_get_contents('https://rest.entitysport.com/v2/matches/'.$match->match_id.'/point?token='.$this->token);
             $points_json = json_decode($points);
-            $this->storeMatchInfoAtMachine($data,'point/'.$match->match_id.'.txt');
+            $this->storeMatchInfoAtMachine($points,'point/'.$match->match_id.'.txt');
             
-            $m = [];
             foreach ($points_json->response->points as $team => $teams) {
                 if($teams==""){
                     continue;
@@ -577,7 +581,7 @@ class ApiController extends BaseController
                         if($result->pid==null){
                             continue;
                         }
-                        $m[] = MatchPoint::updateOrCreate(
+                        MatchPoint::updateOrCreate(
                             ['match_id'=>$match->match_id,'pid'=>$result->pid],
                             (array)$result);
 
@@ -585,14 +589,13 @@ class ApiController extends BaseController
                 }
             }
         }
-
-        echo 'points_updated';
+        return "points updated";
     }
     // update points by LIVE Match
     public function updatePoints(Request $request){
         $matches = Matches::where('status',3)
-            ->get();
-
+                ->whereDate('updated_at',\Carbon\Carbon::today())
+                ->get();
 
         foreach ($matches as $key => $match) {   # code...
 
@@ -611,10 +614,10 @@ class ApiController extends BaseController
                         if($result->pid==null){
                             continue;
                         }
-                        $m[] = MatchPoint::updateOrCreate(
+
+                        MatchPoint::updateOrCreate(
                             ['match_id'=>$match->match_id,'pid'=>$result->pid],
                             (array)$result);
-
                     }
                 }
             }
@@ -711,7 +714,7 @@ class ApiController extends BaseController
             })
             ->orderBy('ranks','ASC')
             ->get();
-            
+
             $leader_board1->transform(function($item,$key){
                 $prize = \DB::table('prize_distributions')
                         ->where('match_id' ,$item->match_id)
@@ -1329,14 +1332,36 @@ class ApiController extends BaseController
 
     public function updateMatchDataById($match_id=null)
     {
-        //upcoming
+        
         $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
-        // store match info    
-        $this->storeMatchInfoAtMachine($data,'info/'.$match_id.'.txt');
-        $this->saveMatchDataFromAPI2DB($data);
-        //$this->saveMatchDataById($data);
+       // $this->saveMatchDataFromAPI2DB($data);
+        $this->saveMatchDataById($data);
 
         return [$match_id.' : match id updated successfully'];
+    }
+
+    public function updateMatchStatus(Request $request)
+    {   $match_id = $request->match_id;
+        $matches = Matches::where('status',1)
+                        ->whereDate('date_start',\Carbon\Carbon::today())
+                        ->get(); 
+                    
+        foreach ($matches as $key => $result) {
+            $match_id = $result->match_id;
+            $data =    file_get_contents('https://rest.entitysport.com/v2/matches/'.$match_id.'/info?token='.$this->token);
+
+            $match = json_decode($data);
+            if(isset($match->response)){
+                \DB::table('matches')->where('match_id',$match->response->match_id)
+                        ->update(
+                            [
+                                'status'=>$match->response->status,
+                                'status_str'=>$match->response->status_str
+                            ]
+                        );
+            }
+        } 
+        return ['match id updated successfully'];
     }
 
     public function updateMatchInfo(Request $request)
@@ -2161,6 +2186,11 @@ class ApiController extends BaseController
                     }else{
                         $item->has_free_contest= true;
                     }
+
+                    $lineup = \DB::table('team_a_squads')->where('match_id',$item->match_id)
+                                ->where('playing11',"true")->count();
+
+                    $item->is_lineup = $lineup?true:false;  
 
                     $item->league_title = $league_title;
                     return $item;
@@ -3341,16 +3371,16 @@ class ApiController extends BaseController
 
     public function getScore(Request $request){
 
-
+        $this->updatePointsAndPlayerByMatchId($request);
+        $this->updateUserMatchPoints($request);
         $score = Matches::with(['teama' => function ($query) {
             $query->select('match_id', 'team_id', 'name','short_name','scores_full','scores','overs');
-        }])
-            ->with(['teamb' => function ($query) {
+        }])->with(['teamb' => function ($query) {
                 $query->select('match_id', 'team_id', 'name','short_name','scores_full','scores','overs');
-            }])->where('match_id',$request->match_id)
+            }])
+            ->where('match_id',$request->match_id)
             ->select('match_id','title','short_title','status','status_str','result','status_note')
             ->first();
-
         return response()->json(
             [
                 "status"=>true,
@@ -3483,12 +3513,22 @@ class ApiController extends BaseController
 
        $extraNotificationData = $data;
 
-       $fcmNotification = [
+       if(is_array($token)){
+            $fcmNotification = [
+               'registration_ids' => $token, //multple token array
+              // 'to' => $token, //single token
+               //'notification' => $notification,
+               'data' => $extraNotificationData
+            ];
+       }else{
+            $fcmNotification = [
            //'registration_ids' => $tokenList, //multple token array
            'to' => $token, //single token
            //'notification' => $notification,
            'data' => $extraNotificationData
-       ];
+        ];
+        }
+       
 
        $headers = [
            'Authorization: key='.$serverLKey,
@@ -3906,6 +3946,144 @@ class ApiController extends BaseController
         });
         return "Contest cloned";          
 
+    }
+
+    public function isLineUp(Request $request){
+
+        $matches = Matches::where('status',1)
+                   ->whereDate('date_start',\Carbon\Carbon::today())
+                        ->get()
+                        ->transform(function($item,$key){
+                            
+                            $lineup = \DB::table('team_a_squads')->where('match_id',$item->match_id)
+                                ->where('playing11',"true")->count();
+
+                            if($lineup){
+                                $this->matchAutoCancel();
+                                $user_id = \DB::table('create_teams')->where('match_id',$item->match_id)
+                                    ->pluck('user_id')->toArray();
+                                $device_id = User::whereIn('id',$user_id)->pluck('device_id')->toArray();
+
+                                $data = [
+                                    'action' => 'notify' ,
+                                    'title' => $item->title . 'is lineup' ,
+                                    'message' => 'Hurry up!!. Join or edit your team.'
+                                ];
+                                $this->sendNotification($device_id, $data);
+                                return $item; 
+                            }    
+                                    
+                        }); 
+
+
+        return 'Matches lined up';
+    }
+    /*Match auto cancel if not filled*/
+    public function matchAutoCancel(){
+
+        $cancel_match = Matches::where('status',1)
+                       ->whereDate('date_start',\Carbon\Carbon::today())
+                       ->get()
+                        ->transform(function($item,$key){
+                           
+                            $contests = \DB::table('create_contests')
+                                        ->where('match_id',$item->match_id)
+                                        ->where('total_spots','>',0)
+                                        ->get()
+                                        ->transform(function($item,$key){
+                                    $total_winning_prize = $item->total_winning_prize;
+                                    $total_amount_recvd = $item->filled_spot*$item->entry_fees;
+                                    //if($item->entry_fees!=0 && $total_winning_prize < $total_amount_recvd){
+                                    if($item->entry_fees!=0 && $total_winning_prize > $total_amount_recvd){
+
+                                        $match_id = $item->match_id;
+                                        $contest_id = $item->id;
+                                        $c =$this->cancelContest($match_id,$contest_id);
+                                        
+                                    }
+                                    
+                                });
+                        });
+ 
+       return ['Contest Cancelled successfully']; 
+    }
+
+    public function cancelContest($match_id=null,$contest_id=null){
+         
+        $request = new Request;
+
+        if($match_id && $contest_id){
+            $JoinContest = JoinContest::whereHas('user')->with('contest')
+                        ->where('match_id',$match_id)
+                        ->where('contest_id',$contest_id)
+                        ->get()
+                        ->transform(function($item,$key){
+                        dd($item);
+                        $cancel_contest = CreateContest::find($item->contest_id);
+                        if($cancel_contest->is_cancelled==0){
+                            
+                            $cancel_contest->is_cancelled = 1;
+                            $cancel_contest->save();
+
+                            if(isset($item->contest) && $item->contest->entry_fees){
+                                
+                                $transaction_id = $item->match_id.$item->contest_id.$item->created_team_id.'-'.$item->user_id;
+
+                                $wt =    WalletTransaction::firstOrNew(
+                                        [
+                                           'user_id' => $item->user_id,
+                                           'transaction_id' => $transaction_id
+                                        ]
+                                    );
+                                $wt->user_id            = $item->user_id;   
+                                $wt->amount             = $item->contest->entry_fees;  
+                                $wt->payment_type       = 7;  
+                                $wt->payment_type_string = "Refunded";
+                                $wt->transaction_id     = $transaction_id;
+                                $wt->payment_mode       = 'Sportsfight';    
+                                $wt->payment_status     = "success";
+                                $wt->debit_credit_status = "+";   
+                                $wt->save();
+
+
+                                $wallet = Wallet::firstOrNew(
+                                        [
+                                           'user_id' => $item->user_id,
+                                           'payment_type' => 4
+                                        ]
+                                    );
+
+                                $wallet->user_id        =  $item->user_id;
+                                $wallet->amount = $wallet->amount+$item->contest->entry_fees;
+                                $wallet->deposit_amount = $wallet->amount+$item->contest->entry_fees;
+                                $wallet->save();
+                            }
+
+                            \DB::commit();
+                            
+                            $item->cancel_message = 'Contest Cancelled' ;
+                            return $item;
+                        }else{
+                            $item->cancel_message = 'Already Cancelled' ; 
+                            return $item; 
+                        }
+                    });               
+        
+        if($JoinContest->count()==0 and $contest_id){
+           
+          //  foreach ($request->cancel_contest as $key => $value) {
+                $cancel_contest = CreateContest::find($contest_id);
+                $cancel_contest->is_cancelled = 1;
+                $cancel_contest->save();
+          //  }
+
+           return  ['Selected contest is cancelled'];
+
+        }
+        return ['Match Contest Cancelled successfully'];
+        }else{
+            return ['No Contest selected for cancellation']; 
+        }
     }
     
 }
