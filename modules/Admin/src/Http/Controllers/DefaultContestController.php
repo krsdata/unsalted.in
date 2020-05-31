@@ -30,8 +30,6 @@ use Modules\Admin\Models\ContestType;
 use Modules\Admin\Models\PrizeBreakups;
 use App\Models\Matches;
 
-
-
 /**
  * Class AdminController
  */
@@ -220,14 +218,16 @@ class DefaultContestController extends Controller {
         $defaultContest->fill(Input::all()); 
         $defaultContest->save(); 
         $default_contest_id = $id;
+
         $match  = Matches::where('status',1)->get('match_id');
-        //$request->merge(['filled_spot' => 0]);
         foreach ($match as $key => $result) {
+          
             $request->merge(['match_id' => $result->match_id]);
             $request->merge(['default_contest_id' => $default_contest_id]);
+           
             \DB::table('create_contests')
-                    ->where('default_contest_id',$result->match_id)
-                    ->where('match_id',$id)
+                    ->where('default_contest_id',$default_contest_id)
+                    ->where('match_id',$result->match_id)
                     ->update($request->except(['_token','_method']));
         }
         
