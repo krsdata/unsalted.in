@@ -242,10 +242,13 @@ class DefaultContestController extends Controller {
     public function destroy($id) { 
         
         DefaultContest::where('id',$id)->delete();
-        
+        $del = date(now());
         $contest = \DB::table('create_contests')
                     ->where('default_contest_id',$id)
-                    ->where('filled_spot',0)->update(['deleted_at'=>date('Y-m-d h:i:s')]);
+                    ->where('filled_spot',0)
+                    ->orwhere('filled_spot',null)
+                    ->orwhere('filled_spot',"")
+                    ->delete();
 
         return Redirect::to(route('defaultContest'))
                         ->with('flash_alert_notice', 'Contest successfully deleted.');
