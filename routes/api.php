@@ -14,6 +14,10 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['prefix' => 'v2'], function () {
+
+    Route::match(['post','get'],'signup', 'Api\UserController@registration');
+    Route::match(['post','get'],'login', 'Api\UserController@customerLogin');
+
     Route::post('/login', 'Api\UserController@member/memberLogin');
     Route::post('/register', 'Api\UserController@member/registration');
     Route::get('/logout', 'Api\UserController@logout')->middleware('auth:api');
@@ -158,8 +162,6 @@ Route::group([
 
 
     //User API
-    Route::match(['post','get'],'member/registration', 'Api\UserController@registration');
-    Route::match(['post','get'],'member/customerLogin', 'Api\UserController@customerLogin');
     Route::match(['post','get'],'email_verification','Api\UserController@emailVerification');
     Route::match(['post','get'],'member/updateProfile', 'Api\UserController@updateProfile');
     Route::match(['post','get'],'member/logout', 'Api\UserController@logout');

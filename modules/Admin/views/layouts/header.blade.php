@@ -5,7 +5,7 @@
     <!-- BEGIN HEAD -->
     <head>
         <meta charset="utf-8" />
-        <title> PLUG 11 | {{ $page_title }} </title>
+        <title> {{ $page_title??'Admin' }} </title>
         <link rel="shortcut icon" type="image/png" href="{{asset('assets/img/fav.png')}}" />
 
         <meta http-equiv="X-UA-Compatible" content="IE=edge">

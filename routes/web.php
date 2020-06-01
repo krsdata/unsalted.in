@@ -23,7 +23,9 @@ Route::match(['post','get'], 'changePassword', 'UserController@changePassword');
 
 Route::match(['post','get'], 'changePasswordToken', 'UserController@changePasswordToken');
 
-Route::match(['post','get'], '/', 'HomeController@home');
+Route::match(['post','get'], '/', function(){
+    die('Access deny');
+});
 Route::match(['post','get'], '404', 'HomeController@page404');
 
 
